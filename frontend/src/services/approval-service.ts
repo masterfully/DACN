@@ -10,7 +10,7 @@ export const approvalService = {
     status: "Approved" | "Rejected",
     notes: string,
   ) =>
-    apiClient.patch(`/applications/${id}`, {
+    apiClient.patch<unknown>(`/applications/${id}`, {
       ApplicationStatus: status,
       ReviewNotes: notes,
     }),

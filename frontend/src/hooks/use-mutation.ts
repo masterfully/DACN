@@ -3,7 +3,7 @@
 import useSWRMutation from "swr/mutation";
 import type { ApiError } from "@/types/api";
 
-interface UseMutationResult<TData, TVariables> {
+export interface UseMutationResult<TData, TVariables> {
   mutate: (variables: TVariables) => Promise<TData | undefined>;
   isLoading: boolean;
   error: ApiError | undefined;

@@ -7,7 +7,7 @@ import type { ApiError } from "@/types/api";
 /**
  * Options for useFetch hook
  */
-interface UseFetchOptions<T> extends SWRConfiguration<T, ApiError> {
+export interface UseFetchOptions<T> extends SWRConfiguration<T, ApiError> {
   /**
    * If false, the request will not be made
    */
@@ -17,7 +17,7 @@ interface UseFetchOptions<T> extends SWRConfiguration<T, ApiError> {
 /**
  * Return type for useFetch hook
  */
-interface UseFetchResult<T> {
+export interface UseFetchResult<T> {
   data: T | undefined;
   isLoading: boolean;
   isValidating: boolean;

@@ -1,4 +1,4 @@
-import type { Room, Schedule } from "@/types";
+import type { Room, Schedule, UsageHistory } from "@/types";
 import apiClient from "./api-client";
 
 export const roomService = {
@@ -8,5 +8,5 @@ export const roomService = {
     apiClient.get<Schedule[]>(`/sections/${sectionId}/schedules`),
 
   getUsageHistory: (roomId: number) =>
-    apiClient.get(`/rooms/${roomId}/usage-history`),
+    apiClient.get<UsageHistory[]>(`/rooms/${roomId}/usage-history`),
 };

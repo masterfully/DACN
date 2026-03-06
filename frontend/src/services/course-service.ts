@@ -14,7 +14,7 @@ export const courseService = {
     }),
 
   unregister: (sectionId: number, studentId: number) =>
-    apiClient.delete("/registrations", {
+    apiClient.delete<unknown>("/registrations", {
       data: { SectionID: sectionId, StudentID: studentId },
     }),
 };
