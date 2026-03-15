@@ -36,23 +36,27 @@ export const roomColumns: ColumnDef<Room>[] = [
   {
     accessorKey: "roomName",
     header: () => <ColHeader label="Tên phòng" />,
+    meta: { visibilityLabel: "Tên phòng" },
     enableSorting: false,
   },
   {
     accessorKey: "roomType",
     header: () => <ColHeader icon={TagIcon} label="Loại phòng" />,
+    meta: { visibilityLabel: "Loại phòng" },
     enableSorting: false,
     cell: ({ row }) => row.original.roomType ?? "—",
   },
   {
     accessorKey: "campus",
     header: () => <ColHeader icon={MapPinIcon} label="Cơ sở" />,
+    meta: { visibilityLabel: "Cơ sở" },
     enableSorting: true,
     cell: ({ row }) => row.original.campus ?? "—",
   },
   {
     accessorKey: "capacity",
     header: () => <ColHeader icon={UsersIcon} label="Sức chứa" />,
+    meta: { visibilityLabel: "Sức chứa" },
     enableSorting: true,
     cell: ({ row }) =>
       row.original.capacity != null ? (
@@ -64,6 +68,7 @@ export const roomColumns: ColumnDef<Room>[] = [
   {
     accessorKey: "status",
     header: () => <ColHeader icon={ActivityIcon} label="Trạng thái" />,
+    meta: { visibilityLabel: "Trạng thái" },
     enableSorting: false,
     cell: ({ row }) => <RoomStatusBadge status={row.original.status} />,
   },

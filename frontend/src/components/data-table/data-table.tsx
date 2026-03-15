@@ -31,7 +31,6 @@ import type { DataTableProps } from "./data-table.types";
 import { DataTablePagination } from "./data-table-pagination";
 import { DataTableToolbar } from "./data-table-toolbar";
 
-// Pre-defined string keys avoid array-index-as-key lint warnings for skeleton rows
 const SKELETON_ROW_IDS = ["sk-0", "sk-1", "sk-2", "sk-3", "sk-4"] as const;
 
 export function DataTable<TData>({
@@ -43,23 +42,24 @@ export function DataTable<TData>({
   onSortingChange,
   searchValue,
   onSearchChange,
+  onSearch,
   searchPlaceholder,
   isLoading = false,
   error,
   enableRowSelection = false,
   enableColumnVisibility = true,
   renderRowActions,
-  renderBulkActions,
+  toolbarActions,
   getRowId,
-  actionColumnWidth = 72,
+  actionColumnWidth: _actionColumnWidth = 72,
   emptyMessage = "Không có dữ liệu.",
+  onRowDoubleClick,
 }: DataTableProps<TData>) {
   const [sorting, setSorting] = React.useState<SortingState>(sortingProp ?? []);
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
 
-  // Keep internal sorting in sync when controlled from parent
   React.useEffect(() => {
     if (sortingProp !== undefined) {
       setSorting(sortingProp);
@@ -68,8 +68,6 @@ export function DataTable<TData>({
 
   const { page, pageSize } = pagination;
 
-  // Reset row selection whenever the page or page-size changes so stale
-  // selections from a previous page are not carried forward.
   // biome-ignore lint/correctness/useExhaustiveDependencies: intentional trigger on pagination change
   React.useEffect(() => {
     setRowSelection({});
@@ -160,20 +158,22 @@ export function DataTable<TData>({
 
   const selectedRows = table.getFilteredSelectedRowModel().rows;
 
+  const resolvedToolbarActions =
+    typeof toolbarActions === "function"
+      ? toolbarActions(selectedRows)
+      : toolbarActions;
+
   return (
-    <div className="flex h-full flex-col gap-4">
+    <div className="flex h-full flex-col gap-4 select-none">
       <DataTableToolbar
         table={table}
         searchValue={searchValue}
         onSearchChange={onSearchChange}
+        onSearch={onSearch}
         searchPlaceholder={searchPlaceholder}
         enableColumnVisibility={enableColumnVisibility}
         selectedCount={selectedRows.length}
-        bulkActionsContent={
-          enableRowSelection && renderBulkActions && selectedRows.length > 0
-            ? renderBulkActions(selectedRows)
-            : null
-        }
+        toolbarActions={resolvedToolbarActions}
       />
 
       <div className="max-h-[calc(100vh-20rem)] overflow-auto rounded-md border">
@@ -263,6 +263,8 @@ export function DataTable<TData>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() ? "selected" : undefined}
+                  className={onRowDoubleClick ? "cursor-pointer" : undefined}
+                  onDoubleClick={() => onRowDoubleClick?.(row)}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell

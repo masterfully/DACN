@@ -1,5 +1,6 @@
 import type { ColumnDef, Row, SortingState } from "@tanstack/react-table";
 import type { ReactNode } from "react";
+import type { ToolbarActionGroup } from "./data-table-toolbar.types";
 
 export interface DataTablePagination {
   page: number;
@@ -30,6 +31,7 @@ export interface DataTableProps<TData> {
    */
   searchValue?: string;
   onSearchChange?: (value: string) => void;
+  onSearch?: (value: string) => void;
   searchPlaceholder?: string;
   /** Show skeleton loading rows */
   isLoading?: boolean;
@@ -41,7 +43,7 @@ export interface DataTableProps<TData> {
   enableColumnVisibility?: boolean;
   /**
    * Render a cell with actions (edit / delete / view) for each row.
-   * Automatically appended as the last column with a fixed width.
+   * Automatically appended as the last column
    */
   renderRowActions?: (row: Row<TData>) => ReactNode;
   /**
@@ -50,9 +52,14 @@ export interface DataTableProps<TData> {
    */
   actionColumnWidth?: number;
   /**
-   * Render bulk-action controls shown above the table when rows are selected.
+   * Declarative toolbar action group.  The primary action is always rendered
+   * as a full button; additional actions land in a chevron dropdown.
+   * Accepts either a static config or a factory that receives the currently
+   * selected rows so callers can drive `disabled` from selection state.
    */
-  renderBulkActions?: (selectedRows: Row<TData>[]) => ReactNode;
+  toolbarActions?:
+    | ToolbarActionGroup
+    | ((selectedRows: Row<TData>[]) => ToolbarActionGroup);
   /**
    * Stable row identity function passed to useReactTable.
    * Defaults to the row index if not provided.
@@ -60,4 +67,11 @@ export interface DataTableProps<TData> {
   getRowId?: (row: TData) => string;
   /** Message shown when data array is empty */
   emptyMessage?: string;
+  /**
+   * Called when a data row is double-clicked.
+   * DataTable forwards the tanstack Row object; the page is responsible
+   * for deciding what to do (open dialog, navigate, etc.).
+   * When provided, rows also get a `cursor-pointer` affordance.
+   */
+  onRowDoubleClick?: (row: Row<TData>) => void;
 }
