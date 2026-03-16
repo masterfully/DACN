@@ -50,5 +50,7 @@
     "outDir": "dist",
     "esModuleInterop": true,
     "strict": true
-  }
+  },
+  "include": ["src/**/*.ts", "src/**/*.d.ts"],
+  "exclude": ["node_modules", "dist", "src/generated"]
 }

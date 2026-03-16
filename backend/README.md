@@ -91,7 +91,7 @@ Lệnh này sẽ:
 
 - Tạo file migration trong `prisma/migrations/`
 - Áp dụng migration lên database
-- Generate lại Prisma Client (vào `src/generated/prisma`)
+- Generate lại Prisma Client (qua package `@prisma/client`)
 
 ### 3. Chỉ generate client (không tạo migration)
 
@@ -124,3 +124,49 @@ Trình duyệt sẽ mở tại `http://localhost:5555`. Tại đây bạn có th
 | `pnpm dev` | Chạy server development (ts-node-dev) |
 | `pnpm build` | Build TypeScript ra `dist/` |
 | `pnpm start` | Chạy server từ `dist/index.js` |
+
+---
+
+## Test endpoint kiểm tra server (Health Check)
+
+Endpoint dùng để kiểm tra backend đang chạy:
+
+- Method: `GET`
+- URL: `http://localhost:8080/api/health`
+- Không cần body
+- Không cần Authorization
+
+### Test bằng Postman
+
+1. Chạy server:
+
+```bash
+pnpm dev
+```
+
+2. Trong Postman, tạo request mới:
+
+- Method: `GET`
+- URL: `http://localhost:8080/api/health`
+
+3. Bấm **Send**
+
+Kỳ vọng nhận được response:
+
+```json
+{
+  "success": true,
+  "data": {
+    "status": "ok",
+    "timestamp": "2026-03-16T00:00:00.000Z"
+  },
+  "error": null,
+  "meta": null
+}
+```
+
+### Test nhanh bằng terminal (cURL)
+
+```bash
+curl http://localhost:8080/api/health
+```

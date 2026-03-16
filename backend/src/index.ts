@@ -1,29 +1,19 @@
 import "dotenv/config";
 import express from "express";
-import { prisma } from "./prisma/prismaClient";
+import apiRouter from "./routes";
+import { errorHandler } from "./middleware/errorHandler";
+import { requestLogger } from "./middleware/requestLogger";
 
 const app = express();
 app.use(express.json());
+app.use(requestLogger);
 
-app.get("/accounts", async (_req, res) => {
-  const accounts = await prisma.account.findMany();
-  res.json(accounts);
-});
+app.use("/api", apiRouter);
 
-app.post("/accounts", async (req, res) => {
-  const { username, password, role } = req.body;
+app.use(errorHandler);
 
-  const account = await prisma.account.create({
-    data: {
-      Username: username,
-      Password: password,
-      Role: role ?? "STUDENT",
-    },
-  });
+const port = Number(process.env.PORT ?? 8080);
 
-  res.json(account);
-});
-
-app.listen(8080, () => {
-  console.log("Server running on port 8080");
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
 });
