@@ -1,0 +1,294 @@
+# Backend Task Assignment
+
+## Overview
+
+| Member | Responsibility | Endpoints |
+|---|---|:---:|
+| **Member 1 (Leader)** | Infrastructure + Auth + Account + Profile | 18 + all infra |
+| **Member 2** | Subject + Section + Registration + Schedule + Attendance | 36 |
+| **Member 3** | Room + UsageHistory + ProfileApplication + CertificateType + CertificateDetail | 35 |
+
+> **Dependency rule**: Member 2 and Member 3 are blocked until Member 1 finishes the infrastructure (middleware, auth guard, response formatter). Coordinate a handoff point after Step 0 + Step 1 of Member 1's tasks.
+
+---
+
+## Member 1 (Leader) — Infrastructure + Auth + Account + Profile
+
+### Step 0 — Infrastructure ⚠️ Do this first, others are blocked
+
+- [x] Install missing packages:
+  ```
+  pnpm add jsonwebtoken bcrypt zod
+  pnpm add -D @types/jsonwebtoken @types/bcrypt
+  ```
+- [x] Fix `prisma/schema.prisma`:
+  - Add `url = env("DATABASE_URL")` to the `datasource db` block
+  - Add proper `@relation` annotation to `Subject.PrerequisiteSubjectID` (self-relation)
+  - Remove `Usage_Section` model (duplicate of `SectionUsageHistory`) and clean up relations in `Section` and `UsageHistory`
+- [x] Set up folder structure under `src/`:
+  ```
+  src/
+    middleware/
+      auth.ts          # requireAuth, requireRole
+      errorHandler.ts  # global error handler
+    utils/
+      response.ts      # standard { success, data, error, meta } formatter
+    routes/
+    controllers/
+    services/
+  ```
+- [x] Implement response formatter utility (`success`, `data`, `error`, `meta`)
+- [x] Implement global error handler middleware
+- [x] Implement JWT auth middleware:
+  - `requireAuth` — verifies Bearer token, attaches `req.user`
+  - `requireRole(...roles)` — checks role against allowed list
+- [x] Refactor `src/index.ts`: mount all routers under `/api`, apply `express.json()` and error handler
+
+---
+
+### Step 1 — Auth module
+
+Base path: `/api/auth`
+
+- [ ] `POST /api/auth/login` — validate credentials, return `accessToken` + `refreshToken`, store refresh token in DB
+- [ ] `POST /api/auth/logout` — invalidate refresh token record
+- [ ] `POST /api/auth/refresh-token` — verify stored refresh token, issue new pair (rotation)
+- [ ] `PUT /api/auth/change-password` — verify `currentPassword`, hash and update `newPassword`
+- [ ] `POST /api/auth/register` — create `Account` (role: STUDENT) + `UserProfile`, return tokens
+
+**Notes**:
+- Hash passwords with `bcrypt` (min rounds: 10)
+- Store refresh tokens in DB with expiry
+- Password rules: min 8 chars, at least 1 uppercase, 1 number, 1 special character
+
+---
+
+### Step 2 — Account module
+
+Base path: `/api/accounts`
+
+- [ ] `GET /api/accounts` — paginated list, filter by `role`. **Role: ADMIN**
+- [ ] `POST /api/accounts` — create account (any role). **Role: ADMIN**
+- [ ] `GET /api/accounts/me` — current user's account. **Any auth** _(register before `/:id`)_
+- [ ] `GET /api/accounts/:accountId` — account detail. **Role: ADMIN**
+- [ ] `PUT /api/accounts/:accountId` — update `username`, `role`. **Role: ADMIN**
+- [ ] `DELETE /api/accounts/:accountId` — delete account. **Role: ADMIN**
+
+---
+
+### Step 3 — UserProfile module
+
+Base path: `/api/profiles`
+
+- [ ] `GET /api/profiles` — paginated, search by name/email. **Role: ADMIN**
+- [ ] `GET /api/profiles/me` — own profile. **Any auth** _(register before `/:id`)_
+- [ ] `PUT /api/profiles/me` — update own profile. **Any auth**
+- [ ] `GET /api/profiles/students` — student profiles. **Role: ADMIN, LECTURER** _(register before `/:id`)_
+- [ ] `GET /api/profiles/lecturers` — lecturer profiles. **Role: ADMIN** _(register before `/:id`)_
+- [ ] `GET /api/profiles/:profileId` — profile detail. **Role: ADMIN or owner**
+- [ ] `PUT /api/profiles/:profileId` — update profile. **Role: ADMIN or owner**
+- [ ] `GET /api/profiles/:profileId/attendance-summary` — attendance stats. **Role: ADMIN, LECTURER, or owner**
+- [ ] `GET /api/profiles/:profileId/certificates` — student's certificates. **Role: ADMIN or owner**
+- [ ] `POST /api/profiles/:profileId/certificates` — link certificate to student. **Role: ADMIN**
+- [ ] `DELETE /api/profiles/:profileId/certificates/:certificateId` — unlink. **Role: ADMIN**
+
+---
+
+## Member 2 — Subject + Section + Registration + Schedule + Attendance
+
+> **Wait for**: Member 1 to finish Step 0 (infrastructure + middleware) before starting.
+
+### Subject module
+
+Base path: `/api/subjects`
+
+- [ ] `GET /api/subjects` — paginated, search by name. **Any auth**
+- [ ] `POST /api/subjects` — create subject. **Role: ADMIN**
+- [ ] `GET /api/subjects/:subjectId` — subject detail. **Any auth**
+- [ ] `PUT /api/subjects/:subjectId` — update. **Role: ADMIN**
+- [ ] `DELETE /api/subjects/:subjectId` — delete. **Role: ADMIN** _(guard: not linked to any section)_
+
+---
+
+### Section module
+
+Base path: `/api/sections`
+
+- [ ] `GET /api/sections` — paginated, filter by `subjectId`, `year`, `status`. **Role: ADMIN**
+- [ ] `POST /api/sections` — create section. **Role: ADMIN**
+- [ ] `GET /api/sections/my-sections` — lecturer's own sections. **Role: LECTURER** _(register before `/:id`)_
+- [ ] `GET /api/sections/:sectionId` — section detail. **Any auth**
+- [ ] `PUT /api/sections/:sectionId` — update section. **Role: ADMIN**
+- [ ] `DELETE /api/sections/:sectionId` — delete. **Role: ADMIN** _(guard: has registered students)_
+- [ ] `GET /api/sections/:sectionId/students` — students in section. **Role: ADMIN, LECTURER**
+- [ ] `PATCH /api/sections/:sectionId/status` — update status. **Role: ADMIN, LECTURER**
+- [ ] `PATCH /api/sections/:sectionId/visibility` — update visibility. **Role: ADMIN, LECTURER**
+
+**Status values**: `0` = draft, `1` = open, `2` = closed  
+**Visibility values**: `0` = hidden, `1` = visible
+
+---
+
+### Registration module
+
+Base path: `/api/registrations` and `/api/sections/:sectionId/registrations`
+
+- [ ] `GET /api/registrations` — all registrations, filter by `sectionId`. **Role: ADMIN**
+- [ ] `POST /api/registrations` — student registers for a section. **Role: STUDENT** _(guard: section full, section not open, already registered — atomically increment `EnrollmentCount`)_
+- [ ] `GET /api/registrations/my-registrations` — own registrations. **Role: STUDENT** _(register before `/:id`)_
+- [ ] `DELETE /api/registrations/:sectionId` — cancel registration. **Role: STUDENT** _(atomically decrement `EnrollmentCount`)_
+- [ ] `GET /api/sections/:sectionId/registrations` — registrations for a section. **Role: ADMIN, LECTURER**
+
+---
+
+### Schedule module
+
+Base path: `/api/schedules` and `/api/sections/:sectionId/schedules`
+
+- [ ] `GET /api/schedules` — paginated, filter by `roomId`, `sectionId`. **Role: ADMIN**
+- [ ] `POST /api/schedules` — create schedule. **Role: ADMIN** _(guard: room conflict check)_
+- [ ] `GET /api/schedules/my-schedule` — personal schedule. **Any auth** _(register before `/:id`)_
+- [ ] `GET /api/schedules/:scheduleId` — schedule detail. **Any auth**
+- [ ] `PUT /api/schedules/:scheduleId` — update. **Role: ADMIN** _(guard: room conflict check)_
+- [ ] `DELETE /api/schedules/:scheduleId` — delete. **Role: ADMIN**
+- [ ] `GET /api/sections/:sectionId/schedules` — schedules for a section. **Any auth**
+
+---
+
+### Attendance module
+
+Base path: `/api/attendances` and `/api/sections/:sectionId/attendances`
+
+- [ ] `GET /api/attendances` — paginated, filter by `sectionId`. **Role: ADMIN**
+- [ ] `POST /api/attendances` — create attendance session. **Role: LECTURER** _(guard: duplicate date+slot per section)_
+- [ ] `GET /api/attendances/:attendanceId` — detail. **Role: ADMIN, LECTURER**
+- [ ] `PUT /api/attendances/:attendanceId` — update. **Role: LECTURER**
+- [ ] `DELETE /api/attendances/:attendanceId` — delete. **Role: ADMIN, LECTURER**
+- [ ] `GET /api/sections/:sectionId/attendances` — attendance sessions for a section. **Role: ADMIN, LECTURER**
+
+---
+
+### AttendanceDetail module
+
+Base path: `/api/attendances/:attendanceId/details`
+
+- [ ] `GET /api/attendances/:attendanceId/details` — all student statuses for a session. **Role: ADMIN, LECTURER**
+- [ ] `POST /api/attendances/:attendanceId/details` — bulk create details. **Role: LECTURER** _(guard: already created for this session)_
+- [ ] `PUT /api/attendances/:attendanceId/details/:detailId` — update one student's status. **Role: LECTURER**
+
+**Status values**: `present`, `absent`, `late`
+
+---
+
+## Member 3 — Room + UsageHistory + ProfileApplication + CertificateType + CertificateDetail
+
+> **Wait for**: Member 1 to finish Step 0 (infrastructure + middleware) before starting.  
+> **Schema note**: `Usage_Section` has been removed; use `SectionUsageHistory` for all UsageHistory ↔ Section relations.
+
+### Room module
+
+Base path: `/api/rooms`
+
+- [ ] `GET /api/rooms` — paginated, filter by `campus`, `roomType`, `status`. **Any auth**
+- [ ] `POST /api/rooms` — create room. **Role: ADMIN** _(guard: roomName unique)_
+- [ ] `GET /api/rooms/available` — rooms free for a given date/period/capacity. **Role: ADMIN** _(register before `/:id`)_
+- [ ] `GET /api/rooms/:roomId` — room detail. **Any auth**
+- [ ] `PUT /api/rooms/:roomId` — update room. **Role: ADMIN**
+- [ ] `DELETE /api/rooms/:roomId` — delete room. **Role: ADMIN** _(guard: has active schedules)_
+- [ ] `GET /api/rooms/:roomId/schedules` — schedules for a room. **Role: ADMIN**
+- [ ] `GET /api/rooms/:roomId/usage-histories` — usage history for a room. **Role: ADMIN**
+
+---
+
+### UsageHistory module
+
+Base path: `/api/usage-histories`
+
+- [ ] `GET /api/usage-histories` — paginated, filter by `roomId`. **Role: ADMIN**
+- [ ] `POST /api/usage-histories` — create usage record. **Role: ADMIN**
+- [ ] `GET /api/usage-histories/:usageHistoryId` — detail (includes linked sections). **Role: ADMIN**
+- [ ] `PUT /api/usage-histories/:usageHistoryId` — update. **Role: ADMIN**
+- [ ] `DELETE /api/usage-histories/:usageHistoryId` — delete. **Role: ADMIN**
+- [ ] `POST /api/usage-histories/:usageHistoryId/sections` — link a section. **Role: ADMIN** _(guard: already linked)_
+- [ ] `DELETE /api/usage-histories/:usageHistoryId/sections/:sectionId` — unlink a section. **Role: ADMIN**
+
+---
+
+### ProfileApplication module
+
+Base path: `/api/profile-applications`
+
+- [ ] `GET /api/profile-applications` — paginated, filter by `applicationStatus`. **Role: ADMIN**
+- [ ] `POST /api/profile-applications` — student submits an application. **Role: STUDENT** _(guard: pending application already exists)_
+- [ ] `GET /api/profile-applications/my-applications` — own applications. **Role: STUDENT** _(register before `/:id`)_
+- [ ] `GET /api/profile-applications/:applicationId` — detail. **Role: ADMIN or owner**
+- [ ] `PUT /api/profile-applications/:applicationId` — student updates. **Role: STUDENT (owner)** _(guard: already reviewed)_
+- [ ] `PATCH /api/profile-applications/:applicationId/review` — admin approves/rejects. **Role: ADMIN**
+- [ ] `GET /api/profile-applications/:applicationId/certificates` — certificates in an application. **Role: ADMIN or owner**
+
+**Status values**: `pending`, `approved`, `rejected`
+
+---
+
+### CertificateType module
+
+Base path: `/api/certificate-types`
+
+- [ ] `GET /api/certificate-types` — paginated list. **Any auth**
+- [ ] `POST /api/certificate-types` — create type. **Role: ADMIN** _(guard: typeName unique)_
+- [ ] `GET /api/certificate-types/:typeId` — type detail. **Any auth**
+- [ ] `PUT /api/certificate-types/:typeId` — update. **Role: ADMIN**
+- [ ] `DELETE /api/certificate-types/:typeId` — delete. **Role: ADMIN** _(guard: in use by certificates)_
+
+---
+
+### CertificateDetail module
+
+Base path: `/api/certificates`
+
+- [ ] `GET /api/certificates` — paginated, filter by `certificateTypeId`. **Role: ADMIN**
+- [ ] `POST /api/certificates` — create certificate for an application. **Role: ADMIN**
+- [ ] `GET /api/certificates/:certificateId` — detail. **Role: ADMIN or owner**
+- [ ] `PUT /api/certificates/:certificateId` — update. **Role: ADMIN**
+- [ ] `DELETE /api/certificates/:certificateId` — delete. **Role: ADMIN**
+
+---
+
+## General Conventions (All Members)
+
+### Folder structure per module
+```
+src/
+  routes/         authRoute.ts, accountRoute.ts, ...
+  controllers/    authController.ts, accountController.ts, ...
+  services/       authService.ts, accountService.ts, ...
+```
+
+### Response format (always use the utility from `src/utils/response.ts`)
+```json
+{
+  "success": true | false,
+  "data": <object | array | null>,
+  "error": { "code": "ERROR_CODE", "message": "..." } | null,
+  "meta": { "page": 1, "limit": 10, "total": 100 } | null
+}
+```
+
+### HTTP status codes
+| Situation | Code |
+|---|---|
+| Success GET / PUT / PATCH / DELETE | 200 |
+| Success POST (created) | 201 |
+| Validation error | 400 |
+| Unauthorized (no token) | 401 |
+| Forbidden (wrong role) | 403 |
+| Not found | 404 |
+| Conflict (duplicate) | 409 |
+| Server error | 500 |
+
+### Input validation
+- Use `zod` for all request body and query param validation
+- Return `400` with descriptive message on validation failure
+
+### Route ordering rule
+Static routes (e.g. `/me`, `/my-sections`, `/available`) **must be registered before** dynamic routes (e.g. `/:id`) to avoid Express matching them as IDs.

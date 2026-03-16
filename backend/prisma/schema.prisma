@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -56,6 +55,8 @@ model Subject {
   PrerequisiteSubjectID Int?
   SubjectName           String    @db.VarChar(255)
   Periods               Int
+  prerequisiteSubject   Subject?  @relation("SubjectPrerequisite", fields: [PrerequisiteSubjectID], references: [SubjectID])
+  requiredBySubjects    Subject[] @relation("SubjectPrerequisite")
   sections              Section[]
 }
 
@@ -75,7 +76,6 @@ model Section {
   schedules         Schedule[]
   attendances       Attendance[]
   sectionUsageHistories SectionUsageHistory[]
-  usageSections     Usage_Section[]
 }
 
 model Registration {
@@ -125,20 +125,9 @@ model UsageHistory {
 
   room                  Room                  @relation(fields: [RoomID], references: [RoomID])
   sectionUsageHistories SectionUsageHistory[]
-  usageSections         Usage_Section[]
 }
 
 model SectionUsageHistory {
-  UsageHistoryID Int
-  SectionID      Int
-
-  usageHistory UsageHistory @relation(fields: [UsageHistoryID], references: [UsageHistoryID])
-  section      Section      @relation(fields: [SectionID], references: [SectionID])
-
-  @@id([UsageHistoryID, SectionID])
-}
-
-model Usage_Section {
   UsageHistoryID Int
   SectionID      Int
 
