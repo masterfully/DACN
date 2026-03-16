@@ -5,19 +5,23 @@ import { prisma } from "./prisma/prismaClient";
 const app = express();
 app.use(express.json());
 
-app.get("/users", async (req, res) => {
-  const users = await prisma.user.findMany();
-  res.json(users);
+app.get("/accounts", async (_req, res) => {
+  const accounts = await prisma.account.findMany();
+  res.json(accounts);
 });
 
-app.post("/users", async (req, res) => {
-  const { name, email } = req.body;
+app.post("/accounts", async (req, res) => {
+  const { username, password, role } = req.body;
 
-  const user = await prisma.user.create({
-    data: { name, email },
+  const account = await prisma.account.create({
+    data: {
+      Username: username,
+      Password: password,
+      Role: role ?? "STUDENT",
+    },
   });
 
-  res.json(user);
+  res.json(account);
 });
 
 app.listen(8080, () => {
