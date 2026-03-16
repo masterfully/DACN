@@ -2,7 +2,7 @@ export interface Subject {
   subjectId: number;
   subjectName: string;
   periods: number;
-  prerequisiteSubjectId?: number | null;
+  // prerequisiteSubjectId?: number | null;
 }
 
 export interface GetSubjectListParams {
@@ -14,11 +14,11 @@ export interface GetSubjectListParams {
 export interface CreateSubjectInput {
   subjectName: string;
   periods: number;
-  prerequisiteSubjectId?: number;
+  // prerequisiteSubjectId?: number;
 }
 
 export interface UpdateSubjectInput {
   subjectName?: string;
   periods?: number;
-  prerequisiteSubjectId?: number | null;
+  // prerequisiteSubjectId?: number | null;
 }
