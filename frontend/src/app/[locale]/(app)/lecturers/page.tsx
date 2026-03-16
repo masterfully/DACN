@@ -1,9 +1,18 @@
+import { PageContainer } from "@/components/page-container";
+import { PageSectionHeader } from "@/components/page-section-header";
+import { LecturersTable } from "./lecturers-table";
+
 export default function LecturersPage() {
   return (
-    <div className="flex flex-1 flex-col gap-4">
-      <h1 className="text-2xl font-semibold tracking-tight">Giảng viên</h1>
-      <div className="min-h-[50vh] rounded-xl bg-muted/50" />
-    </div>
+    <PageContainer
+      header={
+        <PageSectionHeader
+          title="Giảng viên"
+          description="Quản lý giảng viên và các thông tin liên quan."
+        />
+      }
+    >
+      <LecturersTable />
+    </PageContainer>
   );
 }
-
