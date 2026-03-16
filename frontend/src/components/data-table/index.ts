@@ -1,5 +1,6 @@
-export { DataTable } from "./data-table";
+export { ColHeader, DataTable } from "./data-table";
 export type {
+  DataTableMessages,
   DataTablePagination as DataTablePaginationState,
   DataTableProps,
 } from "./data-table.types";

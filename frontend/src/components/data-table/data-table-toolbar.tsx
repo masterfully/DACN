@@ -30,6 +30,10 @@ interface DataTableToolbarProps<TData> {
   enableColumnVisibility?: boolean;
   toolbarActions?: ToolbarActionGroup;
   selectedCount?: number;
+  hideColumnsLabel?: string;
+  showHideColumnsLabel?: string;
+  /** Debounce delay in ms for the search input. Defaults to 400. */
+  debounceMs?: number;
 }
 
 export function DataTableToolbar<TData>({
@@ -41,6 +45,9 @@ export function DataTableToolbar<TData>({
   enableColumnVisibility = true,
   toolbarActions,
   selectedCount: _selectedCount = 0,
+  hideColumnsLabel = "Ẩn cột",
+  showHideColumnsLabel = "Hiện / ẩn cột",
+  debounceMs = 400,
 }: DataTableToolbarProps<TData>) {
   const [localSearch, setLocalSearch] = React.useState(searchValue ?? "");
   const debounceRef = React.useRef<ReturnType<typeof setTimeout> | undefined>(
@@ -66,7 +73,7 @@ export function DataTableToolbar<TData>({
     clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
       onSearchChange?.(value);
-    }, 400);
+    }, debounceMs);
   }
 
   const hidableColumns = table
@@ -101,11 +108,11 @@ export function DataTableToolbar<TData>({
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="sm">
                 <Settings2 className="size-4" />
-                Ẩn cột
+                {hideColumnsLabel}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-44">
-              <DropdownMenuLabel>Hiện / ẩn cột</DropdownMenuLabel>
+              <DropdownMenuLabel>{showHideColumnsLabel}</DropdownMenuLabel>
               <DropdownMenuSeparator />
               {hidableColumns.map((column) => {
                 const label =
