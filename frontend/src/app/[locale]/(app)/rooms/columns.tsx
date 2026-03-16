@@ -1,38 +1,33 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { ActivityIcon, MapPinIcon, TagIcon, UsersIcon } from "lucide-react";
-import { ColHeader } from "@/components/data-table/data-table";
+import { ColHeader } from "@/components/data-table";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import type { Room } from "@/types/room";
+import { ROOM_STATUS_LABELS, ROOM_STATUS_STYLES } from "./room.constants";
 
-const STATUS_STYLES: Record<string, string> = {
-  active:
-    "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
-  inactive: "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400",
-  maintenance:
-    "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400",
-};
-
-const STATUS_LABELS: Record<string, string> = {
-  active: "Hoạt động",
-  inactive: "Ngừng hoạt động",
-  maintenance: "Bảo trì",
-};
-
-function RoomStatusBadge({ status }: { status: string | null }) {
+export function RoomStatusBadge({ status }: { status: string | null }) {
   if (!status) return <span className="text-muted-foreground">—</span>;
   const key = status.toLowerCase();
   return (
     <Badge
       variant="ghost"
-      className={cn(STATUS_STYLES[key] ?? "bg-muted text-muted-foreground")}
+      className={cn(
+        ROOM_STATUS_STYLES[key] ?? "bg-muted text-muted-foreground",
+      )}
     >
-      {STATUS_LABELS[key] ?? status}
+      {ROOM_STATUS_LABELS[key] ?? status}
     </Badge>
   );
 }
 
 export const roomColumns: ColumnDef<Room>[] = [
+  {
+    accessorKey: "roomId",
+    header: () => <ColHeader label="Mã phòng" />,
+    meta: { visibilityLabel: "Mã phòng" },
+    enableSorting: false,
+  },
   {
     accessorKey: "roomName",
     header: () => <ColHeader label="Tên phòng" />,

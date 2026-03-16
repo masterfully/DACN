@@ -12,13 +12,17 @@ import {
 } from "@/components/ui/pagination";
 import { cn } from "@/lib/utils";
 
-const PAGE_SIZE_OPTIONS = [10, 20, 50, 100];
+const DEFAULT_PAGE_SIZE_OPTIONS = [10, 20, 50, 100];
 
 interface DataTablePaginationProps {
   page: number;
   pageSize: number;
   total: number;
   onPaginationChange: (page: number, pageSize: number) => void;
+  pageSizeOptions?: number[];
+  recordsPerPageLabel?: string;
+  noRecordsLabel?: string;
+  recordRangeLabel?: (start: number, end: number, total: number) => string;
 }
 
 type PageItem =
@@ -52,6 +56,10 @@ export function DataTablePagination({
   pageSize,
   total,
   onPaginationChange,
+  pageSizeOptions = DEFAULT_PAGE_SIZE_OPTIONS,
+  recordsPerPageLabel = "Số bản ghi mỗi trang",
+  noRecordsLabel = "Không có bản ghi nào",
+  recordRangeLabel = (start, end, t) => `${start}–${end} trong ${t} bản ghi`,
 }: DataTablePaginationProps) {
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
   const startItem = total === 0 ? 0 : (page - 1) * pageSize + 1;
@@ -62,7 +70,7 @@ export function DataTablePagination({
     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex flex-wrap items-center gap-3">
         <div className="flex items-center gap-1.5 text-sm">
-          <span className="text-muted-foreground">Số bản ghi mỗi trang</span>
+          <span className="text-muted-foreground">{recordsPerPageLabel}</span>
           <select
             value={pageSize}
             onChange={(e) => onPaginationChange(1, Number(e.target.value))}
@@ -71,18 +79,17 @@ export function DataTablePagination({
               "focus-visible:border-ring focus-visible:ring-ring/50 focus:outline-none focus-visible:ring-[3px]",
             )}
           >
-            {PAGE_SIZE_OPTIONS.map((size) => (
+            {pageSizeOptions.map((size) => (
               <option key={size} value={size}>
                 {size}
               </option>
             ))}
           </select>
-          {/* <span className="text-muted-foreground">/ trang</span> */}
         </div>
         <p className="text-muted-foreground text-sm">
           {total === 0
-            ? "Không có bản ghi nào"
-            : `${startItem}–${endItem} trong ${total} bản ghi`}
+            ? noRecordsLabel
+            : recordRangeLabel(startItem, endItem, total)}
         </p>
       </div>
 

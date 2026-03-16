@@ -8,6 +8,33 @@ export interface DataTablePagination {
   total: number;
 }
 
+/**
+ * Overrideable UI strings for the table, toolbar and pagination.
+ * All fields are optional — only provide what you need to customize.
+ */
+export interface DataTableMessages {
+  /** Checkbox aria-label for "select all rows" */
+  selectAll?: string;
+  /** Checkbox aria-label for "select single row" */
+  selectRow?: string;
+  /** Header label for the auto-generated actions column */
+  actionsColumn?: string;
+  /** Message shown when the data array is empty */
+  empty?: string;
+  /** Placeholder for the search input */
+  searchPlaceholder?: string;
+  /** Label on the "hide columns" trigger button */
+  hideColumns?: string;
+  /** Title of the column visibility dropdown */
+  showHideColumns?: string;
+  /** Label before the page-size selector */
+  recordsPerPage?: string;
+  /** Message shown when total === 0 */
+  noRecords?: string;
+  /** Range summary e.g. "1–10 trong 42 bản ghi" */
+  recordRange?: (start: number, end: number, total: number) => string;
+}
+
 export interface DataTableProps<TData> {
   /** Column definitions for @tanstack/react-table */
   columns: ColumnDef<TData>[];
@@ -47,11 +74,6 @@ export interface DataTableProps<TData> {
    */
   renderRowActions?: (row: Row<TData>) => ReactNode;
   /**
-   * Fixed pixel width for the auto-generated action column.
-   * Defaults to 56px (enough for a single icon-size trigger button).
-   */
-  actionColumnWidth?: number;
-  /**
    * Declarative toolbar action group.  The primary action is always rendered
    * as a full button; additional actions land in a chevron dropdown.
    * Accepts either a static config or a factory that receives the currently
@@ -65,7 +87,10 @@ export interface DataTableProps<TData> {
    * Defaults to the row index if not provided.
    */
   getRowId?: (row: TData) => string;
-  /** Message shown when data array is empty */
+  /**
+   * Message shown when data array is empty.
+   * @deprecated Use `messages.empty` instead.
+   */
   emptyMessage?: string;
   /**
    * Called when a data row is double-clicked.
@@ -74,4 +99,19 @@ export interface DataTableProps<TData> {
    * When provided, rows also get a `cursor-pointer` affordance.
    */
   onRowDoubleClick?: (row: Row<TData>) => void;
+  /**
+   * Override any UI label/string rendered by the table, toolbar or pagination.
+   * Unset fields fall back to built-in defaults.
+   */
+  messages?: DataTableMessages;
+  /**
+   * Options for the page-size selector.
+   * Defaults to [10, 20, 50, 100].
+   */
+  pageSizeOptions?: number[];
+  /**
+   * Debounce delay (ms) for the search input.
+   * Defaults to 400.
+   */
+  searchDebounceMs?: number;
 }

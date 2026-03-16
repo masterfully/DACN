@@ -51,10 +51,44 @@ export function DataTable<TData>({
   renderRowActions,
   toolbarActions,
   getRowId,
-  actionColumnWidth: _actionColumnWidth = 72,
-  emptyMessage = "Không có dữ liệu.",
+  emptyMessage,
   onRowDoubleClick,
+  messages,
+  pageSizeOptions,
+  searchDebounceMs,
 }: DataTableProps<TData>) {
+  const resolvedMessages = React.useMemo(
+    () => ({
+      selectAll: messages?.selectAll ?? "Chọn tất cả",
+      selectRow: messages?.selectRow ?? "Chọn dòng",
+      actionsColumn: messages?.actionsColumn ?? "Hành động",
+      empty: messages?.empty ?? emptyMessage ?? "Không có dữ liệu.",
+      searchPlaceholder:
+        messages?.searchPlaceholder ?? searchPlaceholder ?? "Tìm kiếm...",
+      hideColumns: messages?.hideColumns ?? "Ẩn cột",
+      showHideColumns: messages?.showHideColumns ?? "Hiện / ẩn cột",
+      recordsPerPage: messages?.recordsPerPage ?? "Số bản ghi mỗi trang",
+      noRecords: messages?.noRecords ?? "Không có bản ghi nào",
+      recordRange:
+        messages?.recordRange ??
+        ((start: number, end: number, total: number) =>
+          `${start}–${end} trong ${total} bản ghi`),
+    }),
+    [
+      messages?.selectAll,
+      messages?.selectRow,
+      messages?.actionsColumn,
+      messages?.empty,
+      messages?.searchPlaceholder,
+      messages?.hideColumns,
+      messages?.showHideColumns,
+      messages?.recordsPerPage,
+      messages?.noRecords,
+      messages?.recordRange,
+      emptyMessage,
+      searchPlaceholder,
+    ],
+  );
   const [sorting, setSorting] = React.useState<SortingState>(sortingProp ?? []);
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -91,7 +125,7 @@ export function DataTable<TData>({
               }
             }}
             onChange={table.getToggleAllPageRowsSelectedHandler()}
-            aria-label="Chọn tất cả"
+            aria-label={resolvedMessages.selectAll}
             className="cursor-pointer"
           />
         ),
@@ -101,7 +135,7 @@ export function DataTable<TData>({
             checked={row.getIsSelected()}
             disabled={!row.getCanSelect()}
             onChange={row.getToggleSelectedHandler()}
-            aria-label="Chọn dòng"
+            aria-label={resolvedMessages.selectRow}
             className="cursor-pointer"
           />
         ),
@@ -116,7 +150,13 @@ export function DataTable<TData>({
     if (renderRowActions) {
       cols.push({
         id: "__actions__",
-        header: () => <ColHeader icon={Target} label="Hành động" center />,
+        header: () => (
+          <ColHeader
+            icon={Target}
+            label={resolvedMessages.actionsColumn}
+            center
+          />
+        ),
         cell: ({ row }) => (
           <div className="flex items-center justify-center">
             {renderRowActions(row)}
@@ -124,14 +164,11 @@ export function DataTable<TData>({
         ),
         enableSorting: false,
         enableHiding: false,
-        // size: actionColumnWidth,
-        // minSize: actionColumnWidth,
-        // maxSize: actionColumnWidth,
       });
     }
 
     return cols;
-  }, [columnsProp, enableRowSelection, renderRowActions]);
+  }, [columnsProp, enableRowSelection, renderRowActions, resolvedMessages]);
 
   const { total } = pagination;
   const pageCount = Math.max(1, Math.ceil(total / pageSize));
@@ -170,10 +207,13 @@ export function DataTable<TData>({
         searchValue={searchValue}
         onSearchChange={onSearchChange}
         onSearch={onSearch}
-        searchPlaceholder={searchPlaceholder}
+        searchPlaceholder={resolvedMessages.searchPlaceholder}
         enableColumnVisibility={enableColumnVisibility}
         selectedCount={selectedRows.length}
         toolbarActions={resolvedToolbarActions}
+        hideColumnsLabel={resolvedMessages.hideColumns}
+        showHideColumnsLabel={resolvedMessages.showHideColumns}
+        debounceMs={searchDebounceMs}
       />
 
       <div className="max-h-[calc(100vh-20rem)] overflow-auto rounded-md border">
@@ -255,7 +295,7 @@ export function DataTable<TData>({
                   colSpan={columns.length}
                   className="text-muted-foreground h-24 text-center"
                 >
-                  {emptyMessage}
+                  {resolvedMessages.empty}
                 </TableCell>
               </TableRow>
             ) : (
@@ -295,6 +335,10 @@ export function DataTable<TData>({
         pageSize={pageSize}
         total={total}
         onPaginationChange={onPaginationChange}
+        pageSizeOptions={pageSizeOptions}
+        recordsPerPageLabel={resolvedMessages.recordsPerPage}
+        noRecordsLabel={resolvedMessages.noRecords}
+        recordRangeLabel={resolvedMessages.recordRange}
       />
     </div>
   );
