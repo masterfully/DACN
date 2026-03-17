@@ -263,3 +263,24 @@ Migration strategy:
 - Tokens issued and refresh token persisted with expiry
 - Error cases are deterministic and documented
 - API document updated to remove role inconsistency in register example
+
+## Actual Result (2026-03-17)
+
+### Implementation Status
+- Completed: `POST /api/auth/register` is implemented with route -> controller -> service architecture
+- Completed: request validation includes `fullName`, `username`, `email`, `password`, `confirmPassword`
+- Completed: business rule is enforced in service layer (`role = STUDENT` only)
+- Completed: register returns `accessToken`, `refreshToken`, and account/profile payload
+- Completed: refresh token is persisted with expiry in database
+- Completed: auth identity email is stored in `Account.Email` (unique), and `UserProfile.Email` was removed from schema
+
+### Verified Behavior
+- Success path: returns `201` with standard envelope and token pair
+- Validation failures: returns `400` with structured `error.details`
+- Conflict failures (duplicate username/email): returns `409` with deterministic error codes and field-level `details.fieldErrors`
+- Internal failure path: mapped to `500` with standard error envelope
+
+### Documentation Alignment
+- Updated: register response sample role is `STUDENT`
+- Updated: global API error shape documents `details` object (`formErrors`, `fieldErrors`)
+- Updated: error examples include `data: null` and `meta: null` for failure responses
