@@ -9,7 +9,7 @@ export interface AuthProfile {
 export interface AuthAccount {
   accountId: number;
   username: string;
-  role: "ADMIN" | "LECTURER" | "STUDENT";
+  role: "ADMIN" | "LECTURER" | "STUDENT" | "PARENT";
   profile: AuthProfile | null;
 }
 

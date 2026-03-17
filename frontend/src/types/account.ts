@@ -1,4 +1,4 @@
-export type Role = "ADMIN" | "LECTURER" | "STUDENT";
+export type Role = "ADMIN" | "LECTURER" | "STUDENT" | "PARENT";
 
 export interface AccountProfile {
   profileId: number;
