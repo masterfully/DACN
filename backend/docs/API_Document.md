@@ -121,12 +121,16 @@ Response Structure:
     "error": {
         "code": string,
         "message": string,
+        "details": {
+            "formErrors": string[],
+            "fieldErrors": Record<string, string[]>
+        }
     } | null,
     "meta": {
         "page": number,
         "limit": number,
         "total": number
-    }
+    } | null
 }
 ```
 
@@ -147,10 +151,18 @@ Response Structure:
   ```
   {
       "success": false,
+      "data": null,
       "error": {
           "code": "EMAIL_EXISTED",
-          "message": "Đăng ký thất bại, email đã tồn tại"
-      }
+        "message": "Đăng ký thất bại, email đã tồn tại",
+        "details": {
+          "formErrors": [],
+          "fieldErrors": {
+            "email": ["Email đã được sử dụng"]
+          }
+        }
+      },
+      "meta": null
   }
   ```
 
@@ -359,7 +371,7 @@ Response Structure:
         "accountId": 10,
         "username": "admin01",
         "email": "nguyenvana@example.com",
-        "role": "ADMIN",
+        "role": "STUDENT",
         "profile": {
           "profileId": 10,
           "fullName": "Nguyễn Văn A",

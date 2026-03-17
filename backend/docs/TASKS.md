@@ -25,6 +25,11 @@
   - Add `url = env("DATABASE_URL")` to the `datasource db` block
   - Add proper `@relation` annotation to `Subject.PrerequisiteSubjectID` (self-relation)
   - Remove `Usage_Section` model (duplicate of `SectionUsageHistory`) and clean up relations in `Section` and `UsageHistory`
+- [ ] Email model hardening (new):
+  - Add `Email String @unique @db.VarChar(255)` to `Account`
+  - Migrate existing emails from `UserProfile.Email` to `Account.Email`
+  - Remove `Email` from `UserProfile` after migration
+  - Update Prisma migration and regenerate client
 - [x] Set up folder structure under `src/`:
   ```
   src/
@@ -54,12 +59,15 @@ Base path: `/api/auth`
 - [ ] `POST /api/auth/logout` — invalidate refresh token record
 - [ ] `POST /api/auth/refresh-token` — verify stored refresh token, issue new pair (rotation)
 - [ ] `PUT /api/auth/change-password` — verify `currentPassword`, hash and update `newPassword`
-- [ ] `POST /api/auth/register` — create `Account` (role: STUDENT) + `UserProfile`, return tokens
+- [x] `POST /api/auth/register` — create `Account` (role: STUDENT) + `UserProfile`, validate `password` = `confirmPassword`, return tokens
 
 **Notes**:
 - Hash passwords with `bcrypt` (min rounds: 10)
 - Store refresh tokens in DB with expiry
 - Password rules: min 8 chars, at least 1 uppercase, 1 number, 1 special character
+- Require `confirmPassword` in register request and return `400` if it does not match `password`
+- Register must persist email to `Account.Email` (unique source of truth)
+- Register must force role to `STUDENT` and never accept role from client payload
 
 ---
 
@@ -91,6 +99,10 @@ Base path: `/api/profiles`
 - [ ] `GET /api/profiles/:profileId/certificates` — student's certificates. **Role: ADMIN or owner**
 - [ ] `POST /api/profiles/:profileId/certificates` — link certificate to student. **Role: ADMIN**
 - [ ] `DELETE /api/profiles/:profileId/certificates/:certificateId` — unlink. **Role: ADMIN**
+
+**Notes**:
+- For profile list/detail/student/lecturer endpoints, return email from `Account.Email` (join `account` relation)
+- For profile list search by email, query against `Account.Email`
 
 ---
 
