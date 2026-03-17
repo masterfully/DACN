@@ -102,6 +102,7 @@ git rebase --continue
 ## 7. Push Branch
 
 ```bash
+git push --set-upstream origin <your-branch>
 git push --force-with-lease
 ```
 
