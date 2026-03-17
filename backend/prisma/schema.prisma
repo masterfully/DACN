@@ -26,6 +26,18 @@ model Account {
   Email     String     @unique @db.VarChar(255)
   Password  String     @db.VarChar(255)
   profile   UserProfile?
+  refreshTokens RefreshToken[]
+}
+
+model RefreshToken {
+  RefreshTokenID Int       @id @default(autoincrement())
+  AccountID      Int
+  Token          String    @unique
+  ExpiresAt      DateTime
+  RevokedAt      DateTime?
+  CreatedAt      DateTime  @default(now())
+
+  account Account @relation(fields: [AccountID], references: [AccountID])
 }
 
 model UserProfile {

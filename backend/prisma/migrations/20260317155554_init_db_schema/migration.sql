@@ -16,6 +16,18 @@ CREATE TABLE "Account" (
 );
 
 -- CreateTable
+CREATE TABLE "RefreshToken" (
+    "RefreshTokenID" SERIAL NOT NULL,
+    "AccountID" INTEGER NOT NULL,
+    "Token" TEXT NOT NULL,
+    "ExpiresAt" TIMESTAMP(3) NOT NULL,
+    "RevokedAt" TIMESTAMP(3),
+    "CreatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "RefreshToken_pkey" PRIMARY KEY ("RefreshTokenID")
+);
+
+-- CreateTable
 CREATE TABLE "UserProfile" (
     "ProfileID" SERIAL NOT NULL,
     "AccountID" INTEGER NOT NULL,
@@ -183,7 +195,13 @@ CREATE UNIQUE INDEX "Account_Username_key" ON "Account"("Username");
 CREATE UNIQUE INDEX "Account_Email_key" ON "Account"("Email");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "RefreshToken_Token_key" ON "RefreshToken"("Token");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "UserProfile_AccountID_key" ON "UserProfile"("AccountID");
+
+-- AddForeignKey
+ALTER TABLE "RefreshToken" ADD CONSTRAINT "RefreshToken_AccountID_fkey" FOREIGN KEY ("AccountID") REFERENCES "Account"("AccountID") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "UserProfile" ADD CONSTRAINT "UserProfile_AccountID_fkey" FOREIGN KEY ("AccountID") REFERENCES "Account"("AccountID") ON DELETE RESTRICT ON UPDATE CASCADE;

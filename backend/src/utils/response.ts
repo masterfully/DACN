@@ -9,8 +9,47 @@ export interface ResponseMeta {
 export interface ErrorBody {
   code: string;
   message: string;
-  details?: unknown;
+  details: {
+    formErrors: string[];
+    fieldErrors: Record<string, string[]>;
+  };
 }
+
+const toErrorDetails = (details: unknown): ErrorBody["details"] => {
+  if (
+    details &&
+    typeof details === "object" &&
+    "formErrors" in (details as Record<string, unknown>) &&
+    "fieldErrors" in (details as Record<string, unknown>)
+  ) {
+    const safe = details as {
+      formErrors?: unknown;
+      fieldErrors?: unknown;
+    };
+
+    return {
+      formErrors: Array.isArray(safe.formErrors)
+        ? safe.formErrors.filter((item): item is string => typeof item === "string")
+        : [],
+      fieldErrors:
+        safe.fieldErrors && typeof safe.fieldErrors === "object"
+          ? Object.fromEntries(
+              Object.entries(safe.fieldErrors as Record<string, unknown>).map(([key, value]) => [
+                key,
+                Array.isArray(value)
+                  ? value.filter((item): item is string => typeof item === "string")
+                  : [],
+              ]),
+            )
+          : {},
+    };
+  }
+
+  return {
+    formErrors: [],
+    fieldErrors: {},
+  };
+};
 
 export const sendSuccess = <T>(
   res: Response,
@@ -39,7 +78,7 @@ export const sendError = (
     error: {
       code,
       message,
-      details,
+      details: toErrorDetails(details),
     },
     meta: null,
   });

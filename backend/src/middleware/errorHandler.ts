@@ -36,6 +36,42 @@ interface AppErrorOptions {
   details?: unknown;
 }
 
+const toErrorDetails = (details: unknown): { formErrors: string[]; fieldErrors: Record<string, string[]> } => {
+  if (
+    details &&
+    typeof details === "object" &&
+    "formErrors" in (details as Record<string, unknown>) &&
+    "fieldErrors" in (details as Record<string, unknown>)
+  ) {
+    const safe = details as {
+      formErrors?: unknown;
+      fieldErrors?: unknown;
+    };
+
+    return {
+      formErrors: Array.isArray(safe.formErrors)
+        ? safe.formErrors.filter((item): item is string => typeof item === "string")
+        : [],
+      fieldErrors:
+        safe.fieldErrors && typeof safe.fieldErrors === "object"
+          ? Object.fromEntries(
+              Object.entries(safe.fieldErrors as Record<string, unknown>).map(([key, value]) => [
+                key,
+                Array.isArray(value)
+                  ? value.filter((item): item is string => typeof item === "string")
+                  : [],
+              ]),
+            )
+          : {},
+    };
+  }
+
+  return {
+    formErrors: [],
+    fieldErrors: {},
+  };
+};
+
 export class AppError extends Error {
   public readonly statusCode: number;
   public readonly code: string;
@@ -76,7 +112,7 @@ export const errorHandler = (
       error: {
         code: err.code,
         message: err.message,
-        details: err.details,
+        details: toErrorDetails(err.details),
       },
       meta: null,
     });
