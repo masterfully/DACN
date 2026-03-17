@@ -1,3 +1,6 @@
+-- CreateSchema
+CREATE SCHEMA IF NOT EXISTS "public";
+
 -- CreateEnum
 CREATE TYPE "RoleEnum" AS ENUM ('ADMIN', 'LECTURER', 'STUDENT');
 
@@ -6,6 +9,7 @@ CREATE TABLE "Account" (
     "AccountID" SERIAL NOT NULL,
     "Role" "RoleEnum" NOT NULL,
     "Username" VARCHAR(255) NOT NULL,
+    "Email" VARCHAR(255) NOT NULL,
     "Password" VARCHAR(255) NOT NULL,
 
     CONSTRAINT "Account_pkey" PRIMARY KEY ("AccountID")
@@ -19,7 +23,6 @@ CREATE TABLE "UserProfile" (
     "PhoneNumber" VARCHAR(255),
     "DateOfBirth" DATE,
     "Gender" VARCHAR(255),
-    "Email" VARCHAR(255),
     "Avatar" VARCHAR(255),
     "CitizenID" VARCHAR(255),
     "Hometown" VARCHAR(255),
@@ -107,14 +110,6 @@ CREATE TABLE "SectionUsageHistory" (
 );
 
 -- CreateTable
-CREATE TABLE "Usage_Section" (
-    "UsageHistoryID" INTEGER NOT NULL,
-    "SectionID" INTEGER NOT NULL,
-
-    CONSTRAINT "Usage_Section_pkey" PRIMARY KEY ("UsageHistoryID","SectionID")
-);
-
--- CreateTable
 CREATE TABLE "Attendance" (
     "AttendanceID" SERIAL NOT NULL,
     "SectionID" INTEGER NOT NULL,
@@ -185,10 +180,16 @@ CREATE TABLE "StudentCertificates" (
 CREATE UNIQUE INDEX "Account_Username_key" ON "Account"("Username");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Account_Email_key" ON "Account"("Email");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "UserProfile_AccountID_key" ON "UserProfile"("AccountID");
 
 -- AddForeignKey
 ALTER TABLE "UserProfile" ADD CONSTRAINT "UserProfile_AccountID_fkey" FOREIGN KEY ("AccountID") REFERENCES "Account"("AccountID") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Subject" ADD CONSTRAINT "Subject_PrerequisiteSubjectID_fkey" FOREIGN KEY ("PrerequisiteSubjectID") REFERENCES "Subject"("SubjectID") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Section" ADD CONSTRAINT "Section_LecturerProfileID_fkey" FOREIGN KEY ("LecturerProfileID") REFERENCES "UserProfile"("ProfileID") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -216,12 +217,6 @@ ALTER TABLE "SectionUsageHistory" ADD CONSTRAINT "SectionUsageHistory_UsageHisto
 
 -- AddForeignKey
 ALTER TABLE "SectionUsageHistory" ADD CONSTRAINT "SectionUsageHistory_SectionID_fkey" FOREIGN KEY ("SectionID") REFERENCES "Section"("SectionID") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Usage_Section" ADD CONSTRAINT "Usage_Section_UsageHistoryID_fkey" FOREIGN KEY ("UsageHistoryID") REFERENCES "UsageHistory"("UsageHistoryID") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Usage_Section" ADD CONSTRAINT "Usage_Section_SectionID_fkey" FOREIGN KEY ("SectionID") REFERENCES "Section"("SectionID") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Attendance" ADD CONSTRAINT "Attendance_SectionID_fkey" FOREIGN KEY ("SectionID") REFERENCES "Section"("SectionID") ON DELETE RESTRICT ON UPDATE CASCADE;

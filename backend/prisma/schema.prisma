@@ -23,6 +23,7 @@ model Account {
   AccountID Int        @id @default(autoincrement())
   Role      RoleEnum
   Username  String     @unique @db.VarChar(255)
+  Email     String     @unique @db.VarChar(255)
   Password  String     @db.VarChar(255)
   profile   UserProfile?
 }
@@ -34,7 +35,6 @@ model UserProfile {
   PhoneNumber String? @db.VarChar(255)
   DateOfBirth DateTime? @db.Date
   Gender      String? @db.VarChar(255)
-  Email       String? @db.VarChar(255)
   Avatar      String? @db.VarChar(255)
   CitizenID   String? @db.VarChar(255)
   Hometown    String? @db.VarChar(255)
