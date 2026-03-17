@@ -1,8 +1,10 @@
+"use client";
+
 import { PageContainer } from "@/components/page-container";
 import { PageSectionHeader } from "@/components/page-section-header";
-import { AccountsTable } from "./accounts-table";
+import { AccountsTable } from "@/app/[locale]/(app)/accounts/accounts-table";
 
-export default function AccountsPage() {
+export function AccountManager() {
   return (
     <PageContainer
       header={
