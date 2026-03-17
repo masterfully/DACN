@@ -5,10 +5,9 @@
   - [II. Endpoints](#ii-endpoints)
     - [1. Auth](#1-auth)
       - [1.1. Login](#11-login)
-      - [1.2. Logout](#12-logout)
-      - [1.3. Refresh Token](#13-refresh-token)
-      - [1.4. Change Password](#14-change-password)
-      - [1.5. Register](#15-register)
+      - [1.2. Refresh Token](#12-refresh-token)
+      - [1.3. Change Password](#13-change-password)
+      - [1.4. Register](#14-register)
     - [2. Account](#2-account)
       - [2.1. Get Account List](#21-get-account-list)
       - [2.2. Create Account](#22-create-account)
@@ -17,13 +16,14 @@
       - [2.5. Delete Account](#25-delete-account)
       - [2.6. Get My Account](#26-get-my-account)
     - [3. UserProfile](#3-userprofile)
-      - [3.1. Get Profile List](#31-get-profile-list)
-      - [3.2. Get Profile Detail](#32-get-profile-detail)
-      - [3.3. Update Profile](#33-update-profile)
-      - [3.4. Get My Profile](#34-get-my-profile)
-      - [3.5. Update My Profile](#35-update-my-profile)
-      - [3.6. Get Student List](#36-get-student-list)
-      - [3.7. Get Lecturer List](#37-get-lecturer-list)
+      - [3.1. Create Profile](#31-create-profile)
+      - [3.2. Get Profile List](#32-get-profile-list)
+      - [3.3. Get Profile Detail](#33-get-profile-detail)
+      - [3.4. Update Profile](#34-update-profile)
+      - [3.5. Get My Profile](#35-get-my-profile)
+      - [3.6. Update My Profile](#36-update-my-profile)
+      - [3.7. Get Student List](#37-get-student-list)
+      - [3.8. Get Lecturer List](#38-get-lecturer-list)
     - [4. Subject](#4-subject)
       - [4.1. Get Subject List](#41-get-subject-list)
       - [4.2. Create Subject](#42-create-subject)
@@ -222,52 +222,7 @@ Response Structure:
 
 ---
 
-#### 1.2. Logout
-
-**Description**: Đăng xuất khỏi hệ thống, vô hiệu hóa refresh token. Yêu cầu xác thực: `Authorization: Bearer <token>`.
-
-**URL**: `/api/auth/logout`
-
-**Method**: `POST`
-
-**Body Request**:
-
-| Field        |  Type  | Required | Description   |
-| ------------ | :----: | :------: | ------------- |
-| refreshToken | string |   Yes    | Refresh token |
-
-```json
-{
-  "refreshToken": "dGhpcyBpcyBhIHJlZnJlc2ggdG9rZW4..."
-}
-```
-
-**Example Response:**
-
-- Success:
-
-  ```json
-  {
-    "success": true,
-    "data": null
-  }
-  ```
-
-- Error:
-
-  ```json
-  {
-    "success": false,
-    "error": {
-      "code": "INVALID_TOKEN",
-      "message": "Token không hợp lệ hoặc đã hết hạn"
-    }
-  }
-  ```
-
----
-
-#### 1.3. Refresh Token
+#### 1.2. Refresh Token
 
 **Description**: Làm mới access token bằng refresh token hiện có.
 
@@ -315,7 +270,7 @@ Response Structure:
 
 ---
 
-#### 1.4. Change Password
+#### 1.3. Change Password
 
 **Description**: Đổi mật khẩu tài khoản hiện tại. Yêu cầu xác thực: `Authorization: Bearer <token>`.
 
@@ -362,7 +317,7 @@ Response Structure:
 
 ---
 
-#### 1.5. Register
+#### 1.4. Register
 
 **Description**: Tự đăng ký tài khoản mới (dành cho sinh viên). Hệ thống tự động tạo `Account` với role `STUDENT` và `UserProfile` tương ứng. Không yêu cầu xác thực trước.
 
@@ -403,11 +358,11 @@ Response Structure:
       "account": {
         "accountId": 10,
         "username": "admin01",
+        "email": "nguyenvana@example.com",
         "role": "ADMIN",
         "profile": {
           "profileId": 10,
           "fullName": "Nguyễn Văn A",
-          "email": "nguyenvana@example.com",
           "avatar": null,
           "status": "active"
         }
@@ -463,11 +418,11 @@ GET /api/accounts?page=1&limit=10&role=STUDENT
       {
         "accountId": 1,
         "username": "admin01",
-        "role": "ADMIN",
+        "email": "admin@university.edu.vn",
+        "role": "STUDENT",
         "profile": {
           "profileId": 1,
           "fullName": "Nguyễn Văn Admin",
-          "email": "admin@university.edu.vn",
           "avatar": "https://storage.example.com/avatars/1.jpg",
           "status": "active"
         }
@@ -475,11 +430,11 @@ GET /api/accounts?page=1&limit=10&role=STUDENT
       {
         "accountId": 2,
         "username": "student01",
+        "email": "tranthib@example.com",
         "role": "STUDENT",
         "profile": {
           "profileId": 3,
           "fullName": "Trần Thị B",
-          "email": "tranthib@example.com",
           "avatar": null,
           "status": "active"
         }
@@ -543,6 +498,7 @@ GET /api/accounts?page=1&limit=10&role=STUDENT
     "data": {
       "accountId": 5,
       "username": "lecturer01",
+      "email": "nguyenvana@example.com",
       "role": "LECTURER",
       "profile": null
     }
@@ -583,11 +539,11 @@ GET /api/accounts?page=1&limit=10&role=STUDENT
     "data": {
       "accountId": 5,
       "username": "lecturer01",
+      "email": "levanc@university.edu.vn",
       "role": "LECTURER",
       "profile": {
         "profileId": 5,
         "fullName": "TS. Lê Văn C",
-        "email": "levanc@university.edu.vn",
         "avatar": "https://storage.example.com/avatars/5.jpg",
         "status": "active"
       }
@@ -641,11 +597,11 @@ GET /api/accounts?page=1&limit=10&role=STUDENT
     "data": {
       "accountId": 5,
       "username": "lecturer01_updated",
+      "email": "levanc@university.edu.vn",
       "role": "LECTURER",
       "profile": {
         "profileId": 5,
         "fullName": "TS. Lê Văn C",
-        "email": "levanc@university.edu.vn",
         "avatar": "https://storage.example.com/avatars/5.jpg",
         "status": "active"
       }
@@ -723,10 +679,10 @@ GET /api/accounts?page=1&limit=10&role=STUDENT
       "accountId": 5,
       "username": "lecturer01",
       "role": "LECTURER",
+      "email": "levanc@university.edu.vn",
       "profile": {
         "profileId": 5,
         "fullName": "TS. Lê Văn C",
-        "email": "levanc@university.edu.vn",
         "avatar": "https://storage.example.com/avatars/5.jpg",
         "status": "active"
       }
@@ -750,7 +706,60 @@ GET /api/accounts?page=1&limit=10&role=STUDENT
 
 ### 3. UserProfile
 
-#### 3.1. Get Profile List
+#### 3.1. Create Profile
+
+**Description**: Tạo profile cho account được tạo bởi admin ([2.2. Create Account](#22-create-account)). Yêu cầu role `ADMIN`.
+
+**URL**: `/api/profiles`
+
+**Method**: `POST`
+
+**Body Request**:
+
+| Field       |  Type  | Required | Description                  |
+| ----------- | :----: | :------: | ---------------------------- |
+| accountId   | number |   Yes    | ID tài khoản cần tạo profile |
+| fullName    | string |   Yes    | Họ và tên                    |
+| phoneNumber | string |    No    | Số điện thoại                |
+| dateOfBirth | string |    No    | Ngày sinh (YYYY-MM-DD)       |
+| gender      | string |    No    | Giới tính                    |
+| avatar      | string |    No    | URL ảnh đại diện             |
+| citizenId   | string |    No    | CCCD/CMND                    |
+| hometown    | string |    No    | Quê quán                     |
+| status      | string |    No    | Trạng thái                   |
+
+```json
+{
+  "accountId": 2,
+  "fullName": "Nguyễn Văn A",
+  "phoneNumber": "0901234567"
+}
+```
+
+**Example Response:**
+
+- Success:
+
+  ```json
+  {
+    "success": true,
+    "data": null
+  }
+  ```
+
+- Error:
+
+  ```json
+  {
+    "success": false,
+    "error": {
+      "code": "ACCOUNT_NOT_FOUND",
+      "message": "Tài khoản không tồn tại"
+    }
+  }
+  ```
+
+#### 3.2. Get Profile List
 
 **Description**: Lấy danh sách hồ sơ người dùng. Yêu cầu role: `ADMIN`.
 
@@ -812,7 +821,7 @@ GET /api/profiles?page=1&limit=10&search=Nguyen
 
 ---
 
-#### 3.2. Get Profile Detail
+#### 3.3. Get Profile Detail
 
 **Description**: Lấy chi tiết hồ sơ theo ID. Yêu cầu role: `ADMIN` hoặc chính chủ.
 
@@ -860,7 +869,7 @@ GET /api/profiles?page=1&limit=10&search=Nguyen
 
 ---
 
-#### 3.3. Update Profile
+#### 3.4. Update Profile
 
 **Description**: Cập nhật hồ sơ theo ID. Yêu cầu role: `ADMIN` hoặc chính chủ.
 
@@ -922,7 +931,7 @@ GET /api/profiles?page=1&limit=10&search=Nguyen
 
 ---
 
-#### 3.4. Get My Profile
+#### 3.5. Get My Profile
 
 **Description**: Lấy hồ sơ của người dùng đang đăng nhập. Yêu cầu xác thực: `Authorization: Bearer <token>`.
 
@@ -967,7 +976,7 @@ GET /api/profiles?page=1&limit=10&search=Nguyen
 
 ---
 
-#### 3.5. Update My Profile
+#### 3.6. Update My Profile
 
 **Description**: Cập nhật hồ sơ của người dùng đang đăng nhập. Yêu cầu xác thực: `Authorization: Bearer <token>`.
 
@@ -1027,7 +1036,7 @@ GET /api/profiles?page=1&limit=10&search=Nguyen
 
 ---
 
-#### 3.6. Get Student List
+#### 3.7. Get Student List
 
 **Description**: Lấy danh sách hồ sơ sinh viên. Yêu cầu role: `ADMIN`, `LECTURER`.
 
@@ -1086,7 +1095,7 @@ GET /api/profiles/students?page=1&limit=20
 
 ---
 
-#### 3.7. Get Lecturer List
+#### 3.8. Get Lecturer List
 
 **Description**: Lấy danh sách hồ sơ giảng viên. Yêu cầu role: `ADMIN`.
 
@@ -1303,8 +1312,8 @@ GET /api/subjects?page=1&limit=10
 
 **Body Request**:
 
-| Field                 |  Type  | Required | Description       |
-| --------------------- | :----: | :------: | ----------------- |
+| Field       |  Type  | Required | Description     |
+| ----------- | :----: | :------: | --------------- |
 | subjectName | string |    No    | Tên môn học mới |
 | periods     | number |    No    | Số tiết học     |
 
