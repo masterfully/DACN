@@ -1,4 +1,7 @@
 export const AUTH_ERROR_MESSAGES = {
+  AUTH_LOGIN_INVALID_INPUT: "Dữ liệu đăng nhập không hợp lệ",
+  AUTH_LOGIN_INVALID_CREDENTIALS: "Tên đăng nhập hoặc mật khẩu không đúng",
+  AUTH_LOGIN_ACCOUNT_INACTIVE: "Tài khoản đã bị vô hiệu hóa hoặc bị khóa",
   AUTH_REGISTER_INVALID_INPUT: "Dữ liệu đăng ký không hợp lệ",
   AUTH_REGISTER_USERNAME_EXISTS: "Tên đăng nhập đã tồn tại",
   AUTH_REGISTER_EMAIL_EXISTS: "Email đã tồn tại",

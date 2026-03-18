@@ -168,6 +168,15 @@ Response Structure:
   }
   ```
 
+### Error Details Conventions
+
+- Validation errors (`400`):
+  - Put messages in `error.details.fieldErrors` by field name.
+  - Keep `error.details.formErrors` empty unless there is a form-level validation rule.
+- Authentication/business errors (`401`, `403`, `409`, ...):
+  - Put user-facing messages in `error.details.formErrors`.
+  - Keep `error.details.fieldErrors` empty when the error is not tied to one specific input field.
+
 ### Enum Conventions
 
 - Account Role: ADMIN, LECTURER, STUDENT, PARENT
@@ -235,28 +244,60 @@ Response Structure:
       "account": {
         "accountId": 1,
         "username": "admin01",
+        "email": "admin@university.edu.vn",
         "role": "ADMIN",
         "profile": {
           "profileId": 1,
           "fullName": "Nguyễn Văn Admin",
-          "email": "admin@university.edu.vn",
           "avatar": "https://storage.example.com/avatars/1.jpg",
           "status": "ACTIVE"
         }
       }
-    }
+    },
+    "error": null,
+    "meta": null
   }
   ```
 
-- Error:
+- Error - Validation (`AUTH_LOGIN_INVALID_INPUT`):
 
   ```json
   {
     "success": false,
+    "data": null,
     "error": {
-      "code": "INVALID_CREDENTIALS",
-      "message": "Tên đăng nhập hoặc mật khẩu không đúng"
-    }
+      "code": "AUTH_LOGIN_INVALID_INPUT",
+      "message": "Dữ liệu đăng nhập không hợp lệ",
+      "details": {
+        "formErrors": [],
+        "fieldErrors": {
+          "username": [
+            "Tên đăng nhập là bắt buộc"
+          ]
+        }
+      }
+    },
+    "meta": null
+  }
+  ```
+
+- Error - Invalid Credentials (`AUTH_LOGIN_INVALID_CREDENTIALS`):
+
+  ```json
+  {
+    "success": false,
+    "data": null,
+    "error": {
+      "code": "AUTH_LOGIN_INVALID_CREDENTIALS",
+      "message": "Tên đăng nhập hoặc mật khẩu không đúng",
+      "details": {
+        "formErrors": [
+          "Tên đăng nhập hoặc mật khẩu không đúng"
+        ],
+        "fieldErrors": {}
+      }
+    },
+    "meta": null
   }
   ```
 

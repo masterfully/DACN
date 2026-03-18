@@ -21,6 +21,15 @@ const requiredString = (requiredMessage: string) =>
     },
   });
 
+const loginSchema = z.object({
+  username: requiredString(AUTH_FIELD_ERROR_MESSAGES.USERNAME_REQUIRED)
+    .trim()
+    .min(1, AUTH_FIELD_ERROR_MESSAGES.USERNAME_REQUIRED)
+    .max(255, AUTH_FIELD_ERROR_MESSAGES.USERNAME_MAX_LENGTH),
+  password: requiredString(AUTH_FIELD_ERROR_MESSAGES.PASSWORD_REQUIRED)
+    .min(1, AUTH_FIELD_ERROR_MESSAGES.PASSWORD_REQUIRED),
+});
+
 const registerSchema = z
   .object({
     fullName: requiredString(AUTH_FIELD_ERROR_MESSAGES.FULL_NAME_REQUIRED)
@@ -72,4 +81,18 @@ export const register = async (req: Request, res: Response): Promise<void> => {
   });
 
   sendSuccess(res, result, 201);
+};
+
+export const login = async (req: Request, res: Response): Promise<void> => {
+  const parsed = parseOrThrow(loginSchema, req.body, {
+    code: AUTH_ERROR_CODES.AUTH_LOGIN_INVALID_INPUT,
+    message: AUTH_ERROR_MESSAGES.AUTH_LOGIN_INVALID_INPUT,
+  });
+
+  const result = await authService.login({
+    username: parsed.username,
+    password: parsed.password,
+  });
+
+  sendSuccess(res, result, 200);
 };
