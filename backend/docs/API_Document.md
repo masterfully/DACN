@@ -2,7 +2,8 @@
 
 - [API Document](#api-document)
   - [I. General information](#i-general-information)
-    - [Enum](#enum)
+    - [Enum Conventions](#enum-conventions)
+    - [Query Param Conventions](#query-param-conventions)
   - [II. Endpoints](#ii-endpoints)
     - [1. Auth](#1-auth)
       - [1.1. Login](#11-login)
@@ -167,10 +168,11 @@ Response Structure:
   }
   ```
 
-### Enum
+### Enum Conventions
 
 - Account Role: ADMIN, LECTURER, STUDENT, PARENT
 - Profile Status: ACTIVE, INACTIVE, BANNED
+- Profile Gender: MAlE, FEMALE
 - Section Status: OPEN, COMPLETED, CANCELLED
 - Room:
   - Type: LECTURE, LAB
@@ -178,6 +180,19 @@ Response Structure:
 - Schedule Day of week: MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY
 - Attendance Status: PRESENT, ABSENT, EXCUSED_ABSENCE, LATE
 - Application Status: PENDING, APPROVED, REJECTED, CANCELLED
+
+### Query Param Conventions
+
+- Pagination:
+  - `page`: số trang (mặc định: `1`)
+  - `limit`: số bản ghi mỗi trang (mặc định: `10`)
+- Search:
+  - `search`: từ khóa tìm kiếm full-text theo các trường chính (tên, mã, email, ...)
+- Enum filters:
+  - Các giá trị enum trong query dùng UPPERCASE theo mục Enum ở trên.
+- Date range:
+  - Dùng cặp `startDate`/`endDate` cho các tài nguyên lịch/sử dụng.
+  - Dùng cặp `<field>From`/`<field>To` cho các tài nguyên có nhiều loại mốc thời gian (vd: `submissionFrom`, `submissionTo`).
 
 ## II. Endpoints
 
@@ -414,7 +429,7 @@ Response Structure:
 
 #### 2.1. Get Account List
 
-**Description**: Lấy danh sách tài khoản có phân trang và lọc theo role. Yêu cầu role: `ADMIN`.
+**Description**: Lấy danh sách tài khoản có phân trang, tìm kiếm và lọc. Yêu cầu role: `ADMIN`.
 
 **URL**: `/api/accounts`
 
@@ -422,14 +437,16 @@ Response Structure:
 
 **Query Params**:
 
-| Field |  Type  | Required | Description                             |
-| ----- | :----: | :------: | --------------------------------------- |
-| page  | number |    No    | Trang hiện tại (mặc định: 1)            |
-| limit | number |    No    | Số bản ghi mỗi trang (mặc định: 10)     |
-| role  | string |    No    | Lọc theo role: ADMIN, LECTURER, STUDENT |
+| Field  |  Type  | Required | Description                                           |
+| ------ | :----: | :------: | ----------------------------------------------------- |
+| page   | number |    No    | Trang hiện tại (mặc định: 1)                          |
+| limit  | number |    No    | Số bản ghi mỗi trang (mặc định: 10)                   |
+| search | string |    No    | Tìm theo username hoặc email                          |
+| role   | string |    No    | Lọc theo role: ADMIN, LECTURER, STUDENT               |
+| status | string |    No    | Lọc theo trạng thái profile: ACTIVE, INACTIVE, BANNED |
 
 ```
-GET /api/accounts?page=1&limit=10&role=STUDENT
+GET /api/accounts?page=1&limit=10&search=student&role=STUDENT&status=ACTIVE
 ```
 
 **Example Response:**
@@ -794,14 +811,17 @@ GET /api/accounts?page=1&limit=10&role=STUDENT
 
 **Query Params**:
 
-| Field  |  Type  | Required | Description                         |
-| ------ | :----: | :------: | ----------------------------------- |
-| page   | number |    No    | Trang hiện tại (mặc định: 1)        |
-| limit  | number |    No    | Số bản ghi mỗi trang (mặc định: 10) |
-| search | string |    No    | Tìm theo tên hoặc email             |
+| Field  |  Type  | Required | Description                                     |
+| ------ | :----: | :------: | ----------------------------------------------- |
+| page   | number |    No    | Trang hiện tại (mặc định: 1)                    |
+| limit  | number |    No    | Số bản ghi mỗi trang (mặc định: 10)             |
+| search | string |    No    | Tìm theo tên hoặc email                         |
+| role   | string |    No    | Lọc theo role: ADMIN, LECTURER, STUDENT, PARENT |
+| status | string |    No    | Lọc theo trạng thái: ACTIVE, INACTIVE, BANNED   |
+| gender | string |    No    | Lọc theo giới tính                              |
 
 ```
-GET /api/profiles?page=1&limit=10&search=Nguyen
+GET /api/profiles?page=1&limit=10&search=Nguyen&role=STUDENT&status=ACTIVE
 ```
 
 **Example Response:**
@@ -820,7 +840,7 @@ GET /api/profiles?page=1&limit=10&search=Nguyen
         "email": "nguyenvana@example.com",
         "phoneNumber": "0901234567",
         "dateOfBirth": "2002-05-15",
-        "gender": "Nam",
+        "gender": "MALE",
         "status": "ACTIVE"
       }
     ],
@@ -871,7 +891,7 @@ GET /api/profiles?page=1&limit=10&search=Nguyen
       "email": "nguyenvana@example.com",
       "phoneNumber": "0901234567",
       "dateOfBirth": "2002-05-15",
-      "gender": "Nam",
+      "gender": "MALE",
       "avatar": "https://storage.example.com/avatars/1.jpg",
       "citizenId": "079202012345",
       "hometown": "Hà Nội",
@@ -981,7 +1001,7 @@ GET /api/profiles?page=1&limit=10&search=Nguyen
       "email": "nguyenvana@example.com",
       "phoneNumber": "0901234567",
       "dateOfBirth": "2002-05-15",
-      "gender": "Nam",
+      "gender": "MALE",
       "status": "ACTIVE"
     }
   }
@@ -1071,14 +1091,16 @@ GET /api/profiles?page=1&limit=10&search=Nguyen
 
 **Query Params**:
 
-| Field  |  Type  | Required | Description                         |
-| ------ | :----: | :------: | ----------------------------------- |
-| page   | number |    No    | Trang hiện tại (mặc định: 1)        |
-| limit  | number |    No    | Số bản ghi mỗi trang (mặc định: 10) |
-| search | string |    No    | Tìm theo tên hoặc email             |
+| Field  |  Type  | Required | Description                                   |
+| ------ | :----: | :------: | --------------------------------------------- |
+| page   | number |    No    | Trang hiện tại (mặc định: 1)                  |
+| limit  | number |    No    | Số bản ghi mỗi trang (mặc định: 10)           |
+| search | string |    No    | Tìm theo tên hoặc email                       |
+| status | string |    No    | Lọc theo trạng thái: ACTIVE, INACTIVE, BANNED |
+| gender | string |    No    | Lọc theo giới tính                            |
 
 ```
-GET /api/profiles/students?page=1&limit=20
+GET /api/profiles/students?page=1&limit=20&search=Tran&status=ACTIVE
 ```
 
 **Example Response:**
@@ -1130,14 +1152,16 @@ GET /api/profiles/students?page=1&limit=20
 
 **Query Params**:
 
-| Field  |  Type  | Required | Description                         |
-| ------ | :----: | :------: | ----------------------------------- |
-| page   | number |    No    | Trang hiện tại (mặc định: 1)        |
-| limit  | number |    No    | Số bản ghi mỗi trang (mặc định: 10) |
-| search | string |    No    | Tìm theo tên                        |
+| Field  |  Type  | Required | Description                                   |
+| ------ | :----: | :------: | --------------------------------------------- |
+| page   | number |    No    | Trang hiện tại (mặc định: 1)                  |
+| limit  | number |    No    | Số bản ghi mỗi trang (mặc định: 10)           |
+| search | string |    No    | Tìm theo tên hoặc email                       |
+| status | string |    No    | Lọc theo trạng thái: ACTIVE, INACTIVE, BANNED |
+| gender | string |    No    | Lọc theo giới tính                            |
 
 ```
-GET /api/profiles/lecturers?page=1&limit=10
+GET /api/profiles/lecturers?page=1&limit=10&search=Le&status=ACTIVE
 ```
 
 **Example Response:**
@@ -1191,14 +1215,16 @@ GET /api/profiles/lecturers?page=1&limit=10
 
 **Query Params**:
 
-| Field  |  Type  | Required | Description                         |
-| ------ | :----: | :------: | ----------------------------------- |
-| page   | number |    No    | Trang hiện tại (mặc định: 1)        |
-| limit  | number |    No    | Số bản ghi mỗi trang (mặc định: 10) |
-| search | string |    No    | Tìm theo tên môn học                |
+| Field      |  Type  | Required | Description                          |
+| ---------- | :----: | :------: | ------------------------------------ |
+| page       | number |    No    | Trang hiện tại (mặc định: 1)         |
+| limit      | number |    No    | Số bản ghi mỗi trang (mặc định: 10)  |
+| search     | string |    No    | Tìm theo tên môn học                 |
+| minPeriods | number |    No    | Lọc môn có số tiết lớn hơn hoặc bằng |
+| maxPeriods | number |    No    | Lọc môn có số tiết nhỏ hơn hoặc bằng |
 
 ```
-GET /api/subjects?page=1&limit=10
+GET /api/subjects?page=1&limit=10&search=Lap%20trinh&minPeriods=30&maxPeriods=60
 ```
 
 **Example Response:**
@@ -1427,16 +1453,19 @@ GET /api/subjects?page=1&limit=10
 
 **Query Params**:
 
-| Field     |  Type  | Required | Description                         |
-| --------- | :----: | :------: | ----------------------------------- |
-| page      | number |    No    | Trang hiện tại (mặc định: 1)        |
-| limit     | number |    No    | Số bản ghi mỗi trang (mặc định: 10) |
-| subjectId | number |    No    | Lọc theo môn học                    |
-| year      | string |    No    | Lọc theo năm học                    |
-| status    | number |    No    | Lọc theo trạng thái                 |
+| Field             |  Type  | Required | Description                             |
+| ----------------- | :----: | :------: | --------------------------------------- |
+| page              | number |    No    | Trang hiện tại (mặc định: 1)            |
+| limit             | number |    No    | Số bản ghi mỗi trang (mặc định: 10)     |
+| search            | string |    No    | Tìm theo mã/tên môn hoặc tên giảng viên |
+| subjectId         | number |    No    | Lọc theo môn học                        |
+| lecturerProfileId | number |    No    | Lọc theo giảng viên                     |
+| year              | string |    No    | Lọc theo năm học                        |
+| status            | number |    No    | Lọc theo trạng thái                     |
+| visibility        | number |    No    | Lọc theo trạng thái hiển thị            |
 
 ```
-GET /api/sections?page=1&limit=10&year=2024-2025
+GET /api/sections?page=1&limit=10&search=OOP&year=2024-2025&subjectId=2&status=1&visibility=1
 ```
 
 **Example Response:**
@@ -1949,14 +1978,18 @@ GET /api/sections/my-sections?year=2024-2025
 
 **Query Params**:
 
-| Field     |  Type  | Required | Description                         |
-| --------- | :----: | :------: | ----------------------------------- |
-| page      | number |    No    | Trang hiện tại (mặc định: 1)        |
-| limit     | number |    No    | Số bản ghi mỗi trang (mặc định: 10) |
-| sectionId | number |    No    | Lọc theo lớp học phần               |
+| Field            |  Type  | Required | Description                             |
+| ---------------- | :----: | :------: | --------------------------------------- |
+| page             | number |    No    | Trang hiện tại (mặc định: 1)            |
+| limit            | number |    No    | Số bản ghi mỗi trang (mặc định: 10)     |
+| sectionId        | number |    No    | Lọc theo lớp học phần                   |
+| studentProfileId | number |    No    | Lọc theo sinh viên                      |
+| status           | number |    No    | Lọc theo trạng thái đăng ký             |
+| registeredFrom   | string |    No    | Thời gian đăng ký từ ngày (YYYY-MM-DD)  |
+| registeredTo     | string |    No    | Thời gian đăng ký đến ngày (YYYY-MM-DD) |
 
 ```
-GET /api/registrations?page=1&limit=10
+GET /api/registrations?page=1&limit=10&sectionId=1&status=1&registeredFrom=2025-01-01&registeredTo=2025-03-31
 ```
 
 **Example Response:**
@@ -2086,13 +2119,17 @@ GET /api/registrations?page=1&limit=10
 
 **Query Params**:
 
-| Field |  Type  | Required | Description                         |
-| ----- | :----: | :------: | ----------------------------------- |
-| page  | number |    No    | Trang hiện tại (mặc định: 1)        |
-| limit | number |    No    | Số bản ghi mỗi trang (mặc định: 10) |
+| Field          |  Type  | Required | Description                             |
+| -------------- | :----: | :------: | --------------------------------------- |
+| page           | number |    No    | Trang hiện tại (mặc định: 1)            |
+| limit          | number |    No    | Số bản ghi mỗi trang (mặc định: 10)     |
+| status         | number |    No    | Lọc theo trạng thái đăng ký             |
+| year           | string |    No    | Lọc theo năm học                        |
+| registeredFrom | string |    No    | Thời gian đăng ký từ ngày (YYYY-MM-DD)  |
+| registeredTo   | string |    No    | Thời gian đăng ký đến ngày (YYYY-MM-DD) |
 
 ```
-GET /api/registrations/my-registrations?page=1&limit=10
+GET /api/registrations/my-registrations?page=1&limit=10&status=1&year=2024-2025
 ```
 
 **Example Response:**
@@ -2143,13 +2180,15 @@ GET /api/registrations/my-registrations?page=1&limit=10
 
 **Query Params**:
 
-| Field |  Type  | Required | Description                         |
-| ----- | :----: | :------: | ----------------------------------- |
-| page  | number |    No    | Trang hiện tại (mặc định: 1)        |
-| limit | number |    No    | Số bản ghi mỗi trang (mặc định: 10) |
+| Field  |  Type  | Required | Description                         |
+| ------ | :----: | :------: | ----------------------------------- |
+| page   | number |    No    | Trang hiện tại (mặc định: 1)        |
+| limit  | number |    No    | Số bản ghi mỗi trang (mặc định: 10) |
+| search | string |    No    | Tìm theo tên hoặc email sinh viên   |
+| status | number |    No    | Lọc theo trạng thái đăng ký         |
 
 ```
-GET /api/sections/1/registrations?page=1&limit=30
+GET /api/sections/1/registrations?page=1&limit=30&search=Tran&status=1
 ```
 
 **Example Response:**
@@ -2200,16 +2239,19 @@ GET /api/sections/1/registrations?page=1&limit=30
 
 **Query Params**:
 
-| Field    |  Type  | Required | Description                         |
-| -------- | :----: | :------: | ----------------------------------- |
-| page     | number |    No    | Trang hiện tại (mặc định: 1)        |
-| limit    | number |    No    | Số bản ghi mỗi trang (mặc định: 10) |
-| campus   | string |    No    | Lọc theo cơ sở                      |
-| roomType | string |    No    | Lọc theo loại phòng                 |
-| status   | string |    No    | Lọc theo trạng thái                 |
+| Field       |  Type  | Required | Description                                        |
+| ----------- | :----: | :------: | -------------------------------------------------- |
+| page        | number |    No    | Trang hiện tại (mặc định: 1)                       |
+| limit       | number |    No    | Số bản ghi mỗi trang (mặc định: 10)                |
+| search      | string |    No    | Tìm theo tên phòng                                 |
+| campus      | string |    No    | Lọc theo cơ sở                                     |
+| roomType    | string |    No    | Lọc theo loại phòng: LECTURE, LAB                  |
+| status      | string |    No    | Lọc theo trạng thái: ACTIVE, INACTIVE, MAINTENANCE |
+| minCapacity | number |    No    | Lọc sức chứa tối thiểu                             |
+| maxCapacity | number |    No    | Lọc sức chứa tối đa                                |
 
 ```
-GET /api/rooms?campus=A&roomType=LECTURE
+GET /api/rooms?page=1&limit=10&search=A1&campus=A&roomType=LECTURE&status=ACTIVE&minCapacity=30
 ```
 
 **Example Response:**
@@ -2570,9 +2612,12 @@ GET /api/rooms/available?date=2025-03-15&startPeriod=1&endPeriod=3&capacity=30
 | limit     | number |    No    | Số bản ghi mỗi trang (mặc định: 10) |
 | roomId    | number |    No    | Lọc theo phòng học                  |
 | sectionId | number |    No    | Lọc theo lớp học phần               |
+| dayOfWeek | string |    No    | Lọc theo thứ: MONDAY ... SUNDAY     |
+| startDate | string |    No    | Từ ngày (YYYY-MM-DD)                |
+| endDate   | string |    No    | Đến ngày (YYYY-MM-DD)               |
 
 ```
-GET /api/schedules?page=1&limit=10
+GET /api/schedules?page=1&limit=10&sectionId=1&dayOfWeek=MONDAY&startDate=2025-01-01&endDate=2025-03-31
 ```
 
 **Example Response:**
@@ -2826,13 +2871,16 @@ GET /api/schedules?page=1&limit=10
 
 **Query Params**:
 
-| Field     |  Type  | Required | Description           |
-| --------- | :----: | :------: | --------------------- |
-| startDate | string |    No    | Từ ngày (YYYY-MM-DD)  |
-| endDate   | string |    No    | Đến ngày (YYYY-MM-DD) |
+| Field     |  Type  | Required | Description                     |
+| --------- | :----: | :------: | ------------------------------- |
+| sectionId | number |    No    | Lọc theo lớp học phần           |
+| roomId    | number |    No    | Lọc theo phòng học              |
+| dayOfWeek | string |    No    | Lọc theo thứ: MONDAY ... SUNDAY |
+| startDate | string |    No    | Từ ngày (YYYY-MM-DD)            |
+| endDate   | string |    No    | Đến ngày (YYYY-MM-DD)           |
 
 ```
-GET /api/schedules/my-schedule?startDate=2025-03-01&endDate=2025-03-31
+GET /api/schedules/my-schedule?sectionId=1&dayOfWeek=MONDAY&startDate=2025-03-01&endDate=2025-03-31
 ```
 
 **Example Response:**
@@ -2928,14 +2976,17 @@ GET /api/schedules/my-schedule?startDate=2025-03-01&endDate=2025-03-31
 
 **Query Params**:
 
-| Field  |  Type  | Required | Description                         |
-| ------ | :----: | :------: | ----------------------------------- |
-| page   | number |    No    | Trang hiện tại (mặc định: 1)        |
-| limit  | number |    No    | Số bản ghi mỗi trang (mặc định: 10) |
-| roomId | number |    No    | Lọc theo phòng học                  |
+| Field     |  Type  | Required | Description                         |
+| --------- | :----: | :------: | ----------------------------------- |
+| page      | number |    No    | Trang hiện tại (mặc định: 1)        |
+| limit     | number |    No    | Số bản ghi mỗi trang (mặc định: 10) |
+| roomId    | number |    No    | Lọc theo phòng học                  |
+| sectionId | number |    No    | Lọc theo lớp học phần               |
+| startDate | string |    No    | Từ ngày (YYYY-MM-DD)                |
+| endDate   | string |    No    | Đến ngày (YYYY-MM-DD)               |
 
 ```
-GET /api/usage-histories?page=1&limit=10
+GET /api/usage-histories?page=1&limit=10&roomId=1&sectionId=2&startDate=2025-01-01&endDate=2025-06-30
 ```
 
 **Example Response:**
@@ -3177,13 +3228,16 @@ GET /api/usage-histories?page=1&limit=10
 
 **Query Params**:
 
-| Field |  Type  | Required | Description                         |
-| ----- | :----: | :------: | ----------------------------------- |
-| page  | number |    No    | Trang hiện tại (mặc định: 1)        |
-| limit | number |    No    | Số bản ghi mỗi trang (mặc định: 10) |
+| Field     |  Type  | Required | Description                         |
+| --------- | :----: | :------: | ----------------------------------- |
+| page      | number |    No    | Trang hiện tại (mặc định: 1)        |
+| limit     | number |    No    | Số bản ghi mỗi trang (mặc định: 10) |
+| sectionId | number |    No    | Lọc theo lớp học phần               |
+| startDate | string |    No    | Từ ngày (YYYY-MM-DD)                |
+| endDate   | string |    No    | Đến ngày (YYYY-MM-DD)               |
 
 ```
-GET /api/rooms/1/usage-histories?page=1&limit=10
+GET /api/rooms/1/usage-histories?page=1&limit=10&sectionId=2&startDate=2025-01-01&endDate=2025-06-30
 ```
 
 **Example Response:**
@@ -3318,14 +3372,16 @@ GET /api/rooms/1/usage-histories?page=1&limit=10
 
 **Query Params**:
 
-| Field     |  Type  | Required | Description                         |
-| --------- | :----: | :------: | ----------------------------------- |
-| page      | number |    No    | Trang hiện tại (mặc định: 1)        |
-| limit     | number |    No    | Số bản ghi mỗi trang (mặc định: 10) |
-| sectionId | number |    No    | Lọc theo lớp học phần               |
+| Field          |  Type  | Required | Description                          |
+| -------------- | :----: | :------: | ------------------------------------ |
+| page           | number |    No    | Trang hiện tại (mặc định: 1)         |
+| limit          | number |    No    | Số bản ghi mỗi trang (mặc định: 10)  |
+| sectionId      | number |    No    | Lọc theo lớp học phần                |
+| attendanceDate | string |    No    | Lọc theo ngày điểm danh (YYYY-MM-DD) |
+| slot           | number |    No    | Lọc theo tiết                        |
 
 ```
-GET /api/attendances?page=1&limit=10
+GET /api/attendances?page=1&limit=10&sectionId=1&attendanceDate=2025-02-10&slot=1
 ```
 
 **Example Response:**
@@ -3557,13 +3613,15 @@ GET /api/attendances?page=1&limit=10
 
 **Query Params**:
 
-| Field |  Type  | Required | Description                         |
-| ----- | :----: | :------: | ----------------------------------- |
-| page  | number |    No    | Trang hiện tại (mặc định: 1)        |
-| limit | number |    No    | Số bản ghi mỗi trang (mặc định: 10) |
+| Field          |  Type  | Required | Description                          |
+| -------------- | :----: | :------: | ------------------------------------ |
+| page           | number |    No    | Trang hiện tại (mặc định: 1)         |
+| limit          | number |    No    | Số bản ghi mỗi trang (mặc định: 10)  |
+| attendanceDate | string |    No    | Lọc theo ngày điểm danh (YYYY-MM-DD) |
+| slot           | number |    No    | Lọc theo tiết                        |
 
 ```
-GET /api/sections/1/attendances?page=1&limit=20
+GET /api/sections/1/attendances?page=1&limit=20&attendanceDate=2025-02-10&slot=1
 ```
 
 **Example Response:**
@@ -3615,13 +3673,15 @@ GET /api/sections/1/attendances?page=1&limit=20
 
 **Query Params**:
 
-| Field |  Type  | Required | Description                         |
-| ----- | :----: | :------: | ----------------------------------- |
-| page  | number |    No    | Trang hiện tại (mặc định: 1)        |
-| limit | number |    No    | Số bản ghi mỗi trang (mặc định: 50) |
+| Field            |  Type  | Required | Description                                                 |
+| ---------------- | :----: | :------: | ----------------------------------------------------------- |
+| page             | number |    No    | Trang hiện tại (mặc định: 1)                                |
+| limit            | number |    No    | Số bản ghi mỗi trang (mặc định: 50)                         |
+| studentProfileId | number |    No    | Lọc theo sinh viên                                          |
+| status           | string |    No    | Lọc theo trạng thái: PRESENT, ABSENT, EXCUSED_ABSENCE, LATE |
 
 ```
-GET /api/attendances/1/details
+GET /api/attendances/1/details?page=1&limit=50&status=PRESENT
 ```
 
 **Example Response:**
@@ -3840,14 +3900,17 @@ GET /api/profiles/3/attendance-summary?sectionId=1
 
 **Query Params**:
 
-| Field             |  Type  | Required | Description                         |
-| ----------------- | :----: | :------: | ----------------------------------- |
-| page              | number |    No    | Trang hiện tại (mặc định: 1)        |
-| limit             | number |    No    | Số bản ghi mỗi trang (mặc định: 10) |
-| applicationStatus | string |    No    | Lọc theo trạng thái                 |
+| Field             |  Type  | Required | Description                                                 |
+| ----------------- | :----: | :------: | ----------------------------------------------------------- |
+| page              | number |    No    | Trang hiện tại (mặc định: 1)                                |
+| limit             | number |    No    | Số bản ghi mỗi trang (mặc định: 10)                         |
+| search            | string |    No    | Tìm theo tên sinh viên                                      |
+| applicationStatus | string |    No    | Lọc theo trạng thái: PENDING, APPROVED, REJECTED, CANCELLED |
+| submissionFrom    | string |    No    | Ngày nộp từ (YYYY-MM-DD)                                    |
+| submissionTo      | string |    No    | Ngày nộp đến (YYYY-MM-DD)                                   |
 
 ```
-GET /api/profile-applications?page=1&applicationStatus=PENDING
+GET /api/profile-applications?page=1&limit=10&search=Tran&applicationStatus=PENDING&submissionFrom=2025-03-01&submissionTo=2025-03-31
 ```
 
 **Example Response:**
@@ -4147,13 +4210,14 @@ GET /api/profile-applications/my-applications
 
 **Query Params**:
 
-| Field |  Type  | Required | Description                         |
-| ----- | :----: | :------: | ----------------------------------- |
-| page  | number |    No    | Trang hiện tại (mặc định: 1)        |
-| limit | number |    No    | Số bản ghi mỗi trang (mặc định: 10) |
+| Field  |  Type  | Required | Description                         |
+| ------ | :----: | :------: | ----------------------------------- |
+| page   | number |    No    | Trang hiện tại (mặc định: 1)        |
+| limit  | number |    No    | Số bản ghi mỗi trang (mặc định: 10) |
+| search | string |    No    | Tìm theo tên loại chứng chỉ         |
 
 ```
-GET /api/certificate-types
+GET /api/certificate-types?page=1&limit=10&search=IELTS
 ```
 
 **Example Response:**
@@ -4379,14 +4443,20 @@ GET /api/certificate-types
 
 **Query Params**:
 
-| Field             |  Type  | Required | Description                         |
-| ----------------- | :----: | :------: | ----------------------------------- |
-| page              | number |    No    | Trang hiện tại (mặc định: 1)        |
-| limit             | number |    No    | Số bản ghi mỗi trang (mặc định: 10) |
-| certificateTypeId | number |    No    | Lọc theo loại chứng chỉ             |
+| Field             |  Type   | Required | Description                                     |
+| ----------------- | :-----: | :------: | ----------------------------------------------- |
+| page              | number  |    No    | Trang hiện tại (mặc định: 1)                    |
+| limit             | number  |    No    | Số bản ghi mỗi trang (mặc định: 10)             |
+| search            | string  |    No    | Tìm theo tên loại chứng chỉ hoặc URL minh chứng |
+| certificateTypeId | number  |    No    | Lọc theo loại chứng chỉ                         |
+| isVerified        | boolean |    No    | Lọc theo trạng thái xác minh chứng chỉ          |
+| issueDateFrom     | string  |    No    | Ngày cấp từ (YYYY-MM-DD)                        |
+| issueDateTo       | string  |    No    | Ngày cấp đến (YYYY-MM-DD)                       |
+| expiryDateFrom    | string  |    No    | Ngày hết hạn từ (YYYY-MM-DD)                    |
+| expiryDateTo      | string  |    No    | Ngày hết hạn đến (YYYY-MM-DD)                   |
 
 ```
-GET /api/certificates?page=1&limit=10
+GET /api/certificates?page=1&limit=10&search=IELTS&certificateTypeId=1&isVerified=true&issueDateFrom=2024-01-01
 ```
 
 **Example Response:**
@@ -4686,13 +4756,16 @@ GET /api/certificates?page=1&limit=10
 
 **Query Params**:
 
-| Field |  Type  | Required | Description                         |
-| ----- | :----: | :------: | ----------------------------------- |
-| page  | number |    No    | Trang hiện tại (mặc định: 1)        |
-| limit | number |    No    | Số bản ghi mỗi trang (mặc định: 10) |
+| Field             |  Type   | Required | Description                         |
+| ----------------- | :-----: | :------: | ----------------------------------- |
+| page              | number  |    No    | Trang hiện tại (mặc định: 1)        |
+| limit             | number  |    No    | Số bản ghi mỗi trang (mặc định: 10) |
+| search            | string  |    No    | Tìm theo tên loại chứng chỉ         |
+| certificateTypeId | number  |    No    | Lọc theo loại chứng chỉ             |
+| isVerified        | boolean |    No    | Lọc theo trạng thái xác minh        |
 
 ```
-GET /api/profiles/3/certificates
+GET /api/profiles/3/certificates?page=1&limit=10&search=IELTS&certificateTypeId=1&isVerified=true
 ```
 
 **Example Response:**
