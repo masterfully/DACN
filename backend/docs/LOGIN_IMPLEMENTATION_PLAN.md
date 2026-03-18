@@ -8,6 +8,17 @@ Implement POST /api/auth/login for Member 1 Auth module.
 - Backend conventions from skills/backend-coder-skill.md
 - Task assignment from backend/docs/TASKS.md (Step 1 Auth)
 
+## Current Codebase Snapshot (2026-03-18)
+- `POST /api/auth/login` is not mounted yet.
+- `src/routes/authRoute.ts` currently exposes only `POST /register`.
+- `src/controllers/authController.ts` currently contains register validation/controller only.
+- `src/services/authService.ts` already has reusable JWT helpers and refresh-token persistence logic via register flow.
+- Auth error constants currently do not include login-specific codes/messages.
+- Global error envelope already includes `data`, `error.details`, and `meta`.
+
+Implication:
+- This plan should focus on extending existing register-first auth architecture, not creating a brand new auth stack.
+
 ## Goal
 Build a secure login flow that:
 - Authenticates by username + password
@@ -36,6 +47,7 @@ Freeze API contract and security rules before coding.
 - Confirm error status targets: 400, 401, 403 (optional), 500
 - Confirm response envelope includes: success, data, error, meta
 - Confirm login result projection includes account + profile
+- Confirm final field placement for email (`account.email` vs `account.profile.email`)
 
 ### Exit Criteria
 - Team agrees on final status code and error code matrix
@@ -55,6 +67,10 @@ Freeze API contract and security rules before coding.
   - data.account.profile (profileId, fullName, avatar, status, optional fields as available)
 - Failure response: standardized error envelope with `meta: null`
 
+Contract note to resolve before implementation:
+- `API_Document.md` login success example currently places `email` inside `profile`, while register flow and schema conventions treat email as `Account.Email`.
+- Keep one canonical shape across auth responses to avoid frontend integration drift.
+
 ## Phase 1 - API Surface (Route + Controller + Validation)
 
 ### Objective
@@ -63,6 +79,8 @@ Expose endpoint and enforce strict input validation.
 ### Planned Files
 - Update `src/routes/authRoute.ts`
 - Update `src/controllers/authController.ts`
+- Update `src/constants/errors/auth/codes.ts`
+- Update `src/constants/errors/auth/messages.ts`
 
 ### Validation Design (Zod)
 - username: required, trimmed, non-empty, max 255
@@ -70,7 +88,7 @@ Expose endpoint and enforce strict input validation.
 
 Validation failure behavior:
 - Return 400
-- code: VALIDATION_ERROR
+- code: AUTH_LOGIN_INVALID_INPUT
 - details: `formErrors` and `fieldErrors`
 
 ### Controller Responsibilities
@@ -83,6 +101,12 @@ Validation failure behavior:
 - Register `POST /login`
 - Keep route file thin
 - Keep static-before-dynamic ordering in auth routes for future endpoints
+
+### Constants Responsibilities
+- Add login-specific error codes/messages for deterministic mapping:
+  - `AUTH_LOGIN_INVALID_INPUT` (400)
+  - `AUTH_LOGIN_INVALID_CREDENTIALS` (401) or `INVALID_CREDENTIALS` (pick one naming convention)
+  - `AUTH_LOGIN_ACCOUNT_INACTIVE` (403)
 
 ### Exit Criteria
 - Invalid input produces deterministic 400 response
@@ -121,6 +145,11 @@ Implement credential verification, token issuance, and refresh-token persistence
 - refreshToken
 - account + profile fields in API contract shape
 
+Implementation alignment notes:
+- Reuse existing helper functions already in `authService.ts` (`getJwtSecret`, expiry helpers, `signToken`, `parseExpiryToMs`).
+- Mirror register transaction style to persist refresh token with `ExpiresAt`.
+- Consider filtering revoked tokens in future endpoints (`logout`, `refresh-token`) by `RevokedAt`.
+
 ### Exit Criteria
 - Valid credentials return token pair and account payload
 - Invalid credentials never reveal whether username exists
@@ -132,9 +161,9 @@ Implement credential verification, token issuance, and refresh-token persistence
 Ensure deterministic and secure failure behavior.
 
 ### Error Mapping (Recommended)
-- VALIDATION_ERROR -> 400
-- INVALID_CREDENTIALS -> 401
-- ACCOUNT_INACTIVE -> 403
+- AUTH_LOGIN_INVALID_INPUT -> 400
+- AUTH_LOGIN_INVALID_CREDENTIALS (or INVALID_CREDENTIALS) -> 401
+- AUTH_LOGIN_ACCOUNT_INACTIVE -> 403
 - INTERNAL_SERVER_ERROR -> 500
 
 Notes:
@@ -147,6 +176,7 @@ Notes:
 - Keep JWT secret and expiries from env only
 - Reuse centralized AppError + global error handler
 - Keep response `error.details` structure consistent
+- Ensure inactive account/profile checks are explicit and deterministic (if status policy is enforced at login)
 
 ### Exit Criteria
 - All auth failures return standardized envelope
@@ -169,12 +199,102 @@ Validation failures:
 - Empty/whitespace username -> 400
 
 Authentication failures:
-- Wrong password -> 401 INVALID_CREDENTIALS
-- Non-existing username -> 401 INVALID_CREDENTIALS
+- Wrong password -> 401 AUTH_LOGIN_INVALID_CREDENTIALS (or chosen equivalent)
+- Non-existing username -> 401 AUTH_LOGIN_INVALID_CREDENTIALS (or chosen equivalent)
+- Inactive account/profile (if enforced) -> 403 AUTH_LOGIN_ACCOUNT_INACTIVE
 
 Consistency checks:
 - Error response contains `data: null`, `error.code`, `error.message`, `error.details`, `meta: null`
 - Response field naming matches existing auth/register conventions
+- API_Document.md login examples are updated to include `data`, `meta`, and `error.details` exactly as runtime responses
+
+### Detailed Cases and Expected Result
+
+1. Login - Success
+- Request body: `{ username, password }` with valid credentials
+- Expected status: `200`
+- Expected code path: `authService.login` success
+- Expected response:
+  - `success: true`
+  - `data.accessToken` exists (string)
+  - `data.refreshToken` exists (string)
+  - `data.account.accountId`, `data.account.username`, `data.account.email`, `data.account.role` exist
+  - `error: null`
+  - `meta: null`
+- DB expectation: one new `RefreshToken` row with matching `AccountID`, non-null `ExpiresAt`, `RevokedAt = null`
+
+2. Login - Missing username
+- Request body: `{ password }`
+- Expected status: `400`
+- Expected code: `AUTH_LOGIN_INVALID_INPUT`
+- Expected response details:
+  - `error.details.formErrors = []`
+  - `error.details.fieldErrors.username` contains required-message
+
+3. Login - Missing password
+- Request body: `{ username }`
+- Expected status: `400`
+- Expected code: `AUTH_LOGIN_INVALID_INPUT`
+- Expected response details:
+  - `error.details.formErrors = []`
+  - `error.details.fieldErrors.password` contains required-message
+
+4. Login - Empty username
+- Request body: `{ username: "   ", password }`
+- Expected status: `400`
+- Expected code: `AUTH_LOGIN_INVALID_INPUT`
+- Expected response details:
+  - `error.details.formErrors = []`
+  - `error.details.fieldErrors.username` contains required-message
+
+5. Login - Wrong password
+- Request body: valid username + wrong password
+- Expected status: `401`
+- Expected code: `AUTH_LOGIN_INVALID_CREDENTIALS`
+- Expected response details:
+  - `error.details.formErrors` contains invalid-credentials message
+  - `error.details.fieldErrors = {}`
+- Security expectation: response must not reveal whether username exists
+
+6. Login - Username not found
+- Request body: unknown username + any password
+- Expected status: `401`
+- Expected code: `AUTH_LOGIN_INVALID_CREDENTIALS`
+- Expected response details:
+  - `error.details.formErrors` contains invalid-credentials message
+  - `error.details.fieldErrors = {}`
+- Security expectation: response is intentionally identical to wrong-password case
+
+7. Login - Inactive account
+- Preconditions:
+  - account exists and password is valid
+  - linked `UserProfile.Status = INACTIVE`
+- Expected status: `403`
+- Expected code: `AUTH_LOGIN_ACCOUNT_INACTIVE`
+- Expected response details:
+  - `error.details.formErrors` contains inactive/banned message
+  - `error.details.fieldErrors = {}`
+
+8. Login - Banned account
+- Preconditions:
+  - account exists and password is valid
+  - linked `UserProfile.Status = BANNED`
+- Expected status: `403`
+- Expected code: `AUTH_LOGIN_ACCOUNT_INACTIVE`
+- Expected response details:
+  - `error.details.formErrors` contains inactive/banned message
+  - `error.details.fieldErrors = {}`
+
+### Postman Coverage Mapping
+
+- `Login - Success` -> case 1
+- `Login - Missing username` -> case 2
+- `Login - Missing password` -> case 3
+- `Login - Empty username` -> case 4
+- `Login - Wrong password` -> case 5
+- `Login - Username not found` -> case 6
+- `Login - Inactive account` -> case 7
+- `Login - Banned account` -> case 8
 
 ### Exit Criteria
 - Build passes (`pnpm build`)
@@ -191,6 +311,10 @@ Keep docs and tracking in sync with actual implementation.
 - Ensure global error format in docs remains aligned (`details` documented)
 - Mark login task completed in TASKS.md once verified
 - Add short implementation note in this file under an `Actual Result` section
+
+Additional tasks based on current repo state:
+- Add login-related constants in auth error code/message files before controller/service wiring.
+- Confirm datasource config in `prisma/schema.prisma` includes `url = env("DATABASE_URL")` before running migration-dependent verification.
 
 ## Workflow Mapping (Backend Skill)
 1. Confirm endpoint contract (path, method, auth, request/response)
@@ -215,9 +339,35 @@ Keep docs and tracking in sync with actual implementation.
 - Build and manual tests pass
 
 ## Locked Decisions
-1. Invalid credentials status code: `401`
-2. Inactive account/profile must be blocked at login: `403` with code `ACCOUNT_INACTIVE`
-3. `error.details` remains required in login error responses for consistency with register
+1. Invalid credentials status code: `401` with code `AUTH_LOGIN_INVALID_CREDENTIALS`.
+2. Inactive account/profile is blocked at login: `403` with code `AUTH_LOGIN_ACCOUNT_INACTIVE`.
+3. Login response uses email at `account.email`.
+4. `error.details` remains required in login error responses; follow option-1 convention:
+   - validation errors use `fieldErrors`
+   - auth/business errors use `formErrors`
+
+## Actual Result
+
+- Implemented `POST /api/auth/login` in route, controller, and service layers.
+- Added login-specific auth constants/messages:
+  - `AUTH_LOGIN_INVALID_INPUT`
+  - `AUTH_LOGIN_INVALID_CREDENTIALS`
+  - `AUTH_LOGIN_ACCOUNT_INACTIVE`
+- Implemented credential validation with bcrypt and secure generic failure for wrong username/password.
+- Implemented profile-status gate at login (`INACTIVE`, `BANNED` -> `403 AUTH_LOGIN_ACCOUNT_INACTIVE`).
+- Implemented refresh token persistence on successful login (`RefreshToken` row with `ExpiresAt`).
+- Updated API documentation examples and error-details conventions to match runtime behavior.
+- Added Postman login cases:
+  - success
+  - missing username/password
+  - empty username
+  - wrong password
+  - username not found
+  - inactive account
+  - banned account
+- Verification status:
+  - `pnpm build` passed
+  - Postman collection JSON validated
 
 ## Refresh Token Session Policy (Confirmed)
 Allow multiple active sessions/devices.

@@ -16,6 +16,11 @@ export interface RegisterInput {
   password: string;
 }
 
+export interface LoginInput {
+  username: string;
+  password: string;
+}
+
 interface AuthTokenPayload {
   accountId: number;
   role: RoleEnum;
@@ -80,6 +85,116 @@ const signToken = (
   expiresIn: TokenExpiry,
 ): string => {
   return jwt.sign(payload, getJwtSecret(), { expiresIn });
+};
+
+export const login = async (input: LoginInput) => {
+  const normalizedUsername = input.username.trim();
+
+  const account = await prisma.account.findUnique({
+    where: {
+      Username: normalizedUsername,
+    },
+    select: {
+      AccountID: true,
+      Username: true,
+      Email: true,
+      Password: true,
+      Role: true,
+      profile: {
+        select: {
+          ProfileID: true,
+          FullName: true,
+          PhoneNumber: true,
+          DateOfBirth: true,
+          Gender: true,
+          Avatar: true,
+          CitizenID: true,
+          Hometown: true,
+          Status: true,
+        },
+      },
+    },
+  });
+
+  if (!account) {
+    throw new AppError(AUTH_ERROR_MESSAGES.AUTH_LOGIN_INVALID_CREDENTIALS, {
+      statusCode: 401,
+      code: AUTH_ERROR_CODES.AUTH_LOGIN_INVALID_CREDENTIALS,
+      details: {
+        formErrors: [AUTH_ERROR_MESSAGES.AUTH_LOGIN_INVALID_CREDENTIALS],
+        fieldErrors: {},
+      },
+    });
+  }
+
+  const passwordMatched = await bcrypt.compare(input.password, account.Password);
+  if (!passwordMatched) {
+    throw new AppError(AUTH_ERROR_MESSAGES.AUTH_LOGIN_INVALID_CREDENTIALS, {
+      statusCode: 401,
+      code: AUTH_ERROR_CODES.AUTH_LOGIN_INVALID_CREDENTIALS,
+      details: {
+        formErrors: [AUTH_ERROR_MESSAGES.AUTH_LOGIN_INVALID_CREDENTIALS],
+        fieldErrors: {},
+      },
+    });
+  }
+
+  const normalizedProfileStatus = account.profile?.Status?.trim().toUpperCase();
+  if (normalizedProfileStatus === "INACTIVE" || normalizedProfileStatus === "BANNED") {
+    throw new AppError(AUTH_ERROR_MESSAGES.AUTH_LOGIN_ACCOUNT_INACTIVE, {
+      statusCode: 403,
+      code: AUTH_ERROR_CODES.AUTH_LOGIN_ACCOUNT_INACTIVE,
+      details: {
+        formErrors: [AUTH_ERROR_MESSAGES.AUTH_LOGIN_ACCOUNT_INACTIVE],
+        fieldErrors: {},
+      },
+    });
+  }
+
+  const accessExpiresIn = getAccessTokenExpiry();
+  const refreshExpiresIn = getRefreshTokenExpiry();
+  const refreshExpiresAt = new Date(Date.now() + parseExpiryToMs(refreshExpiresIn));
+
+  const payload: AuthTokenPayload = {
+    accountId: account.AccountID,
+    role: account.Role,
+    username: account.Username,
+  };
+
+  const accessToken = signToken(payload, accessExpiresIn);
+  const refreshToken = signToken(payload, refreshExpiresIn);
+
+  await prisma.refreshToken.create({
+    data: {
+      AccountID: account.AccountID,
+      Token: refreshToken,
+      ExpiresAt: refreshExpiresAt,
+    },
+  });
+
+  return {
+    accessToken,
+    refreshToken,
+    account: {
+      accountId: account.AccountID,
+      username: account.Username,
+      email: account.Email,
+      role: account.Role,
+      profile: account.profile
+        ? {
+            profileId: account.profile.ProfileID,
+            fullName: account.profile.FullName,
+            phoneNumber: account.profile.PhoneNumber,
+            dateOfBirth: account.profile.DateOfBirth,
+            gender: account.profile.Gender,
+            avatar: account.profile.Avatar,
+            citizenId: account.profile.CitizenID,
+            hometown: account.profile.Hometown,
+            status: account.profile.Status,
+          }
+        : null,
+    },
+  };
 };
 
 export const register = async (input: RegisterInput) => {
