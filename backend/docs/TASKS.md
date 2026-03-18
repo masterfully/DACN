@@ -201,14 +201,14 @@ Base path: `/api/attendances/:attendanceId/details`
 
 Base path: `/api/rooms`
 
-- [ ] `GET /api/rooms` — paginated, filter by `campus`, `roomType`, `status`. **Any auth**
-- [ ] `POST /api/rooms` — create room. **Role: ADMIN** _(guard: roomName unique)_
-- [ ] `GET /api/rooms/available` — rooms free for a given date/period/capacity. **Role: ADMIN** _(register before `/:id`)_
-- [ ] `GET /api/rooms/:roomId` — room detail. **Any auth**
-- [ ] `PUT /api/rooms/:roomId` — update room. **Role: ADMIN**
-- [ ] `DELETE /api/rooms/:roomId` — delete room. **Role: ADMIN** _(guard: has active schedules)_
-- [ ] `GET /api/rooms/:roomId/schedules` — schedules for a room. **Role: ADMIN**
-- [ ] `GET /api/rooms/:roomId/usage-histories` — usage history for a room. **Role: ADMIN**
+- [x] `GET /api/rooms` — paginated, filter by `campus`, `roomType`, `status`. **Any auth**
+- [x] `POST /api/rooms` — create room. **Role: ADMIN** _(guard: roomName unique)_
+- [x] `GET /api/rooms/available` — rooms free for a given date/period/capacity. **Role: ADMIN** _(register before `/:id`)_
+- [x] `GET /api/rooms/:roomId` — room detail. **Any auth**
+- [x] `PUT /api/rooms/:roomId` — update room. **Role: ADMIN**
+- [x] `DELETE /api/rooms/:roomId` — delete room. **Role: ADMIN** _(guard: has active schedules)_
+- [x] `GET /api/rooms/:roomId/schedules` — schedules for a room. **Role: ADMIN**
+- [x] `GET /api/rooms/:roomId/usage-histories` — usage history for a room. **Role: ADMIN**
 
 ---
 
