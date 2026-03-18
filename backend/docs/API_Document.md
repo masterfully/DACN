@@ -2,6 +2,7 @@
 
 - [API Document](#api-document)
   - [I. General information](#i-general-information)
+    - [Enum](#enum)
   - [II. Endpoints](#ii-endpoints)
     - [1. Auth](#1-auth)
       - [1.1. Login](#11-login)
@@ -166,6 +167,18 @@ Response Structure:
   }
   ```
 
+### Enum
+
+- Account Role: ADMIN, LECTURER, STUDENT, PARENT
+- Profile Status: ACTIVE, INACTIVE, BANNED
+- Section Status: OPEN, COMPLETED, CANCELLED
+- Room:
+  - Type: LECTURE, LAB
+  - Status: ACTIVE, INACTIVE, MAINTENANCE
+- Schedule Day of week: MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY
+- Attendance Status: PRESENT, ABSENT, EXCUSED_ABSENCE, LATE
+- Application Status: PENDING, APPROVED, REJECTED, CANCELLED
+
 ## II. Endpoints
 
 ---
@@ -213,7 +226,7 @@ Response Structure:
           "fullName": "Nguyễn Văn Admin",
           "email": "admin@university.edu.vn",
           "avatar": "https://storage.example.com/avatars/1.jpg",
-          "status": "active"
+          "status": "ACTIVE"
         }
       }
     }
@@ -376,7 +389,7 @@ Response Structure:
           "profileId": 10,
           "fullName": "Nguyễn Văn A",
           "avatar": null,
-          "status": "active"
+          "status": "ACTIVE"
         }
       }
     }
@@ -436,7 +449,7 @@ GET /api/accounts?page=1&limit=10&role=STUDENT
           "profileId": 1,
           "fullName": "Nguyễn Văn Admin",
           "avatar": "https://storage.example.com/avatars/1.jpg",
-          "status": "active"
+          "status": "ACTIVE"
         }
       },
       {
@@ -448,7 +461,7 @@ GET /api/accounts?page=1&limit=10&role=STUDENT
           "profileId": 3,
           "fullName": "Trần Thị B",
           "avatar": null,
-          "status": "active"
+          "status": "ACTIVE"
         }
       }
     ],
@@ -557,7 +570,7 @@ GET /api/accounts?page=1&limit=10&role=STUDENT
         "profileId": 5,
         "fullName": "TS. Lê Văn C",
         "avatar": "https://storage.example.com/avatars/5.jpg",
-        "status": "active"
+        "status": "ACTIVE"
       }
     }
   }
@@ -615,7 +628,7 @@ GET /api/accounts?page=1&limit=10&role=STUDENT
         "profileId": 5,
         "fullName": "TS. Lê Văn C",
         "avatar": "https://storage.example.com/avatars/5.jpg",
-        "status": "active"
+        "status": "ACTIVE"
       }
     }
   }
@@ -696,7 +709,7 @@ GET /api/accounts?page=1&limit=10&role=STUDENT
         "profileId": 5,
         "fullName": "TS. Lê Văn C",
         "avatar": "https://storage.example.com/avatars/5.jpg",
-        "status": "active"
+        "status": "ACTIVE"
       }
     }
   }
@@ -808,7 +821,7 @@ GET /api/profiles?page=1&limit=10&search=Nguyen
         "phoneNumber": "0901234567",
         "dateOfBirth": "2002-05-15",
         "gender": "Nam",
-        "status": "active"
+        "status": "ACTIVE"
       }
     ],
     "meta": {
@@ -862,7 +875,7 @@ GET /api/profiles?page=1&limit=10&search=Nguyen
       "avatar": "https://storage.example.com/avatars/1.jpg",
       "citizenId": "079202012345",
       "hometown": "Hà Nội",
-      "status": "active"
+      "status": "ACTIVE"
     }
   }
   ```
@@ -969,7 +982,7 @@ GET /api/profiles?page=1&limit=10&search=Nguyen
       "phoneNumber": "0901234567",
       "dateOfBirth": "2002-05-15",
       "gender": "Nam",
-      "status": "active"
+      "status": "ACTIVE"
     }
   }
   ```
@@ -1082,7 +1095,7 @@ GET /api/profiles/students?page=1&limit=20
         "role": "STUDENT",
         "fullName": "Trần Thị B",
         "email": "tranthib@example.com",
-        "status": "active"
+        "status": "ACTIVE"
       }
     ],
     "meta": {
@@ -1141,7 +1154,7 @@ GET /api/profiles/lecturers?page=1&limit=10
         "role": "LECTURER",
         "fullName": "TS. Lê Văn C",
         "email": "levanc@university.edu.vn",
-        "status": "active"
+        "status": "ACTIVE"
       }
     ],
     "meta": {
@@ -1471,7 +1484,11 @@ GET /api/sections?page=1&limit=10&year=2024-2025
 
 #### 5.2. Create Section
 
-**Description**: Tạo lớp học phần mới. Yêu cầu role: `ADMIN`.
+**Description**: Tạo lớp học phần mới. Tạo đồng thời Schedule, UsageHistory, SectionUsageHistory và các buổi điểm danh (Attendance) theo schedule.
+
+Flow: Section -> Schedule -> Attendance -> UsageHistory -> SectionUsageHistory.
+
+Yêu cầu role: `ADMIN`.
 
 **URL**: `/api/sections`
 
@@ -1479,14 +1496,26 @@ GET /api/sections?page=1&limit=10&year=2024-2025
 
 **Body Request**:
 
-| Field             |  Type  | Required | Description              |
-| ----------------- | :----: | :------: | ------------------------ |
-| subjectId         | number |   Yes    | ID môn học               |
-| lecturerProfileId | number |   Yes    | ID hồ sơ giảng viên      |
-| year              | string |   Yes    | Năm học (vd: 2024-2025)  |
-| maxCapacity       | number |   Yes    | Sĩ số tối đa             |
-| status            | number |    No    | Trạng thái (mặc định: 0) |
-| visibility        | number |    No    | Hiển thị (mặc định: 0)   |
+| Field             |     Type      | Required | Description              |
+| ----------------- | :-----------: | :------: | ------------------------ |
+| subjectId         |    number     |   Yes    | ID môn học               |
+| lecturerProfileId |    number     |   Yes    | ID hồ sơ giảng viên      |
+| year              |    string     |   Yes    | Năm học (vd: 2024-2025)  |
+| maxCapacity       |    number     |   Yes    | Sĩ số tối đa             |
+| status            |    number     |    No    | Trạng thái (mặc định: 0) |
+| visibility        |    number     |    No    | Hiển thị (mặc định: 1)   |
+| schedule          | array<object> |   Yes    | Danh sách lịch học       |
+
+**Schedule item** (`schedule[]`):
+
+| Field       |  Type  | Required | Description                          |
+| ----------- | :----: | :------: | ------------------------------------ |
+| roomId      | number |   Yes    | ID phòng học                         |
+| dayOfWeek   | string |   Yes    | Thứ trong tuần (vd: `MONDAY`)        |
+| startPeriod | number |   Yes    | Tiết bắt đầu                         |
+| endPeriod   | number |   Yes    | Tiết kết thúc                        |
+| startDate   | string |   Yes    | Ngày bắt đầu (format: `YYYY-MM-DD`)  |
+| endDate     | string |   Yes    | Ngày kết thúc (format: `YYYY-MM-DD`) |
 
 ```json
 {
@@ -1495,7 +1524,25 @@ GET /api/sections?page=1&limit=10&year=2024-2025
   "year": "2024-2025",
   "maxCapacity": 40,
   "status": 1,
-  "visibility": 1
+  "visibility": 1,
+  "schedule": [
+    {
+      "roomId": 1,
+      "dayOfWeek": "MONDAY",
+      "startPeriod": 1,
+      "endPeriod": 3,
+      "startDate": "2025-01-06",
+      "endDate": "2025-05-30"
+    },
+    {
+      "roomId": 1,
+      "dayOfWeek": "MONDAY",
+      "startPeriod": 4,
+      "endPeriod": 5,
+      "startDate": "2025-01-06",
+      "endDate": "2025-05-30"
+    }
+  ]
 }
 ```
 
@@ -1506,16 +1553,7 @@ GET /api/sections?page=1&limit=10&year=2024-2025
   ```json
   {
     "success": true,
-    "data": {
-      "sectionId": 2,
-      "subjectId": 2,
-      "lecturerProfileId": 5,
-      "year": "2024-2025",
-      "enrollmentCount": 0,
-      "maxCapacity": 40,
-      "status": 1,
-      "visibility": 1
-    }
+    "data": null
   }
   ```
 
@@ -1560,7 +1598,35 @@ GET /api/sections?page=1&limit=10&year=2024-2025
       "enrollmentCount": 30,
       "maxCapacity": 40,
       "status": 1,
-      "visibility": 1
+      "visibility": 1,
+      "schedule": [
+        {
+          "scheduleId": 1,
+          "roomId": 1,
+          "roomName": "A101",
+          "sectionId": 1,
+          "subjectName": "OOP",
+          "dayOfWeek": "Monday",
+          "startPeriod": 1,
+          "endPeriod": 3,
+          "totalPeriods": 3,
+          "startDate": "2025-01-06",
+          "endDate": "2025-05-30"
+        },
+        {
+          "scheduleId": 1,
+          "roomId": 1,
+          "roomName": "A101",
+          "sectionId": 1,
+          "subjectName": "OOP",
+          "dayOfWeek": "Monday",
+          "startPeriod": 4,
+          "endPeriod": 5,
+          "totalPeriods": 2,
+          "startDate": "2025-01-06",
+          "endDate": "2025-05-30"
+        }
+      ]
     }
   }
   ```
@@ -1797,7 +1863,7 @@ GET /api/sections/my-sections?year=2024-2025
 
 ```json
 {
-  "status": 2
+  "status": 1
 }
 ```
 
@@ -1808,10 +1874,7 @@ GET /api/sections/my-sections?year=2024-2025
   ```json
   {
     "success": true,
-    "data": {
-      "sectionId": 1,
-      "status": 2
-    }
+    "data": null
   }
   ```
 
@@ -1856,10 +1919,7 @@ GET /api/sections/my-sections?year=2024-2025
   ```json
   {
     "success": true,
-    "data": {
-      "sectionId": 1,
-      "visibility": 1
-    }
+    "data": null
   }
   ```
 
@@ -1963,10 +2023,7 @@ GET /api/registrations?page=1&limit=10
   ```json
   {
     "success": true,
-    "data": {
-      "sectionId": 1,
-      "studentProfileId": 3
-    }
+    "data": null
   }
   ```
 
@@ -2152,7 +2209,7 @@ GET /api/sections/1/registrations?page=1&limit=30
 | status   | string |    No    | Lọc theo trạng thái                 |
 
 ```
-GET /api/rooms?campus=A&roomType=lecture
+GET /api/rooms?campus=A&roomType=LECTURE
 ```
 
 **Example Response:**
@@ -2166,10 +2223,10 @@ GET /api/rooms?campus=A&roomType=lecture
       {
         "roomId": 1,
         "roomName": "A101",
-        "roomType": "lecture",
+        "roomType": "LECTURE",
         "campus": "A",
         "capacity": 50,
-        "status": "available"
+        "status": "ACTIVE"
       }
     ],
     "meta": {
@@ -2204,21 +2261,21 @@ GET /api/rooms?campus=A&roomType=lecture
 
 **Body Request**:
 
-| Field    |  Type  | Required | Description                      |
-| -------- | :----: | :------: | -------------------------------- |
-| roomName | string |   Yes    | Tên phòng (duy nhất)             |
-| roomType | string |   Yes    | Loại phòng                       |
-| campus   | string |   Yes    | Cơ sở                            |
-| capacity | number |   Yes    | Sức chứa                         |
-| status   | string |    No    | Trạng thái (mặc định: available) |
+| Field    |  Type  | Required | Description                   |
+| -------- | :----: | :------: | ----------------------------- |
+| roomName | string |   Yes    | Tên phòng (duy nhất)          |
+| roomType | string |   Yes    | Loại phòng                    |
+| campus   | string |   Yes    | Cơ sở                         |
+| capacity | number |   Yes    | Sức chứa                      |
+| status   | string |    No    | Trạng thái (mặc định: ACTIVE) |
 
 ```json
 {
   "roomName": "B201",
-  "roomType": "lab",
+  "roomType": "LAB",
   "campus": "B",
   "capacity": 30,
-  "status": "available"
+  "status": "ACTIVE"
 }
 ```
 
@@ -2232,10 +2289,10 @@ GET /api/rooms?campus=A&roomType=lecture
     "data": {
       "roomId": 2,
       "roomName": "B201",
-      "roomType": "lab",
+      "roomType": "LAB",
       "campus": "B",
       "capacity": 30,
-      "status": "available"
+      "status": "ACTIVE"
     }
   }
   ```
@@ -2274,10 +2331,10 @@ GET /api/rooms?campus=A&roomType=lecture
     "data": {
       "roomId": 1,
       "roomName": "A101",
-      "roomType": "lecture",
+      "roomType": "LECTURE",
       "campus": "A",
       "capacity": 50,
-      "status": "available"
+      "status": "ACTIVE"
     }
   }
   ```
@@ -2317,7 +2374,7 @@ GET /api/rooms?campus=A&roomType=lecture
 ```json
 {
   "capacity": 55,
-  "status": "maintenance"
+  "status": "MAINTENANCE"
 }
 ```
 
@@ -2332,7 +2389,7 @@ GET /api/rooms?campus=A&roomType=lecture
       "roomId": 1,
       "roomName": "A101",
       "capacity": 55,
-      "status": "maintenance"
+      "status": "MAINTENANCE"
     }
   }
   ```
@@ -2473,7 +2530,7 @@ GET /api/rooms/available?date=2025-03-15&startPeriod=1&endPeriod=3&capacity=30
       {
         "roomId": 2,
         "roomName": "B201",
-        "roomType": "lab",
+        "roomType": "LAB",
         "campus": "B",
         "capacity": 30
       }
@@ -2603,17 +2660,7 @@ GET /api/schedules?page=1&limit=10
   ```json
   {
     "success": true,
-    "data": {
-      "scheduleId": 1,
-      "roomId": 1,
-      "sectionId": 1,
-      "dayOfWeek": "Monday",
-      "startPeriod": 1,
-      "endPeriod": 3,
-      "totalPeriods": 3,
-      "startDate": "2025-01-06",
-      "endDate": "2025-05-30"
-    }
+    "data": null
   }
   ```
 
@@ -2701,7 +2748,7 @@ GET /api/schedules?page=1&limit=10
 ```json
 {
   "roomId": 2,
-  "dayOfWeek": "Wednesday"
+  "dayOfWeek": "WEDNESDAY"
 }
 ```
 
@@ -2715,7 +2762,7 @@ GET /api/schedules?page=1&limit=10
     "data": {
       "scheduleId": 1,
       "roomId": 2,
-      "dayOfWeek": "Wednesday"
+      "dayOfWeek": "WEDNESDAY"
     }
   }
   ```
@@ -3354,14 +3401,7 @@ GET /api/attendances?page=1&limit=10
   ```json
   {
     "success": true,
-    "data": {
-      "attendanceId": 1,
-      "sectionId": 1,
-      "attendanceDate": "2025-02-10",
-      "slot": 1,
-      "note": "Buổi học bình thường",
-      "createdAt": "2025-02-10T07:00:00Z"
-    }
+    "data": null
   }
   ```
 
@@ -3596,7 +3636,7 @@ GET /api/attendances/1/details
         "attendanceDetailId": 1,
         "studentProfileId": 3,
         "studentName": "Trần Thị B",
-        "status": "present",
+        "status": "PRESENT",
         "note": ""
       }
     ],
@@ -3636,7 +3676,7 @@ GET /api/attendances/1/details
 | -------------------------- | :----: | :------: | --------------------------------- |
 | details                    | array  |   Yes    | Mảng chi tiết điểm danh           |
 | details[].studentProfileId | number |   Yes    | ID hồ sơ sinh viên                |
-| details[].status           | string |   Yes    | Trạng thái: present, absent, late |
+| details[].status           | string |   Yes    | Trạng thái: PRESENT, ABSENT, LATE |
 | details[].note             | string |    No    | Ghi chú cho sinh viên             |
 
 ```json
@@ -3644,12 +3684,12 @@ GET /api/attendances/1/details
   "details": [
     {
       "studentProfileId": 3,
-      "status": "present",
+      "status": "PRESENT",
       "note": ""
     },
     {
       "studentProfileId": 4,
-      "status": "absent",
+      "status": "ABSENT",
       "note": "Không phép"
     }
   ]
@@ -3696,12 +3736,12 @@ GET /api/attendances/1/details
 
 | Field  |  Type  | Required | Description                       |
 | ------ | :----: | :------: | --------------------------------- |
-| status | string |    No    | Trạng thái: present, absent, late |
+| status | string |    No    | Trạng thái: PRESENT, ABSENT, LATE |
 | note   | string |    No    | Ghi chú                           |
 
 ```json
 {
-  "status": "late",
+  "status": "LATE",
   "note": "Đến muộn 15 phút"
 }
 ```
@@ -3715,7 +3755,7 @@ GET /api/attendances/1/details
     "success": true,
     "data": {
       "attendanceDetailId": 1,
-      "status": "late",
+      "status": "LATE",
       "note": "Đến muộn 15 phút"
     }
   }
@@ -3807,7 +3847,7 @@ GET /api/profiles/3/attendance-summary?sectionId=1
 | applicationStatus | string |    No    | Lọc theo trạng thái                 |
 
 ```
-GET /api/profile-applications?page=1&applicationStatus=pending
+GET /api/profile-applications?page=1&applicationStatus=PENDING
 ```
 
 **Example Response:**
@@ -3822,7 +3862,7 @@ GET /api/profile-applications?page=1&applicationStatus=pending
         "applicationId": 1,
         "studentProfileId": 3,
         "studentName": "Trần Thị B",
-        "applicationStatus": "pending",
+        "applicationStatus": "PENDING",
         "submissionDate": "2025-03-01T08:00:00Z"
       }
     ],
@@ -3876,7 +3916,7 @@ GET /api/profile-applications?page=1&applicationStatus=pending
     "data": {
       "applicationId": 2,
       "studentProfileId": 3,
-      "applicationStatus": "pending",
+      "applicationStatus": "PENDING",
       "submissionDate": "2025-03-05T09:00:00Z"
     }
   }
@@ -3917,7 +3957,7 @@ GET /api/profile-applications?page=1&applicationStatus=pending
       "applicationId": 1,
       "studentProfileId": 3,
       "studentName": "Trần Thị B",
-      "applicationStatus": "pending",
+      "applicationStatus": "PENDING",
       "submissionDate": "2025-03-01T08:00:00Z",
       "reviewedByProfileId": null,
       "reviewDate": null,
@@ -3967,7 +4007,7 @@ GET /api/profile-applications?page=1&applicationStatus=pending
     "success": true,
     "data": {
       "applicationId": 1,
-      "applicationStatus": "pending"
+      "applicationStatus": "PENDING"
     }
   }
   ```
@@ -3998,12 +4038,12 @@ GET /api/profile-applications?page=1&applicationStatus=pending
 
 | Field             |  Type  | Required | Description                        |
 | ----------------- | :----: | :------: | ---------------------------------- |
-| applicationStatus | string |   Yes    | Trạng thái mới: approved, rejected |
+| applicationStatus | string |   Yes    | Trạng thái mới: APPROVED, REJECTED |
 | reviewNotes       | string |    No    | Ghi chú xét duyệt                  |
 
 ```json
 {
-  "applicationStatus": "approved",
+  "applicationStatus": "APPROVED",
   "reviewNotes": "Hồ sơ hợp lệ, đã xét duyệt thành công"
 }
 ```
@@ -4017,7 +4057,7 @@ GET /api/profile-applications?page=1&applicationStatus=pending
     "success": true,
     "data": {
       "applicationId": 1,
-      "applicationStatus": "approved",
+      "applicationStatus": "APPROVED",
       "reviewedByProfileId": 1,
       "reviewDate": "2025-03-06T10:00:00Z",
       "reviewNotes": "Hồ sơ hợp lệ, đã xét duyệt thành công"
@@ -4068,7 +4108,7 @@ GET /api/profile-applications/my-applications
     "data": [
       {
         "applicationId": 1,
-        "applicationStatus": "approved",
+        "applicationStatus": "APPROVED",
         "submissionDate": "2025-03-01T08:00:00Z",
         "reviewDate": "2025-03-06T10:00:00Z"
       }
