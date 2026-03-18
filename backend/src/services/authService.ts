@@ -3,6 +3,11 @@ import jwt, { SignOptions } from "jsonwebtoken";
 import { Prisma, RoleEnum } from "@prisma/client";
 import { prisma } from "../prisma/prismaClient";
 import { AppError } from "../middleware/errorHandler";
+import { AUTH_ERROR_CODES } from "../constants/errors/auth/codes";
+import {
+  AUTH_ERROR_MESSAGES,
+  AUTH_FIELD_ERROR_MESSAGES,
+} from "../constants/errors/auth/messages";
 
 export interface RegisterInput {
   fullName: string;
@@ -22,9 +27,9 @@ type TokenExpiry = NonNullable<SignOptions["expiresIn"]>;
 const getJwtSecret = (): string => {
   const secret = process.env.JWT_SECRET;
   if (!secret) {
-    throw new AppError("JWT secret is not configured", {
+    throw new AppError(AUTH_ERROR_MESSAGES.SERVER_MISCONFIGURATION, {
       statusCode: 500,
-      code: "SERVER_MISCONFIGURATION",
+      code: AUTH_ERROR_CODES.SERVER_MISCONFIGURATION,
     });
   }
 
@@ -51,9 +56,9 @@ const parseExpiryToMs = (expiry: TokenExpiry): number => {
 
   const match = raw.match(/^(\d+)([smhd])$/i);
   if (!match) {
-    throw new AppError("Invalid JWT refresh token expiry format", {
+    throw new AppError(AUTH_ERROR_MESSAGES.SERVER_MISCONFIGURATION, {
       statusCode: 500,
-      code: "SERVER_MISCONFIGURATION",
+      code: AUTH_ERROR_CODES.SERVER_MISCONFIGURATION,
     });
   }
 
@@ -93,26 +98,26 @@ export const register = async (input: RegisterInput) => {
   });
 
   if (existingAccount?.Username === normalizedUsername) {
-    throw new AppError("Username already exists", {
+    throw new AppError(AUTH_ERROR_MESSAGES.AUTH_REGISTER_USERNAME_EXISTS, {
       statusCode: 409,
-      code: "USERNAME_EXISTED",
+      code: AUTH_ERROR_CODES.AUTH_REGISTER_USERNAME_EXISTS,
       details: {
         formErrors: [],
         fieldErrors: {
-          username: ["Username already exists"],
+          username: [AUTH_FIELD_ERROR_MESSAGES.USERNAME_EXISTS],
         },
       },
     });
   }
 
   if (existingAccount?.Email === normalizedEmail) {
-    throw new AppError("Email already exists", {
+    throw new AppError(AUTH_ERROR_MESSAGES.AUTH_REGISTER_EMAIL_EXISTS, {
       statusCode: 409,
-      code: "EMAIL_EXISTED",
+      code: AUTH_ERROR_CODES.AUTH_REGISTER_EMAIL_EXISTS,
       details: {
         formErrors: [],
         fieldErrors: {
-          email: ["Email already exists"],
+          email: [AUTH_FIELD_ERROR_MESSAGES.EMAIL_EXISTS],
         },
       },
     });
@@ -202,8 +207,13 @@ export const register = async (input: RegisterInput) => {
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
       const target = Array.isArray(error.meta?.target) ? error.meta.target.join(",") : "";
-      const code = target.includes("Email") ? "EMAIL_EXISTED" : "USERNAME_EXISTED";
-      const message = code === "EMAIL_EXISTED" ? "Email already exists" : "Username already exists";
+      const code = target.includes("Email")
+        ? AUTH_ERROR_CODES.AUTH_REGISTER_EMAIL_EXISTS
+        : AUTH_ERROR_CODES.AUTH_REGISTER_USERNAME_EXISTS;
+      const message =
+        code === AUTH_ERROR_CODES.AUTH_REGISTER_EMAIL_EXISTS
+          ? AUTH_ERROR_MESSAGES.AUTH_REGISTER_EMAIL_EXISTS
+          : AUTH_ERROR_MESSAGES.AUTH_REGISTER_USERNAME_EXISTS;
 
       throw new AppError(message, {
         statusCode: 409,
@@ -211,9 +221,9 @@ export const register = async (input: RegisterInput) => {
         details: {
           formErrors: [],
           fieldErrors:
-            code === "EMAIL_EXISTED"
-              ? { email: [message] }
-              : { username: [message] },
+            code === AUTH_ERROR_CODES.AUTH_REGISTER_EMAIL_EXISTS
+              ? { email: [AUTH_FIELD_ERROR_MESSAGES.EMAIL_EXISTS] }
+              : { username: [AUTH_FIELD_ERROR_MESSAGES.USERNAME_EXISTS] },
         },
       });
     }

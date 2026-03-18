@@ -1,5 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
+import { AUTH_ERROR_CODES } from "../constants/errors/auth/codes";
+import { AUTH_ERROR_MESSAGES } from "../constants/errors/auth/messages";
 
 type UserRole = "ADMIN" | "LECTURER" | "STUDENT";
 
@@ -49,8 +51,8 @@ export const requireAuth = (
       success: false,
       data: null,
       error: {
-        code: "UNAUTHORIZED",
-        message: "Missing or invalid bearer token",
+        code: AUTH_ERROR_CODES.UNAUTHORIZED,
+        message: AUTH_ERROR_MESSAGES.MISSING_OR_INVALID_BEARER_TOKEN,
       },
       meta: null,
     });
@@ -65,8 +67,8 @@ export const requireAuth = (
       success: false,
       data: null,
       error: {
-        code: "SERVER_MISCONFIGURATION",
-        message: "Server authentication is not configured correctly",
+        code: AUTH_ERROR_CODES.SERVER_MISCONFIGURATION,
+        message: AUTH_ERROR_MESSAGES.SERVER_MISCONFIGURATION,
       },
       meta: null,
     });
@@ -86,8 +88,8 @@ export const requireAuth = (
       success: false,
       data: null,
       error: {
-        code: "UNAUTHORIZED",
-        message: "Token is invalid or expired",
+        code: AUTH_ERROR_CODES.UNAUTHORIZED,
+        message: AUTH_ERROR_MESSAGES.TOKEN_INVALID_OR_EXPIRED,
       },
       meta: null,
     });
@@ -101,8 +103,8 @@ export const requireRole = (...allowedRoles: UserRole[]) => {
         success: false,
         data: null,
         error: {
-          code: "UNAUTHORIZED",
-          message: "Please log in to continue",
+          code: AUTH_ERROR_CODES.UNAUTHORIZED,
+          message: AUTH_ERROR_MESSAGES.LOGIN_REQUIRED,
         },
         meta: null,
       });
@@ -114,8 +116,8 @@ export const requireRole = (...allowedRoles: UserRole[]) => {
         success: false,
         data: null,
         error: {
-          code: "FORBIDDEN",
-          message: "You do not have permission to access this resource",
+          code: AUTH_ERROR_CODES.FORBIDDEN,
+          message: AUTH_ERROR_MESSAGES.FORBIDDEN,
         },
         meta: null,
       });

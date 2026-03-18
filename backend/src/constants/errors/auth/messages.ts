@@ -1,0 +1,30 @@
+export const AUTH_ERROR_MESSAGES = {
+  AUTH_REGISTER_INVALID_INPUT: "Dữ liệu đăng ký không hợp lệ",
+  AUTH_REGISTER_USERNAME_EXISTS: "Tên đăng nhập đã tồn tại",
+  AUTH_REGISTER_EMAIL_EXISTS: "Email đã tồn tại",
+  UNAUTHORIZED: "Chưa được xác thực",
+  FORBIDDEN: "Không có quyền truy cập",
+  SERVER_MISCONFIGURATION: "Cấu hình xác thực máy chủ không hợp lệ",
+  MISSING_OR_INVALID_BEARER_TOKEN: "Thiếu token Bearer hoặc token không hợp lệ",
+  TOKEN_INVALID_OR_EXPIRED: "Token không hợp lệ hoặc đã hết hạn",
+  LOGIN_REQUIRED: "Vui lòng đăng nhập để tiếp tục",
+} as const;
+
+export const AUTH_FIELD_ERROR_MESSAGES = {
+  STRING_INVALID_TYPE: "Giá trị phải là chuỗi",
+  FULL_NAME_REQUIRED: "Họ và tên là bắt buộc",
+  FULL_NAME_MAX_LENGTH: "Họ và tên tối đa 255 ký tự",
+  USERNAME_REQUIRED: "Tên đăng nhập là bắt buộc",
+  USERNAME_MAX_LENGTH: "Tên đăng nhập tối đa 255 ký tự",
+  EMAIL_REQUIRED: "Email là bắt buộc",
+  EMAIL_INVALID_FORMAT: "Email không hợp lệ",
+  EMAIL_MAX_LENGTH: "Email tối đa 255 ký tự",
+  PASSWORD_REQUIRED: "Mật khẩu là bắt buộc",
+  PASSWORD_MIN_LENGTH: "Mật khẩu phải có ít nhất 8 ký tự",
+  PASSWORD_WEAK:
+    "Mật khẩu phải có ít nhất 1 chữ hoa, 1 số và 1 ký tự đặc biệt",
+  CONFIRM_PASSWORD_REQUIRED: "Xác nhận mật khẩu là bắt buộc",
+  CONFIRM_PASSWORD_MISMATCH: "Xác nhận mật khẩu không khớp",
+  USERNAME_EXISTS: "Tên đăng nhập đã tồn tại",
+  EMAIL_EXISTS: "Email đã tồn tại",
+} as const;

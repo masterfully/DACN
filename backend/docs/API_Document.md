@@ -1306,7 +1306,7 @@ GET /api/subjects?page=1&limit=10&search=Lap%20trinh&minPeriods=30&maxPeriods=60
   {
     "success": false,
     "error": {
-      "code": "SUBJECT_NAME_EXISTED",
+      "code": "SUBJECT_CREATE_NAME_EXISTS",
       "message": "Tên môn học đã tồn tại"
     }
   }
@@ -2387,7 +2387,7 @@ GET /api/rooms?page=1&limit=10&search=A1&campus=A&roomType=LECTURE&status=ACTIVE
   {
     "success": false,
     "error": {
-      "code": "ROOM_NOT_FOUND",
+      "code": "ROOM_GET_NOT_FOUND",
       "message": "Phòng học không tồn tại"
     }
   }
@@ -2442,7 +2442,7 @@ GET /api/rooms?page=1&limit=10&search=A1&campus=A&roomType=LECTURE&status=ACTIVE
   {
     "success": false,
     "error": {
-      "code": "ROOM_NOT_FOUND",
+      "code": "ROOM_GET_NOT_FOUND",
       "message": "Phòng học không tồn tại"
     }
   }
@@ -2532,7 +2532,7 @@ GET /api/rooms/1/schedules?startDate=2025-01-01&endDate=2025-06-30
   {
     "success": false,
     "error": {
-      "code": "ROOM_NOT_FOUND",
+      "code": "ROOM_GET_NOT_FOUND",
       "message": "Phòng học không tồn tại"
     }
   }
@@ -3077,7 +3077,7 @@ GET /api/usage-histories?page=1&limit=10&roomId=1&sectionId=2&startDate=2025-01-
   {
     "success": false,
     "error": {
-      "code": "ROOM_NOT_FOUND",
+      "code": "ROOM_GET_NOT_FOUND",
       "message": "Phòng học không tồn tại"
     }
   }
@@ -3269,7 +3269,7 @@ GET /api/rooms/1/usage-histories?page=1&limit=10&sectionId=2&startDate=2025-01-0
   {
     "success": false,
     "error": {
-      "code": "ROOM_NOT_FOUND",
+      "code": "ROOM_GET_NOT_FOUND",
       "message": "Phòng học không tồn tại"
     }
   }
