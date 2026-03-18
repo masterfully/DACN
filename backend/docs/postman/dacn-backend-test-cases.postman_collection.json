@@ -1,0 +1,1656 @@
+{
+  "info": {
+    "_postman_id": "0ce9939c-7250-433c-9081-96f0366978c5",
+    "name": "DACN Backend - Full API Test Cases",
+    "description": "Comprehensive test cases for existing modules: health, auth, subjects, rooms.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "38545466"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health - 200",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/health",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "health"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register - Success",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Sinh Vien Test\",\n  \"username\": \"student_test_{{$timestamp}}\",\n  \"email\": \"student{{$timestamp}}@example.com\",\n  \"password\": \"Admin@123\",\n  \"confirmPassword\": \"Admin@123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Register - Missing fullName",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"student_missing_fullname\",\n  \"email\": \"missing_fullname@example.com\",\n  \"password\": \"Admin@123\",\n  \"confirmPassword\": \"Admin@123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Register - Invalid email",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Email Sai\",\n  \"username\": \"invalid_email_user\",\n  \"email\": \"not-an-email\",\n  \"password\": \"Admin@123\",\n  \"confirmPassword\": \"Admin@123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Register - Weak password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Mat Khau Yeu\",\n  \"username\": \"weak_password_user\",\n  \"email\": \"weak_password@example.com\",\n  \"password\": \"password\",\n  \"confirmPassword\": \"password\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Register - Confirm password mismatch",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Mismatch User\",\n  \"username\": \"mismatch_user\",\n  \"email\": \"mismatch_user@example.com\",\n  \"password\": \"Admin@123\",\n  \"confirmPassword\": \"Admin@999\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Register - Duplicate username",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Duplicate Username\",\n  \"username\": \"student_test_001\",\n  \"email\": \"dup_user_{{$timestamp}}@example.com\",\n  \"password\": \"Admin@123\",\n  \"confirmPassword\": \"Admin@123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Register - Duplicate email",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Duplicate Email\",\n  \"username\": \"dup_email_{{ $timestamp }}\",\n  \"email\": \"student_test_001@example.com\",\n  \"password\": \"Admin@123\",\n  \"confirmPassword\": \"Admin@123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Subjects",
+      "item": [
+        {
+          "name": "Get Subjects - ADMIN token",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjIsInJvbGUiOiJBRE1JTiIsInVzZXJuYW1lIjoic3R1ZGVudF90ZXN0XzAwMSIsImlhdCI6MTc3MzgyNTU3OSwiZXhwIjozNjAwMDAxNzczODI1NTc5fQ.FeX3PXNKyyuBeCDx9GEYshS9w290mapxnjft1DxZTfg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/subjects?page=1&limit=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "subjects"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Subjects - STUDENT token",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjIsInJvbGUiOiJTVFVERU5UIiwidXNlcm5hbWUiOiJzdHVkZW50X3Rlc3RfMDAxIiwiaWF0IjoxNzczODI1NTQ2LCJleHAiOjM2MDAwMDE3NzM4MjU1NDZ9.jnTLfY3vkK2Av7VoPv9_6P7PkC-W2lBoOlvAhw8wZbY",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/subjects?page=1&limit=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "subjects"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Subjects - Missing token",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/subjects",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "subjects"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Subjects - Invalid token",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjIsInJvbGUiOiJBRE1JTiIsInVzZXJuYW1lIjoic3R1ZGVudF90ZXN0XzAwMSIsImlhdCI6MTc3MzgyNTU3OSwiZXhwIjozNjAwMDAxNzczODI1NTc5fQ.FeX3PXNKyyuBeCDx9GEYshSw290mapxnjft1DxZTfg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{invalid_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/subjects",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "subjects"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Subjects - Expired token",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjIsInJvbGUiOiJBRE1JTiIsInVzZXJuYW1lIjoic3R1ZGVudF90ZXN0XzAwMSIsImlhdCI6MTc3MzgyNTY2NSwiZXhwIjoxNzczODI1NjY1fQ.KViJHEbdDcuulTPmJx_51GMVu8S0NIEjiaqKM9QFFOg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{expired_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/subjects",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "subjects"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Subjects - Search",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjIsInJvbGUiOiJBRE1JTiIsInVzZXJuYW1lIjoic3R1ZGVudF90ZXN0XzAwMSIsImlhdCI6MTc3MzgyNTU3OSwiZXhwIjozNjAwMDAxNzczODI1NTc5fQ.FeX3PXNKyyuBeCDx9GEYshS9w290mapxnjft1DxZTfg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/subjects?search=program&page=1&limit=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "subjects"
+              ],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "program"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Subjects - Invalid page",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjIsInJvbGUiOiJBRE1JTiIsInVzZXJuYW1lIjoic3R1ZGVudF90ZXN0XzAwMSIsImlhdCI6MTc3MzgyNTU3OSwiZXhwIjozNjAwMDAxNzczODI1NTc5fQ.FeX3PXNKyyuBeCDx9GEYshS9w290mapxnjft1DxZTfg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/subjects?page=0&limit=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "subjects"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Subject - Success (ADMIN)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjIsInJvbGUiOiJBRE1JTiIsInVzZXJuYW1lIjoic3R1ZGVudF90ZXN0XzAwMSIsImlhdCI6MTc3MzgyNTU3OSwiZXhwIjozNjAwMDAxNzczODI1NTc5fQ.FeX3PXNKyyuBeCDx9GEYshS9w290mapxnjft1DxZTfg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"subjectName\": \"{{new_subject_name}} {{$timestamp}}\",\n  \"periods\": 45\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/subjects",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "subjects"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Subject - Forbidden (STUDENT)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjIsInJvbGUiOiJTVFVERU5UIiwidXNlcm5hbWUiOiJzdHVkZW50X3Rlc3RfMDAxIiwiaWF0IjoxNzczODI1OTM2LCJleHAiOjM2MDAwMDE3NzM4MjU5MzZ9.3o20LfmazbECpEO2wRipy_vjoC04I9necKmf4WUihTM",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"subjectName\": \"Blocked Subject\",\n  \"periods\": 45\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/subjects",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "subjects"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Subject - Missing subjectName",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjIsInJvbGUiOiJBRE1JTiIsInVzZXJuYW1lIjoic3R1ZGVudF90ZXN0XzAwMSIsImlhdCI6MTc3MzgyNTU3OSwiZXhwIjozNjAwMDAxNzczODI1NTc5fQ.FeX3PXNKyyuBeCDx9GEYshS9w290mapxnjft1DxZTfg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"periods\": 45\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/subjects",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "subjects"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Subject - Invalid periods",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjIsInJvbGUiOiJBRE1JTiIsInVzZXJuYW1lIjoic3R1ZGVudF90ZXN0XzAwMSIsImlhdCI6MTc3MzgyNTU3OSwiZXhwIjozNjAwMDAxNzczODI1NTc5fQ.FeX3PXNKyyuBeCDx9GEYshS9w290mapxnjft1DxZTfg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"subjectName\": \"Invalid Period Subject\",\n  \"periods\": 0\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/subjects",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "subjects"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Subject - Duplicate name",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjIsInJvbGUiOiJBRE1JTiIsInVzZXJuYW1lIjoic3R1ZGVudF90ZXN0XzAwMSIsImlhdCI6MTc3MzgyNTU3OSwiZXhwIjozNjAwMDAxNzczODI1NTc5fQ.FeX3PXNKyyuBeCDx9GEYshS9w290mapxnjft1DxZTfg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"subjectName\": \"{{existing_subject_name}}\",\n  \"periods\": 45\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/subjects",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "subjects"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Rooms",
+      "item": [
+        {
+          "name": "List Rooms - ADMIN token",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjIsInJvbGUiOiJBRE1JTiIsInVzZXJuYW1lIjoic3R1ZGVudF90ZXN0XzAwMSIsImlhdCI6MTc3MzgyNTU3OSwiZXhwIjozNjAwMDAxNzczODI1NTc5fQ.FeX3PXNKyyuBeCDx9GEYshS9w290mapxnjft1DxZTfg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/rooms?page=1&limit=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "rooms"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List Rooms - STUDENT token",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjIsInJvbGUiOiJBRE1JTiIsInVzZXJuYW1lIjoic3R1ZGVudF90ZXN0XzAwMSIsImlhdCI6MTc3MzgyNTU3OSwiZXhwIjozNjAwMDAxNzczODI1NTc5fQ.FeX3PXNKyyuBeCDx9GEYshS9w290mapxnjft1DxZTfg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/rooms?page=1&limit=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "rooms"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List Rooms - Missing token",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/rooms",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "rooms"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List Rooms - Invalid page",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjIsInJvbGUiOiJBRE1JTiIsInVzZXJuYW1lIjoic3R1ZGVudF90ZXN0XzAwMSIsImlhdCI6MTc3MzgyNTU3OSwiZXhwIjozNjAwMDAxNzczODI1NTc5fQ.FeX3PXNKyyuBeCDx9GEYshS9w290mapxnjft1DxZTfg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/rooms?page=0&limit=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "rooms"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List Rooms - Filter by campus",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjIsInJvbGUiOiJBRE1JTiIsInVzZXJuYW1lIjoic3R1ZGVudF90ZXN0XzAwMSIsImlhdCI6MTc3MzgyNTU3OSwiZXhwIjozNjAwMDAxNzczODI1NTc5fQ.FeX3PXNKyyuBeCDx9GEYshS9w290mapxnjft1DxZTfg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/rooms?campus=CS1&page=1&limit=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "rooms"
+              ],
+              "query": [
+                {
+                  "key": "campus",
+                  "value": "CS1"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Room - Success (ADMIN)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjIsInJvbGUiOiJBRE1JTiIsInVzZXJuYW1lIjoic3R1ZGVudF90ZXN0XzAwMSIsImlhdCI6MTc3MzgyNTU3OSwiZXhwIjozNjAwMDAxNzczODI1NTc5fQ.FeX3PXNKyyuBeCDx9GEYshS9w290mapxnjft1DxZTfg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"roomName\": \"A{{$timestamp}}\",\n  \"capacity\": 50,\n  \"campus\": \"CS1\",\n  \"status\": \"ACTIVE\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/rooms",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "rooms"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Room - Forbidden (STUDENT)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjIsInJvbGUiOiJTVFVERU5UIiwidXNlcm5hbWUiOiJzdHVkZW50X3Rlc3RfMDAxIiwiaWF0IjoxNzczODI1OTM2LCJleHAiOjM2MDAwMDE3NzM4MjU5MzZ9.3o20LfmazbECpEO2wRipy_vjoC04I9necKmf4WUihTM",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"roomName\": \"STUDENT_ROOM\",\n  \"capacity\": 50\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/rooms",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "rooms"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Room - Missing roomName",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjIsInJvbGUiOiJBRE1JTiIsInVzZXJuYW1lIjoic3R1ZGVudF90ZXN0XzAwMSIsImlhdCI6MTc3MzgyNTU3OSwiZXhwIjozNjAwMDAxNzczODI1NTc5fQ.FeX3PXNKyyuBeCDx9GEYshS9w290mapxnjft1DxZTfg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"capacity\": 50,\n  \"campus\": \"CS1\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/rooms",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "rooms"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Room - Invalid capacity (0)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjIsInJvbGUiOiJBRE1JTiIsInVzZXJuYW1lIjoic3R1ZGVudF90ZXN0XzAwMSIsImlhdCI6MTc3MzgyNTU3OSwiZXhwIjozNjAwMDAxNzczODI1NTc5fQ.FeX3PXNKyyuBeCDx9GEYshS9w290mapxnjft1DxZTfg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"roomName\": \"INVALID_CAP_0\",\n  \"capacity\": 0\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/rooms",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "rooms"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Room - Invalid status",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjIsInJvbGUiOiJBRE1JTiIsInVzZXJuYW1lIjoic3R1ZGVudF90ZXN0XzAwMSIsImlhdCI6MTc3MzgyNTU3OSwiZXhwIjozNjAwMDAxNzczODI1NTc5fQ.FeX3PXNKyyuBeCDx9GEYshS9w290mapxnjft1DxZTfg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"roomName\": \"INVALID_STATUS_{{$timestamp}}\",\n  \"status\": \"OPEN\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/rooms",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "rooms"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Room - Duplicate roomName",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjIsInJvbGUiOiJBRE1JTiIsInVzZXJuYW1lIjoic3R1ZGVudF90ZXN0XzAwMSIsImlhdCI6MTc3MzgyNTU3OSwiZXhwIjozNjAwMDAxNzczODI1NTc5fQ.FeX3PXNKyyuBeCDx9GEYshS9w290mapxnjft1DxZTfg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"roomName\": \"A101\",\n  \"capacity\": 50\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/rooms",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "rooms"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Room By ID - Success",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjIsInJvbGUiOiJBRE1JTiIsInVzZXJuYW1lIjoic3R1ZGVudF90ZXN0XzAwMSIsImlhdCI6MTc3MzgyNTU3OSwiZXhwIjozNjAwMDAxNzczODI1NTc5fQ.FeX3PXNKyyuBeCDx9GEYshS9w290mapxnjft1DxZTfg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/rooms/{{existing_room_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "rooms",
+                "{{existing_room_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Room By ID - Not found",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjIsInJvbGUiOiJBRE1JTiIsInVzZXJuYW1lIjoic3R1ZGVudF90ZXN0XzAwMSIsImlhdCI6MTc3MzgyNTU3OSwiZXhwIjozNjAwMDAxNzczODI1NTc5fQ.FeX3PXNKyyuBeCDx9GEYshS9w290mapxnjft1DxZTfg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/rooms/{{not_found_room_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "rooms",
+                "{{not_found_room_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Room By ID - Invalid roomId",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjIsInJvbGUiOiJBRE1JTiIsInVzZXJuYW1lIjoic3R1ZGVudF90ZXN0XzAwMSIsImlhdCI6MTc3MzgyNTU3OSwiZXhwIjozNjAwMDAxNzczODI1NTc5fQ.FeX3PXNKyyuBeCDx9GEYshS9w290mapxnjft1DxZTfg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/rooms/abc",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "rooms",
+                "abc"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Room - Success",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjIsInJvbGUiOiJBRE1JTiIsInVzZXJuYW1lIjoic3R1ZGVudF90ZXN0XzAwMSIsImlhdCI6MTc3MzgyNTU3OSwiZXhwIjozNjAwMDAxNzczODI1NTc5fQ.FeX3PXNKyyuBeCDx9GEYshS9w290mapxnjft1DxZTfg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"capacity\": 90,\n  \"status\": \"ACTIVE\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/rooms/{{existing_room_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "rooms",
+                "{{existing_room_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Room - Empty body",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjIsInJvbGUiOiJBRE1JTiIsInVzZXJuYW1lIjoic3R1ZGVudF90ZXN0XzAwMSIsImlhdCI6MTc3MzgyNTU3OSwiZXhwIjozNjAwMDAxNzczODI1NTc5fQ.FeX3PXNKyyuBeCDx9GEYshS9w290mapxnjft1DxZTfg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/rooms/{{existing_room_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "rooms",
+                "{{existing_room_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Room - Forbidden (STUDENT)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjIsInJvbGUiOiJTVFVERU5UIiwidXNlcm5hbWUiOiJzdHVkZW50X3Rlc3RfMDAxIiwiaWF0IjoxNzczODI1OTM2LCJleHAiOjM2MDAwMDE3NzM4MjU5MzZ9.3o20LfmazbECpEO2wRipy_vjoC04I9necKmf4WUihTM",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"capacity\": 70\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/rooms/{{existing_room_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "rooms",
+                "{{existing_room_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Room - Has schedules (409)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjIsInJvbGUiOiJBRE1JTiIsInVzZXJuYW1lIjoic3R1ZGVudF90ZXN0XzAwMSIsImlhdCI6MTc3MzgyNTU3OSwiZXhwIjozNjAwMDAxNzczODI1NTc5fQ.FeX3PXNKyyuBeCDx9GEYshS9w290mapxnjft1DxZTfg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/rooms/{{room_with_schedule_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "rooms",
+                "{{room_with_schedule_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Room - Success",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjIsInJvbGUiOiJBRE1JTiIsInVzZXJuYW1lIjoic3R1ZGVudF90ZXN0XzAwMSIsImlhdCI6MTc3MzgyNTU3OSwiZXhwIjozNjAwMDAxNzczODI1NTc5fQ.FeX3PXNKyyuBeCDx9GEYshS9w290mapxnjft1DxZTfg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/rooms/{{room_without_schedule_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "rooms",
+                "{{room_without_schedule_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Room Schedules - Success (ADMIN)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/rooms/{{existing_room_id}}/schedules",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "rooms",
+                "{{existing_room_id}}",
+                "schedules"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Room Usage Histories - Success (ADMIN)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/rooms/{{existing_room_id}}/usage-histories",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "rooms",
+                "{{existing_room_id}}",
+                "usage-histories"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Available Rooms - Success (ADMIN)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/rooms/available?startDate=2026-03-20T00:00:00.000Z&endDate=2026-03-21T00:00:00.000Z&capacity=30",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "rooms",
+                "available"
+              ],
+              "query": [
+                {
+                  "key": "startDate",
+                  "value": "2026-03-20T00:00:00.000Z"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2026-03-21T00:00:00.000Z"
+                },
+                {
+                  "key": "capacity",
+                  "value": "30"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Available Rooms - Forbidden (STUDENT)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/rooms/available?startDate=2026-03-20T00:00:00.000Z&endDate=2026-03-21T00:00:00.000Z&capacity=30",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "rooms",
+                "available"
+              ],
+              "query": [
+                {
+                  "key": "startDate",
+                  "value": "2026-03-20T00:00:00.000Z"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2026-03-21T00:00:00.000Z"
+                },
+                {
+                  "key": "capacity",
+                  "value": "30"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Available Rooms - Invalid query",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/rooms/available?startDate=invalid&endDate=invalid&capacity=0",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "rooms",
+                "available"
+              ],
+              "query": [
+                {
+                  "key": "startDate",
+                  "value": "invalid"
+                },
+                {
+                  "key": "endDate",
+                  "value": "invalid"
+                },
+                {
+                  "key": "capacity",
+                  "value": "0"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "admin_token",
+      "value": ""
+    },
+    {
+      "key": "student_token",
+      "value": ""
+    },
+    {
+      "key": "invalid_token",
+      "value": "invalid.token.value"
+    },
+    {
+      "key": "expired_token",
+      "value": ""
+    },
+    {
+      "key": "existing_room_id",
+      "value": "1"
+    },
+    {
+      "key": "room_with_schedule_id",
+      "value": "1"
+    },
+    {
+      "key": "room_without_schedule_id",
+      "value": "2"
+    },
+    {
+      "key": "not_found_room_id",
+      "value": "999999"
+    },
+    {
+      "key": "existing_subject_name",
+      "value": "Object-Oriented Programming"
+    },
+    {
+      "key": "new_subject_name",
+      "value": "Distributed Systems"
+    }
+  ]
+}

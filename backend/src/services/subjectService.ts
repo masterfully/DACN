@@ -1,27 +1,7 @@
 import { prisma } from "../prisma/prismaClient";
-
-export interface ErrorDetails {
-  formErrors: string[];
-  fieldErrors: Record<string, string[]>;
-}
-
-export class SubjectError extends Error {
-  public readonly statusCode: number;
-  public readonly code: string;
-  public readonly details: ErrorDetails;
-
-  constructor(
-    message: string,
-    statusCode: number,
-    code: string,
-    details: ErrorDetails
-  ) {
-    super(message);
-    this.statusCode = statusCode;
-    this.code = code;
-    this.details = details;
-  }
-}
+import { AppError } from "../middleware/errorHandler";
+import { SUBJECT_ERROR_CODES } from "../constants/errors/subject/codes";
+import { SUBJECT_ERROR_MESSAGES } from "../constants/errors/subject/messages";
 
 export const getSubjects = async (
   page: number = 1,
@@ -66,17 +46,16 @@ export const createSubject = async (subjectName: string, periods: number) => {
   });
 
   if (existingSubject) {
-    throw new SubjectError(
-      "Tên môn học đã tồn tại",
-      409,
-      "SUBJECT_NAME_EXISTED",
-      {
+    throw new AppError(SUBJECT_ERROR_MESSAGES.SUBJECT_CREATE_NAME_EXISTS, {
+      statusCode: 409,
+      code: SUBJECT_ERROR_CODES.SUBJECT_CREATE_NAME_EXISTS,
+      details: {
         formErrors: [],
         fieldErrors: {
-          subjectName: ["Tên môn học đã tồn tại"],
+          subjectName: [SUBJECT_ERROR_MESSAGES.SUBJECT_CREATE_NAME_EXISTS],
         },
-      }
-    );
+      },
+    });
   }
 
   const subject = await prisma.subject.create({

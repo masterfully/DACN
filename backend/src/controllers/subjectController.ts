@@ -1,18 +1,52 @@
 import { Request, Response, NextFunction } from "express";
 import { z } from "zod";
-import { createSubject, getSubjects, SubjectError, ErrorDetails } from "../services/subjectService";
-import { sendError, sendSuccess } from "../utils/response";
+import { createSubject, getSubjects } from "../services/subjectService";
+import { sendSuccess } from "../utils/response";
+import { parseOrThrow } from "../utils/validation";
+import { SUBJECT_ERROR_CODES } from "../constants/errors/subject/codes";
+import {
+  SUBJECT_ERROR_MESSAGES,
+  SUBJECT_FIELD_ERROR_MESSAGES,
+} from "../constants/errors/subject/messages";
 
 // Validation schema for creating subject
 const createSubjectSchema = z.object({
-  subjectName: z.string().min(1, "Tên môn học là bắt buộc"),
-  periods: z.number().int().positive("Số tiết phải là số nguyên dương"),
+  subjectName: z
+    .string({
+      error: (issue) => {
+        if (issue.input === undefined) {
+          return SUBJECT_FIELD_ERROR_MESSAGES.SUBJECT_NAME_REQUIRED;
+        }
+        return SUBJECT_FIELD_ERROR_MESSAGES.SUBJECT_NAME_INVALID_TYPE;
+      },
+    })
+    .trim()
+    .min(1, SUBJECT_FIELD_ERROR_MESSAGES.SUBJECT_NAME_REQUIRED),
+  periods: z
+    .number({
+      error: (issue) => {
+        if (issue.input === undefined) {
+          return SUBJECT_FIELD_ERROR_MESSAGES.PERIODS_REQUIRED;
+        }
+        return SUBJECT_FIELD_ERROR_MESSAGES.PERIODS_INVALID_TYPE;
+      },
+    })
+    .int(SUBJECT_FIELD_ERROR_MESSAGES.PERIODS_INVALID_INTEGER)
+    .positive(SUBJECT_FIELD_ERROR_MESSAGES.PERIODS_INVALID_POSITIVE),
 });
 
 // Validation schema for query params
 const getSubjectsQuerySchema = z.object({
-  page: z.coerce.number().int().positive().default(1),
-  limit: z.coerce.number().int().positive().default(10),
+  page: z.coerce
+    .number()
+    .int(SUBJECT_FIELD_ERROR_MESSAGES.QUERY_PAGE_INVALID_INTEGER)
+    .positive(SUBJECT_FIELD_ERROR_MESSAGES.QUERY_PAGE_INVALID_POSITIVE)
+    .default(1),
+  limit: z.coerce
+    .number()
+    .int(SUBJECT_FIELD_ERROR_MESSAGES.QUERY_LIMIT_INVALID_INTEGER)
+    .positive(SUBJECT_FIELD_ERROR_MESSAGES.QUERY_LIMIT_INVALID_POSITIVE)
+    .default(10),
   search: z.string().optional(),
 });
 
@@ -22,26 +56,10 @@ export async function getSubjectsHandler(
   next: NextFunction
 ): Promise<void> {
   try {
-    const validation = getSubjectsQuerySchema.safeParse(req.query);
-
-    if (!validation.success) {
-      const fieldErrors: Record<string, string[]> = {};
-      validation.error.issues.forEach((issue) => {
-        const field = issue.path.join(".");
-        if (!fieldErrors[field]) {
-          fieldErrors[field] = [];
-        }
-        fieldErrors[field].push(issue.message);
-      });
-
-      sendError(res, 400, "VALIDATION_ERROR", "Dữ liệu không hợp lệ", {
-        formErrors: [],
-        fieldErrors,
-      });
-      return;
-    }
-
-    const { page, limit, search } = validation.data;
+    const { page, limit, search } = parseOrThrow(getSubjectsQuerySchema, req.query, {
+      code: SUBJECT_ERROR_CODES.SUBJECT_LIST_INVALID_QUERY,
+      message: SUBJECT_ERROR_MESSAGES.SUBJECT_LIST_INVALID_QUERY,
+    });
 
     const { subjects, total } = await getSubjects(page, limit, search);
 
@@ -61,40 +79,16 @@ export async function createSubjectHandler(
   next: NextFunction
 ): Promise<void> {
   try {
-    // Validate request body
-    const validation = createSubjectSchema.safeParse(req.body);
-
-    if (!validation.success) {
-      const fieldErrors: Record<string, string[]> = {};
-      
-      validation.error.issues.forEach((issue) => {
-        const field = issue.path.join(".");
-        if (!fieldErrors[field]) {
-          fieldErrors[field] = [];
-        }
-        fieldErrors[field].push(issue.message);
-      });
-
-      const details: ErrorDetails = {
-        formErrors: [],
-        fieldErrors,
-      };
-
-      sendError(res, 400, "VALIDATION_ERROR", "Dữ liệu không hợp lệ", details);
-      return;
-    }
-
-    const { subjectName, periods } = validation.data;
+    const { subjectName, periods } = parseOrThrow(createSubjectSchema, req.body, {
+      code: SUBJECT_ERROR_CODES.SUBJECT_CREATE_INVALID_INPUT,
+      message: SUBJECT_ERROR_MESSAGES.SUBJECT_CREATE_INVALID_INPUT,
+    });
 
     // Create subject
     const subject = await createSubject(subjectName, periods);
 
     sendSuccess(res, subject, 201);
   } catch (error) {
-    if (error instanceof SubjectError) {
-      sendError(res, error.statusCode, error.code, error.message, error.details);
-      return;
-    }
     next(error);
   }
 }

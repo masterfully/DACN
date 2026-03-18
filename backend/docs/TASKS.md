@@ -48,6 +48,7 @@
   - `requireAuth` — verifies Bearer token, attaches `req.user`
   - `requireRole(...roles)` — checks role against allowed list
 - [x] Refactor `src/index.ts`: mount all routers under `/api`, apply `express.json()` and error handler
+- [x] `GET /api/health` — health check endpoint
 
 ---
 
@@ -60,6 +61,7 @@ Base path: `/api/auth`
 - [ ] `POST /api/auth/refresh-token` — verify stored refresh token, issue new pair (rotation)
 - [ ] `PUT /api/auth/change-password` — verify `currentPassword`, hash and update `newPassword`
 - [x] `POST /api/auth/register` — create `Account` (role: STUDENT) + `UserProfile`, validate `password` = `confirmPassword`, return tokens
+- [x] Postman test cases for `POST /api/auth/register` (success + validation + duplicate) verified
 
 **Notes**:
 - Hash passwords with `bcrypt` (min rounds: 10)
@@ -114,8 +116,9 @@ Base path: `/api/profiles`
 
 Base path: `/api/subjects`
 
-- [ ] `GET /api/subjects` — paginated, search by name. **Any auth**
-- [ ] `POST /api/subjects` — create subject. **Role: ADMIN**
+- [x] `GET /api/subjects` — paginated, search by name. **Any auth**
+- [x] `POST /api/subjects` — create subject. **Role: ADMIN**
+- [x] Postman test cases for Subject list/create flows verified
 - [ ] `GET /api/subjects/:subjectId` — subject detail. **Any auth**
 - [ ] `PUT /api/subjects/:subjectId` — update. **Role: ADMIN**
 - [ ] `DELETE /api/subjects/:subjectId` — delete. **Role: ADMIN** _(guard: not linked to any section)_
@@ -209,6 +212,7 @@ Base path: `/api/rooms`
 - [x] `DELETE /api/rooms/:roomId` — delete room. **Role: ADMIN** _(guard: has active schedules)_
 - [x] `GET /api/rooms/:roomId/schedules` — schedules for a room. **Role: ADMIN**
 - [x] `GET /api/rooms/:roomId/usage-histories` — usage history for a room. **Role: ADMIN**
+- [x] Postman test cases for all implemented Room endpoints verified
 
 ---
 

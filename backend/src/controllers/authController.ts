@@ -1,50 +1,74 @@
 import { Request, Response } from "express";
 import { z } from "zod";
 import { sendSuccess } from "../utils/response";
-import { AppError } from "../middleware/errorHandler";
 import * as authService from "../services/authService";
+import { parseOrThrow } from "../utils/validation";
+import { AUTH_ERROR_CODES } from "../constants/errors/auth/codes";
+import {
+  AUTH_ERROR_MESSAGES,
+  AUTH_FIELD_ERROR_MESSAGES,
+} from "../constants/errors/auth/messages";
 
 const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/;
 
+const requiredString = (requiredMessage: string) =>
+  z.string({
+    error: (issue) => {
+      if (issue.input === undefined) {
+        return requiredMessage;
+      }
+      return AUTH_FIELD_ERROR_MESSAGES.STRING_INVALID_TYPE;
+    },
+  });
+
 const registerSchema = z
   .object({
-    fullName: z.string().trim().min(1, "fullName is required").max(255),
-    username: z.string().trim().min(1, "username is required").max(255),
-    email: z.string().trim().email("email is invalid").max(255),
-    password: z
-      .string()
-      .min(8, "password must be at least 8 characters")
+    fullName: requiredString(AUTH_FIELD_ERROR_MESSAGES.FULL_NAME_REQUIRED)
+      .trim()
+      .min(1, AUTH_FIELD_ERROR_MESSAGES.FULL_NAME_REQUIRED)
+      .max(255, AUTH_FIELD_ERROR_MESSAGES.FULL_NAME_MAX_LENGTH),
+    username: requiredString(AUTH_FIELD_ERROR_MESSAGES.USERNAME_REQUIRED)
+      .trim()
+      .min(1, AUTH_FIELD_ERROR_MESSAGES.USERNAME_REQUIRED)
+      .max(255, AUTH_FIELD_ERROR_MESSAGES.USERNAME_MAX_LENGTH),
+    email: requiredString(AUTH_FIELD_ERROR_MESSAGES.EMAIL_REQUIRED)
+      .trim()
+      .email(AUTH_FIELD_ERROR_MESSAGES.EMAIL_INVALID_FORMAT)
+      .max(255, AUTH_FIELD_ERROR_MESSAGES.EMAIL_MAX_LENGTH),
+    password: requiredString(AUTH_FIELD_ERROR_MESSAGES.PASSWORD_REQUIRED)
+      .min(8, AUTH_FIELD_ERROR_MESSAGES.PASSWORD_MIN_LENGTH)
       .regex(
         passwordRegex,
-        "password must include at least 1 uppercase letter, 1 number, and 1 special character",
+        AUTH_FIELD_ERROR_MESSAGES.PASSWORD_WEAK,
       ),
-    confirmPassword: z.string().min(1, "confirmPassword is required"),
+    confirmPassword: requiredString(
+      AUTH_FIELD_ERROR_MESSAGES.CONFIRM_PASSWORD_REQUIRED,
+    ).min(
+      1,
+      AUTH_FIELD_ERROR_MESSAGES.CONFIRM_PASSWORD_REQUIRED,
+    ),
   })
   .superRefine((data, ctx) => {
     if (data.password !== data.confirmPassword) {
       ctx.addIssue({
         code: "custom",
         path: ["confirmPassword"],
-        message: "confirmPassword must match password",
+        message: AUTH_FIELD_ERROR_MESSAGES.CONFIRM_PASSWORD_MISMATCH,
       });
     }
   });
 
 export const register = async (req: Request, res: Response): Promise<void> => {
-  const parsed = registerSchema.safeParse(req.body);
-  if (!parsed.success) {
-    throw new AppError("Invalid request body", {
-      statusCode: 400,
-      code: "VALIDATION_ERROR",
-      details: parsed.error.flatten(),
-    });
-  }
+  const parsed = parseOrThrow(registerSchema, req.body, {
+    code: AUTH_ERROR_CODES.AUTH_REGISTER_INVALID_INPUT,
+    message: AUTH_ERROR_MESSAGES.AUTH_REGISTER_INVALID_INPUT,
+  });
 
   const result = await authService.register({
-    fullName: parsed.data.fullName,
-    username: parsed.data.username,
-    email: parsed.data.email,
-    password: parsed.data.password,
+    fullName: parsed.fullName,
+    username: parsed.username,
+    email: parsed.email,
+    password: parsed.password,
   });
 
   sendSuccess(res, result, 201);

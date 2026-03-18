@@ -39,7 +39,7 @@ Triển khai endpoint POST tạo phòng học mới. Chỉ ADMIN được phép,
 - **Validation**: Zod schema: `roomName.min(1)`, `capacity.int().min(1)`
 - **Database**: Prisma `room.create()` sau kiểm tra `room.findUnique(RoomName)`
 - **Response**: `sendSuccess(res, room, 201)` 
-- **Error**: `AppError(409, "ROOM_NAME_EXISTS")`
+- **Error**: `AppError(409, "ROOM_CREATE_NAME_EXISTS")`
 
 ### Test
 ```
@@ -66,6 +66,41 @@ curl -X POST http://localhost:8080/api/rooms \
   "error": null
 }
 ```
+
+### How To Test (Postman)
+1. Chuẩn bị token ADMIN
+  - Gọi endpoint auth để lấy `accessToken` của tài khoản có role `ADMIN`.
+  - Nếu vừa đổi role trong DB, cần tạo token mới (token cũ vẫn chứa role cũ).
+
+2. Tạo request
+  - Method: `POST`
+  - URL: `{{base_url}}/api/rooms`
+  - Headers:
+    - `Authorization: Bearer <admin-access-token>`
+    - `Content-Type: application/json`
+  - Body (raw JSON):
+
+```json
+{
+  "roomName": "A101",
+  "capacity": 50,
+  "campus": "CS1"
+}
+```
+
+3. Kết quả mong đợi
+  - `201 Created`: tạo phòng thành công.
+  - `409 Conflict`: `roomName` đã tồn tại.
+  - `400 Bad Request`: dữ liệu sai định dạng (ví dụ `capacity <= 0`, `roomName` rỗng).
+  - `401 Unauthorized`: thiếu token hoặc token sai/hết hạn.
+  - `403 Forbidden`: token không phải `ADMIN`.
+
+4. Validation cases nên test thêm
+  - `roomName` thiếu.
+  - `roomName` là chuỗi rỗng hoặc chỉ có khoảng trắng.
+  - `capacity` là số âm, 0, hoặc số thập phân.
+  - Payload có field không hợp lệ.
+  - Tạo 2 lần cùng `roomName` để kiểm tra conflict.
 
 ### Trạng thái
 - [x] Tạo service layer
