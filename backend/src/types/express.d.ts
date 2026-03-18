@@ -1,4 +1,4 @@
-export {};
+import type { Express } from "express";
 
 declare global {
   namespace Express {
@@ -12,3 +12,5 @@ declare global {
     }
   }
 }
+
+export {};
