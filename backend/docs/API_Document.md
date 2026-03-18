@@ -172,7 +172,7 @@ Response Structure:
 
 - Account Role: ADMIN, LECTURER, STUDENT, PARENT
 - Profile Status: ACTIVE, INACTIVE, BANNED
-- Profile Gender: MAlE, FEMALE
+- Profile Gender: MALE, FEMALE
 - Section Status: OPEN, COMPLETED, CANCELLED
 - Room:
   - Type: LECTURE, LAB
@@ -184,15 +184,15 @@ Response Structure:
 ### Query Param Conventions
 
 - Pagination:
-  - `page`: số trang (mặc định: `1`)
-  - `limit`: số bản ghi mỗi trang (mặc định: `10`)
+- `page`: page number (default: `1`)
+- `limit`: number of records per page (default: `10`)
 - Search:
-  - `search`: từ khóa tìm kiếm full-text theo các trường chính (tên, mã, email, ...)
+- `search`: full-text search keyword by main fields (name, code, email, ...)
 - Enum filters:
-  - Các giá trị enum trong query dùng UPPERCASE theo mục Enum ở trên.
+- Enum values ​​in the query use UPPERCASE according to the Enum section above.
 - Date range:
-  - Dùng cặp `startDate`/`endDate` cho các tài nguyên lịch/sử dụng.
-  - Dùng cặp `<field>From`/`<field>To` cho các tài nguyên có nhiều loại mốc thời gian (vd: `submissionFrom`, `submissionTo`).
+- Use pair `startDate`/`endDate` ​​for calendar/usage resources.
+- Use the `<field>From`/`<field>To` ​​pair for resources with multiple timestamps (e.g. `submissionFrom`, `submissionTo`).
 
 ## II. Endpoints
 
@@ -202,7 +202,7 @@ Response Structure:
 
 #### 1.1. Login
 
-**Description**: Đăng nhập vào hệ thống. Trả về access token và refresh token. Không yêu cầu xác thực trước.
+**Description**: Log in to the system. Returns the access token and refresh token. No prior authentication required.
 
 **URL**: `/api/auth/login`
 
@@ -210,10 +210,10 @@ Response Structure:
 
 **Body Request**:
 
-| Field    |  Type  | Required | Description   |
-| -------- | :----: | :------: | ------------- |
-| username | string |   Yes    | Tên đăng nhập |
-| password | string |   Yes    | Mật khẩu      |
+| Field    |  Type  | Required | Description |
+| -------- | :----: | :------: | ----------- |
+| username | string |   Yes    | Username    |
+| password | string |   Yes    | Password    |
 
 ```json
 {
@@ -264,7 +264,7 @@ Response Structure:
 
 #### 1.2. Refresh Token
 
-**Description**: Làm mới access token bằng refresh token hiện có.
+**Description**: Refresh access token with existing refresh token.
 
 **URL**: `/api/auth/refresh-token`
 
@@ -312,7 +312,7 @@ Response Structure:
 
 #### 1.3. Change Password
 
-**Description**: Đổi mật khẩu tài khoản hiện tại. Yêu cầu xác thực: `Authorization: Bearer <token>`.
+**Description**: Change current account password. Authentication request: `Authorization: Bearer <token>`.
 
 **URL**: `/api/auth/change-password`
 
@@ -320,10 +320,10 @@ Response Structure:
 
 **Body Request**:
 
-| Field           |  Type  | Required | Description       |
-| --------------- | :----: | :------: | ----------------- |
-| currentPassword | string |   Yes    | Mật khẩu hiện tại |
-| newPassword     | string |   Yes    | Mật khẩu mới      |
+| Field           |  Type  | Required | Description      |
+| --------------- | :----: | :------: | ---------------- |
+| currentPassword | string |   Yes    | Current password |
+| newPassword     | string |   Yes    | New password     |
 
 ```json
 {
@@ -359,7 +359,7 @@ Response Structure:
 
 #### 1.4. Register
 
-**Description**: Tự đăng ký tài khoản mới (dành cho sinh viên). Hệ thống tự động tạo `Account` với role `STUDENT` và `UserProfile` tương ứng. Không yêu cầu xác thực trước.
+**Description**: Self-register for a new account (for students). The system automatically creates `Account` with the corresponding roles `STUDENT` ​​and `UserProfile`. No prior authentication required.
 
 **URL**: `/api/auth/register`
 
@@ -367,13 +367,13 @@ Response Structure:
 
 **Body Request**:
 
-| Field           |  Type  | Required | Description                                |
-| --------------- | :----: | :------: | ------------------------------------------ |
-| fullName        | string |   Yes    | Họ và tên                                  |
-| username        | string |   Yes    | Username                                   |
-| email           | string |   Yes    | Email của người dùng                       |
-| password        | string |   Yes    | Mật khẩu                                   |
-| confirmPassword | string |   Yes    | Xác nhận mật khẩu (phải khớp với password) |
+| Field           |  Type  | Required | Description                            |
+| --------------- | :----: | :------: | -------------------------------------- |
+| fullName        | string |   Yes    | Full name                              |
+| username        | string |   Yes    | Username                               |
+| email           | string |   Yes    | User's email                           |
+| password        | string |   Yes    | Password                               |
+| confirmPassword | string |   Yes    | Confirm password (must match password) |
 
 ```json
 {
@@ -429,7 +429,7 @@ Response Structure:
 
 #### 2.1. Get Account List
 
-**Description**: Lấy danh sách tài khoản có phân trang, tìm kiếm và lọc. Yêu cầu role: `ADMIN`.
+**Description**: Gets a list of accounts with pagination, search, and filtering. Requires role: `ADMIN`.
 
 **URL**: `/api/accounts`
 
@@ -437,13 +437,13 @@ Response Structure:
 
 **Query Params**:
 
-| Field  |  Type  | Required | Description                                           |
-| ------ | :----: | :------: | ----------------------------------------------------- |
-| page   | number |    No    | Trang hiện tại (mặc định: 1)                          |
-| limit  | number |    No    | Số bản ghi mỗi trang (mặc định: 10)                   |
-| search | string |    No    | Tìm theo username hoặc email                          |
-| role   | string |    No    | Lọc theo role: ADMIN, LECTURER, STUDENT               |
-| status | string |    No    | Lọc theo trạng thái profile: ACTIVE, INACTIVE, BANNED |
+| Field  |  Type  | Required | Description                                        |
+| ------ | :----: | :------: | -------------------------------------------------- |
+| page   | number |    No    | Current page (default: 1)                          |
+| limit  | number |    No    | Number of records per page (default: 10)           |
+| search | string |    No    | Search by username or email                        |
+| roles  | string |    No    | Filter by role: ADMIN, LECTURER, STUDENT           |
+| status | string |    No    | Filter by profile status: ACTIVE, INACTIVE, BANNED |
 
 ```
 GET /api/accounts?page=1&limit=10&search=student&role=STUDENT&status=ACTIVE
@@ -506,7 +506,7 @@ GET /api/accounts?page=1&limit=10&search=student&role=STUDENT&status=ACTIVE
 
 #### 2.2. Create Account
 
-**Description**: Tạo tài khoản mới. Yêu cầu role: `ADMIN`.
+**Description**: Create a new account. Requires role: `ADMIN`.
 
 **URL**: `/api/accounts`
 
@@ -514,12 +514,12 @@ GET /api/accounts?page=1&limit=10&search=student&role=STUDENT&status=ACTIVE
 
 **Body Request**:
 
-| Field    |  Type  | Required | Description                    |
-| -------- | :----: | :------: | ------------------------------ |
-| username | string |   Yes    | Tên đăng nhập (duy nhất)       |
-| email    | string |   Yes    | Email                          |
-| password | string |   Yes    | Mật khẩu                       |
-| role     | string |   Yes    | Role: ADMIN, LECTURER, STUDENT |
+| Field    |  Type  | Required | Description                            |
+| -------- | :----: | :------: | -------------------------------------- |
+| username | string |   Yes    | Username (unique)                      |
+| email    | string |   Yes    | Email                                  |
+| password | string |   Yes    | Password                               |
+| role     | string |   Yes    | Role: ADMIN, LECTURER, STUDENT, PARENT |
 
 ```json
 {
@@ -563,13 +563,13 @@ GET /api/accounts?page=1&limit=10&search=student&role=STUDENT&status=ACTIVE
 
 #### 2.3. Get Account Detail
 
-**Description**: Lấy chi tiết một tài khoản theo ID. Yêu cầu role: `ADMIN`.
+**Description**: Get details of an account by ID. Requires role: `ADMIN`.
 
 **URL**: `/api/accounts/{accountId}`
 
 **Method**: `GET`
 
-**Query Params**: Không có.
+**Query Params**: None.
 
 **Example Response:**
 
@@ -609,7 +609,7 @@ GET /api/accounts?page=1&limit=10&search=student&role=STUDENT&status=ACTIVE
 
 #### 2.4. Update Account
 
-**Description**: Cập nhật thông tin tài khoản (username, role). Yêu cầu role: `ADMIN`.
+**Description**: Update account information (username, role). Requires role: `ADMIN`.
 
 **URL**: `/api/accounts/{accountId}`
 
@@ -617,10 +617,10 @@ GET /api/accounts?page=1&limit=10&search=student&role=STUDENT&status=ACTIVE
 
 **Body Request**:
 
-| Field    |  Type  | Required | Description                        |
-| -------- | :----: | :------: | ---------------------------------- |
-| username | string |    No    | Tên đăng nhập mới                  |
-| role     | string |    No    | Role mới: ADMIN, LECTURER, STUDENT |
+| Field    |  Type  | Required | Description                         |
+| -------- | :----: | :------: | ----------------------------------- |
+| username | string |    No    | New username                        |
+| roles    | string |    No    | New roles: ADMIN, LECTURER, STUDENT |
 
 ```json
 {
@@ -667,13 +667,13 @@ GET /api/accounts?page=1&limit=10&search=student&role=STUDENT&status=ACTIVE
 
 #### 2.5. Delete Account
 
-**Description**: Xóa tài khoản theo ID. Yêu cầu role: `ADMIN`.
+**Description**: Delete account by ID. Requires role: `ADMIN`.
 
 **URL**: `/api/accounts/{accountId}`
 
 **Method**: `DELETE`
 
-**Query Params**: Không có.
+**Query Params**: None.
 
 **Example Response:**
 
@@ -702,13 +702,13 @@ GET /api/accounts?page=1&limit=10&search=student&role=STUDENT&status=ACTIVE
 
 #### 2.6. Get My Account
 
-**Description**: Lấy thông tin tài khoản của người dùng đang đăng nhập. Yêu cầu xác thực: `Authorization: Bearer <token>`.
+**Description**: Get account information of the currently logged in user. Authentication request: `Authorization: Bearer <token>`.
 
 **URL**: `/api/accounts/me`
 
 **Method**: `GET`
 
-**Query Params**: Không có.
+**Query Params**: None.
 
 **Example Response:**
 
@@ -750,7 +750,7 @@ GET /api/accounts?page=1&limit=10&search=student&role=STUDENT&status=ACTIVE
 
 #### 3.1. Create Profile
 
-**Description**: Tạo profile cho account được tạo bởi admin ([2.2. Create Account](#22-create-account)). Yêu cầu role `ADMIN`.
+**Description**: Create profile for account created by admin ([2.2. Create Account](#22-create-account)). Requires role `ADMIN`.
 
 **URL**: `/api/profiles`
 
@@ -760,15 +760,15 @@ GET /api/accounts?page=1&limit=10&search=student&role=STUDENT&status=ACTIVE
 
 | Field       |  Type  | Required | Description                  |
 | ----------- | :----: | :------: | ---------------------------- |
-| accountId   | number |   Yes    | ID tài khoản cần tạo profile |
-| fullName    | string |   Yes    | Họ và tên                    |
-| phoneNumber | string |    No    | Số điện thoại                |
-| dateOfBirth | string |    No    | Ngày sinh (YYYY-MM-DD)       |
-| gender      | string |    No    | Giới tính                    |
-| avatar      | string |    No    | URL ảnh đại diện             |
+| accountId   | number |   Yes    | Account ID to create profile |
+| fullName    | string |   Yes    | Full name                    |
+| phoneNumber | string |    No    | Phone number                 |
+| dateOfBirth | string |    No    | Date of birth (YYYY-MM-DD)   |
+| gender      | string |    No    | Gender                       |
+| avatars     | string |    No    | Profile image URL            |
 | citizenId   | string |    No    | CCCD/CMND                    |
-| hometown    | string |    No    | Quê quán                     |
-| status      | string |    No    | Trạng thái                   |
+| hometown    | string |    No    | Hometown                     |
+| status      | string |    No    | Status                       |
 
 ```json
 {
@@ -803,7 +803,7 @@ GET /api/accounts?page=1&limit=10&search=student&role=STUDENT&status=ACTIVE
 
 #### 3.2. Get Profile List
 
-**Description**: Lấy danh sách hồ sơ người dùng. Yêu cầu role: `ADMIN`.
+**Description**: Gets the list of user profiles. Requires role: `ADMIN`.
 
 **URL**: `/api/profiles`
 
@@ -811,14 +811,14 @@ GET /api/accounts?page=1&limit=10&search=student&role=STUDENT&status=ACTIVE
 
 **Query Params**:
 
-| Field  |  Type  | Required | Description                                     |
-| ------ | :----: | :------: | ----------------------------------------------- |
-| page   | number |    No    | Trang hiện tại (mặc định: 1)                    |
-| limit  | number |    No    | Số bản ghi mỗi trang (mặc định: 10)             |
-| search | string |    No    | Tìm theo tên hoặc email                         |
-| role   | string |    No    | Lọc theo role: ADMIN, LECTURER, STUDENT, PARENT |
-| status | string |    No    | Lọc theo trạng thái: ACTIVE, INACTIVE, BANNED   |
-| gender | string |    No    | Lọc theo giới tính                              |
+| Field  |  Type  | Required | Description                                      |
+| ------ | :----: | :------: | ------------------------------------------------ |
+| page   | number |    No    | Current page (default: 1)                        |
+| limit  | number |    No    | Number of records per page (default: 10)         |
+| search | string |    No    | Search by name or email                          |
+| roles  | string |    No    | Filter by role: ADMIN, LECTURER, STUDENT, PARENT |
+| status | string |    No    | Filter by status: ACTIVE, INACTIVE, BANNED       |
+| gender | string |    No    | Filter by gender                                 |
 
 ```
 GET /api/profiles?page=1&limit=10&search=Nguyen&role=STUDENT&status=ACTIVE
@@ -868,13 +868,13 @@ GET /api/profiles?page=1&limit=10&search=Nguyen&role=STUDENT&status=ACTIVE
 
 #### 3.3. Get Profile Detail
 
-**Description**: Lấy chi tiết hồ sơ theo ID. Yêu cầu role: `ADMIN` hoặc chính chủ.
+**Description**: Get profile details by ID. Requires role: `ADMIN` or owner.
 
 **URL**: `/api/profiles/{profileId}`
 
 **Method**: `GET`
 
-**Query Params**: Không có.
+**Query Params**: None.
 
 **Example Response:**
 
@@ -916,7 +916,7 @@ GET /api/profiles?page=1&limit=10&search=Nguyen&role=STUDENT&status=ACTIVE
 
 #### 3.4. Update Profile
 
-**Description**: Cập nhật hồ sơ theo ID. Yêu cầu role: `ADMIN` hoặc chính chủ.
+**Description**: Update records by ID. Requires role: `ADMIN` or owner.
 
 **URL**: `/api/profiles/{profileId}`
 
@@ -924,17 +924,17 @@ GET /api/profiles?page=1&limit=10&search=Nguyen&role=STUDENT&status=ACTIVE
 
 **Body Request**:
 
-| Field       |  Type  | Required | Description            |
-| ----------- | :----: | :------: | ---------------------- |
-| fullName    | string |    No    | Họ và tên              |
-| phoneNumber | string |    No    | Số điện thoại          |
-| dateOfBirth | string |    No    | Ngày sinh (YYYY-MM-DD) |
-| gender      | string |    No    | Giới tính              |
-| email       | string |    No    | Email                  |
-| avatar      | string |    No    | URL ảnh đại diện       |
-| citizenId   | string |    No    | CCCD/CMND              |
-| hometown    | string |    No    | Quê quán               |
-| status      | string |    No    | Trạng thái             |
+| Field       |  Type  | Required | Description                |
+| ----------- | :----: | :------: | -------------------------- |
+| fullName    | string |    No    | Full name                  |
+| phoneNumber | string |    No    | Phone number               |
+| dateOfBirth | string |    No    | Date of birth (YYYY-MM-DD) |
+| gender      | string |    No    | Gender                     |
+| email       | string |    No    | Email                      |
+| avatars     | string |    No    | Profile image URL          |
+| citizenId   | string |    No    | CCCD/CMND                  |
+| hometown    | string |    No    | Hometown                   |
+| status      | string |    No    | Status                     |
 
 ```json
 {
@@ -978,13 +978,13 @@ GET /api/profiles?page=1&limit=10&search=Nguyen&role=STUDENT&status=ACTIVE
 
 #### 3.5. Get My Profile
 
-**Description**: Lấy hồ sơ của người dùng đang đăng nhập. Yêu cầu xác thực: `Authorization: Bearer <token>`.
+**Description**: Gets the profile of the currently logged in user. Authentication request: `Authorization: Bearer <token>`.
 
 **URL**: `/api/profiles/me`
 
 **Method**: `GET`
 
-**Query Params**: Không có.
+**Query Params**: None.
 
 **Example Response:**
 
@@ -1023,7 +1023,7 @@ GET /api/profiles?page=1&limit=10&search=Nguyen&role=STUDENT&status=ACTIVE
 
 #### 3.6. Update My Profile
 
-**Description**: Cập nhật hồ sơ của người dùng đang đăng nhập. Yêu cầu xác thực: `Authorization: Bearer <token>`.
+**Description**: Updates the currently logged in user's profile. Authentication request: `Authorization: Bearer <token>`.
 
 **URL**: `/api/profiles/me`
 
@@ -1031,16 +1031,16 @@ GET /api/profiles?page=1&limit=10&search=Nguyen&role=STUDENT&status=ACTIVE
 
 **Body Request**:
 
-| Field       |  Type  | Required | Description            |
-| ----------- | :----: | :------: | ---------------------- |
-| fullName    | string |    No    | Họ và tên              |
-| phoneNumber | string |    No    | Số điện thoại          |
-| dateOfBirth | string |    No    | Ngày sinh (YYYY-MM-DD) |
-| gender      | string |    No    | Giới tính              |
-| email       | string |    No    | Email                  |
-| avatar      | string |    No    | URL ảnh đại diện       |
-| citizenId   | string |    No    | CCCD/CMND              |
-| hometown    | string |    No    | Quê quán               |
+| Field       |  Type  | Required | Description                |
+| ----------- | :----: | :------: | -------------------------- |
+| fullName    | string |    No    | Full name                  |
+| phoneNumber | string |    No    | Phone number               |
+| dateOfBirth | string |    No    | Date of birth (YYYY-MM-DD) |
+| gender      | string |    No    | Gender                     |
+| email       | string |    No    | Email                      |
+| avatars     | string |    No    | Profile image URL          |
+| citizenId   | string |    No    | CCCD/CMND                  |
+| hometown    | string |    No    | Hometown                   |
 
 ```json
 {
@@ -1083,7 +1083,7 @@ GET /api/profiles?page=1&limit=10&search=Nguyen&role=STUDENT&status=ACTIVE
 
 #### 3.7. Get Student List
 
-**Description**: Lấy danh sách hồ sơ sinh viên. Yêu cầu role: `ADMIN`, `LECTURER`.
+**Description**: Get the list of student profiles. Role requirements: `ADMIN`, `LECTURER`.
 
 **URL**: `/api/profiles/students`
 
@@ -1091,13 +1091,13 @@ GET /api/profiles?page=1&limit=10&search=Nguyen&role=STUDENT&status=ACTIVE
 
 **Query Params**:
 
-| Field  |  Type  | Required | Description                                   |
-| ------ | :----: | :------: | --------------------------------------------- |
-| page   | number |    No    | Trang hiện tại (mặc định: 1)                  |
-| limit  | number |    No    | Số bản ghi mỗi trang (mặc định: 10)           |
-| search | string |    No    | Tìm theo tên hoặc email                       |
-| status | string |    No    | Lọc theo trạng thái: ACTIVE, INACTIVE, BANNED |
-| gender | string |    No    | Lọc theo giới tính                            |
+| Field  |  Type  | Required | Description                                |
+| ------ | :----: | :------: | ------------------------------------------ |
+| page   | number |    No    | Current page (default: 1)                  |
+| limit  | number |    No    | Number of records per page (default: 10)   |
+| search | string |    No    | Search by name or email                    |
+| status | string |    No    | Filter by status: ACTIVE, INACTIVE, BANNED |
+| gender | string |    No    | Filter by gender                           |
 
 ```
 GET /api/profiles/students?page=1&limit=20&search=Tran&status=ACTIVE
@@ -1144,7 +1144,7 @@ GET /api/profiles/students?page=1&limit=20&search=Tran&status=ACTIVE
 
 #### 3.8. Get Lecturer List
 
-**Description**: Lấy danh sách hồ sơ giảng viên. Yêu cầu role: `ADMIN`.
+**Description**: Get a list of lecturer profiles. Requires role: `ADMIN`.
 
 **URL**: `/api/profiles/lecturers`
 
@@ -1152,13 +1152,13 @@ GET /api/profiles/students?page=1&limit=20&search=Tran&status=ACTIVE
 
 **Query Params**:
 
-| Field  |  Type  | Required | Description                                   |
-| ------ | :----: | :------: | --------------------------------------------- |
-| page   | number |    No    | Trang hiện tại (mặc định: 1)                  |
-| limit  | number |    No    | Số bản ghi mỗi trang (mặc định: 10)           |
-| search | string |    No    | Tìm theo tên hoặc email                       |
-| status | string |    No    | Lọc theo trạng thái: ACTIVE, INACTIVE, BANNED |
-| gender | string |    No    | Lọc theo giới tính                            |
+| Field  |  Type  | Required | Description                                |
+| ------ | :----: | :------: | ------------------------------------------ |
+| page   | number |    No    | Current page (default: 1)                  |
+| limit  | number |    No    | Number of records per page (default: 10)   |
+| search | string |    No    | Search by name or email                    |
+| status | string |    No    | Filter by status: ACTIVE, INACTIVE, BANNED |
+| gender | string |    No    | Filter by gender                           |
 
 ```
 GET /api/profiles/lecturers?page=1&limit=10&search=Le&status=ACTIVE
@@ -1207,7 +1207,7 @@ GET /api/profiles/lecturers?page=1&limit=10&search=Le&status=ACTIVE
 
 #### 4.1. Get Subject List
 
-**Description**: Lấy danh sách môn học. Yêu cầu xác thực: `Authorization: Bearer <token>`.
+**Description**: Get the list of subjects. Authentication request: `Authorization: Bearer <token>`.
 
 **URL**: `/api/subjects`
 
@@ -1215,13 +1215,13 @@ GET /api/profiles/lecturers?page=1&limit=10&search=Le&status=ACTIVE
 
 **Query Params**:
 
-| Field      |  Type  | Required | Description                          |
-| ---------- | :----: | :------: | ------------------------------------ |
-| page       | number |    No    | Trang hiện tại (mặc định: 1)         |
-| limit      | number |    No    | Số bản ghi mỗi trang (mặc định: 10)  |
-| search     | string |    No    | Tìm theo tên môn học                 |
-| minPeriods | number |    No    | Lọc môn có số tiết lớn hơn hoặc bằng |
-| maxPeriods | number |    No    | Lọc môn có số tiết nhỏ hơn hoặc bằng |
+| Field      |  Type  | Required | Description                                                         |
+| ---------- | :----: | :------: | ------------------------------------------------------------------- |
+| page       | number |    No    | Current page (default: 1)                                           |
+| limit      | number |    No    | Number of records per page (default: 10)                            |
+| search     | string |    No    | Search by subject name                                              |
+| minPeriods | number |    No    | Filter subjects with the number of periods greater than or equal to |
+| maxPeriods | number |    No    | Filter subjects with the number of periods less than or equal to    |
 
 ```
 GET /api/subjects?page=1&limit=10&search=Lap%20trinh&minPeriods=30&maxPeriods=60
@@ -1265,7 +1265,7 @@ GET /api/subjects?page=1&limit=10&search=Lap%20trinh&minPeriods=30&maxPeriods=60
 
 #### 4.2. Create Subject
 
-**Description**: Tạo môn học mới. Yêu cầu role: `ADMIN`.
+**Description**: Create a new subject. Requires role: `ADMIN`.
 
 **URL**: `/api/subjects`
 
@@ -1273,10 +1273,10 @@ GET /api/subjects?page=1&limit=10&search=Lap%20trinh&minPeriods=30&maxPeriods=60
 
 **Body Request**:
 
-| Field       |  Type  | Required | Description |
-| ----------- | :----: | :------: | ----------- |
-| subjectName | string |   Yes    | Tên môn học |
-| periods     | number |   Yes    | Số tiết học |
+| Field       |  Type  | Required | Description       |
+| ----------- | :----: | :------: | ----------------- |
+| subjectName | string |   Yes    | Subject name      |
+| periods     | number |   Yes    | Number of lessons |
 
 ```json
 {
@@ -1316,13 +1316,13 @@ GET /api/subjects?page=1&limit=10&search=Lap%20trinh&minPeriods=30&maxPeriods=60
 
 #### 4.3. Get Subject Detail
 
-**Description**: Lấy chi tiết một môn học. Yêu cầu xác thực: `Authorization: Bearer <token>`.
+**Description**: Get details of a subject. Authentication request: `Authorization: Bearer <token>`.
 
 **URL**: `/api/subjects/{subjectId}`
 
 **Method**: `GET`
 
-**Query Params**: Không có.
+**Query Params**: None.
 
 **Example Response:**
 
@@ -1355,7 +1355,7 @@ GET /api/subjects?page=1&limit=10&search=Lap%20trinh&minPeriods=30&maxPeriods=60
 
 #### 4.4. Update Subject
 
-**Description**: Cập nhật thông tin môn học. Yêu cầu role: `ADMIN`.
+**Description**: Update subject information. Requires role: `ADMIN`.
 
 **URL**: `/api/subjects/{subjectId}`
 
@@ -1363,10 +1363,10 @@ GET /api/subjects?page=1&limit=10&search=Lap%20trinh&minPeriods=30&maxPeriods=60
 
 **Body Request**:
 
-| Field       |  Type  | Required | Description     |
-| ----------- | :----: | :------: | --------------- |
-| subjectName | string |    No    | Tên môn học mới |
-| periods     | number |    No    | Số tiết học     |
+| Field       |  Type  | Required | Description       |
+| ----------- | :----: | :------: | ----------------- |
+| subjectName | string |    No    | New subject name  |
+| periods     | number |    No    | Number of lessons |
 
 ```json
 {
@@ -1406,13 +1406,13 @@ GET /api/subjects?page=1&limit=10&search=Lap%20trinh&minPeriods=30&maxPeriods=60
 
 #### 4.5. Delete Subject
 
-**Description**: Xóa môn học. Yêu cầu role: `ADMIN`.
+**Description**: Delete subject. Requires role: `ADMIN`.
 
 **URL**: `/api/subjects/{subjectId}`
 
 **Method**: `DELETE`
 
-**Query Params**: Không có.
+**Query Params**: None.
 
 **Example Response:**
 
@@ -1445,7 +1445,7 @@ GET /api/subjects?page=1&limit=10&search=Lap%20trinh&minPeriods=30&maxPeriods=60
 
 #### 5.1. Get Section List
 
-**Description**: Lấy danh sách lớp học phần. Yêu cầu role: `ADMIN`.
+**Description**: Get the section list. Requires role: `ADMIN`.
 
 **URL**: `/api/sections`
 
@@ -1453,16 +1453,16 @@ GET /api/subjects?page=1&limit=10&search=Lap%20trinh&minPeriods=30&maxPeriods=60
 
 **Query Params**:
 
-| Field             |  Type  | Required | Description                             |
-| ----------------- | :----: | :------: | --------------------------------------- |
-| page              | number |    No    | Trang hiện tại (mặc định: 1)            |
-| limit             | number |    No    | Số bản ghi mỗi trang (mặc định: 10)     |
-| search            | string |    No    | Tìm theo mã/tên môn hoặc tên giảng viên |
-| subjectId         | number |    No    | Lọc theo môn học                        |
-| lecturerProfileId | number |    No    | Lọc theo giảng viên                     |
-| year              | string |    No    | Lọc theo năm học                        |
-| status            | number |    No    | Lọc theo trạng thái                     |
-| visibility        | number |    No    | Lọc theo trạng thái hiển thị            |
+| Field             |  Type  | Required | Description                                    |
+| ----------------- | :----: | :------: | ---------------------------------------------- |
+| page              | number |    No    | Current page (default: 1)                      |
+| limit             | number |    No    | Number of records per page (default: 10)       |
+| search            | string |    No    | Search by subject code/name or instructor name |
+| subjectId         | number |    No    | Filter by subject                              |
+| lecturerProfileId | number |    No    | Filter by lecturer                             |
+| year              | string |    No    | Filter by school year                          |
+| status            | number |    No    | Filter by status                               |
+| visibility        | number |    No    | Filter by display status                       |
 
 ```
 GET /api/sections?page=1&limit=10&search=OOP&year=2024-2025&subjectId=2&status=1&visibility=1
@@ -1513,11 +1513,11 @@ GET /api/sections?page=1&limit=10&search=OOP&year=2024-2025&subjectId=2&status=1
 
 #### 5.2. Create Section
 
-**Description**: Tạo lớp học phần mới. Tạo đồng thời Schedule, UsageHistory, SectionUsageHistory và các buổi điểm danh (Attendance) theo schedule.
+**Description**: Create a new section class. Simultaneously create Schedule, UsageHistory, SectionUsageHistory and attendance according to schedule.
 
 Flow: Section -> Schedule -> Attendance -> UsageHistory -> SectionUsageHistory.
 
-Yêu cầu role: `ADMIN`.
+Requires role: `ADMIN`.
 
 **URL**: `/api/sections`
 
@@ -1525,26 +1525,26 @@ Yêu cầu role: `ADMIN`.
 
 **Body Request**:
 
-| Field             |     Type      | Required | Description              |
-| ----------------- | :-----------: | :------: | ------------------------ |
-| subjectId         |    number     |   Yes    | ID môn học               |
-| lecturerProfileId |    number     |   Yes    | ID hồ sơ giảng viên      |
-| year              |    string     |   Yes    | Năm học (vd: 2024-2025)  |
-| maxCapacity       |    number     |   Yes    | Sĩ số tối đa             |
-| status            |    number     |    No    | Trạng thái (mặc định: 0) |
-| visibility        |    number     |    No    | Hiển thị (mặc định: 1)   |
-| schedule          | array<object> |   Yes    | Danh sách lịch học       |
+| Field             |      Type      | Required | Description                    |
+| ----------------- | :------------: | :------: | ------------------------------ |
+| subjectId         |     number     |   Yes    | Subject ID                     |
+| lecturerProfileId |     number     |   Yes    | Lecturer profile ID            |
+| year              |     string     |   Yes    | School year (eg: 2024-2025)    |
+| maxCapacity       |     number     |   Yes    | Maximum number of participants |
+| status            |     number     |    No    | Status (default: 0)            |
+| visibility        |     number     |    No    | Display (default: 1)           |
+| schedule          | array\<object> |   Yes    | List of class schedules        |
 
 **Schedule item** (`schedule[]`):
 
-| Field       |  Type  | Required | Description                          |
-| ----------- | :----: | :------: | ------------------------------------ |
-| roomId      | number |   Yes    | ID phòng học                         |
-| dayOfWeek   | string |   Yes    | Thứ trong tuần (vd: `MONDAY`)        |
-| startPeriod | number |   Yes    | Tiết bắt đầu                         |
-| endPeriod   | number |   Yes    | Tiết kết thúc                        |
-| startDate   | string |   Yes    | Ngày bắt đầu (format: `YYYY-MM-DD`)  |
-| endDate     | string |   Yes    | Ngày kết thúc (format: `YYYY-MM-DD`) |
+| Field       |  Type  | Required | Description                       |
+| ----------- | :----: | :------: | --------------------------------- |
+| roomId      | number |   Yes    | Classroom ID                      |
+| dayOfWeek   | string |   Yes    | Day of the week (eg: `MONDAY`)    |
+| startPeriod | number |   Yes    | Lesson starts                     |
+| endPeriod   | number |   Yes    | End of section                    |
+| startDate   | string |   Yes    | Start date (format: `YYYY-MM-DD`) |
+| endDate     | string |   Yes    | End date (format: `YYYY-MM-DD`)   |
 
 ```json
 {
@@ -1602,13 +1602,13 @@ Yêu cầu role: `ADMIN`.
 
 #### 5.3. Get Section Detail
 
-**Description**: Lấy chi tiết lớp học phần. Yêu cầu xác thực: `Authorization: Bearer <token>`.
+**Description**: Get section class details. Authentication request: `Authorization: Bearer <token>`.
 
 **URL**: `/api/sections/{sectionId}`
 
 **Method**: `GET`
 
-**Query Params**: Không có.
+**Query Params**: None.
 
 **Example Response:**
 
@@ -1676,7 +1676,7 @@ Yêu cầu role: `ADMIN`.
 
 #### 5.4. Update Section
 
-**Description**: Cập nhật thông tin lớp học phần. Yêu cầu role: `ADMIN`.
+**Description**: Update section class information. Requires role: `ADMIN`.
 
 **URL**: `/api/sections/{sectionId}`
 
@@ -1684,13 +1684,13 @@ Yêu cầu role: `ADMIN`.
 
 **Body Request**:
 
-| Field             |  Type  | Required | Description         |
-| ----------------- | :----: | :------: | ------------------- |
-| lecturerProfileId | number |    No    | ID hồ sơ giảng viên |
-| year              | string |    No    | Năm học             |
-| maxCapacity       | number |    No    | Sĩ số tối đa        |
-| status            | number |    No    | Trạng thái          |
-| visibility        | number |    No    | Hiển thị            |
+| Field             |  Type  | Required | Description                    |
+| ----------------- | :----: | :------: | ------------------------------ |
+| lecturerProfileId | number |    No    | Lecturer profile ID            |
+| year              | string |    No    | School year                    |
+| maxCapacity       | number |    No    | Maximum number of participants |
+| status            | number |    No    | Status                         |
+| visibility        | number |    No    | Show                           |
 
 ```json
 {
@@ -1730,13 +1730,13 @@ Yêu cầu role: `ADMIN`.
 
 #### 5.5. Delete Section
 
-**Description**: Xóa lớp học phần. Yêu cầu role: `ADMIN`.
+**Description**: Delete the section class. Requires role: `ADMIN`.
 
 **URL**: `/api/sections/{sectionId}`
 
 **Method**: `DELETE`
 
-**Query Params**: Không có.
+**Query Params**: None.
 
 **Example Response:**
 
@@ -1765,7 +1765,7 @@ Yêu cầu role: `ADMIN`.
 
 #### 5.6. Get Students in Section
 
-**Description**: Lấy danh sách sinh viên đã đăng ký vào lớp học phần. Yêu cầu role: `ADMIN`, `LECTURER`.
+**Description**: Get the list of students registered in the class. Role requirements: `ADMIN`, `LECTURER`.
 
 **URL**: `/api/sections/{sectionId}/students`
 
@@ -1773,10 +1773,10 @@ Yêu cầu role: `ADMIN`.
 
 **Query Params**:
 
-| Field |  Type  | Required | Description                         |
-| ----- | :----: | :------: | ----------------------------------- |
-| page  | number |    No    | Trang hiện tại (mặc định: 1)        |
-| limit | number |    No    | Số bản ghi mỗi trang (mặc định: 10) |
+| Field |  Type  | Required | Description                              |
+| ----- | :----: | :------: | ---------------------------------------- |
+| page  | number |    No    | Current page (default: 1)                |
+| limit | number |    No    | Number of records per page (default: 10) |
 
 ```
 GET /api/sections/1/students?page=1&limit=30
@@ -1820,7 +1820,7 @@ GET /api/sections/1/students?page=1&limit=30
 
 #### 5.7. Get My Sections (Lecturer)
 
-**Description**: Lấy danh sách lớp học phần của giảng viên đang đăng nhập. Yêu cầu role: `LECTURER`.
+**Description**: Get the list of classes for the currently logged in instructor. Requires role: `LECTURER`.
 
 **URL**: `/api/sections/my-sections`
 
@@ -1828,11 +1828,11 @@ GET /api/sections/1/students?page=1&limit=30
 
 **Query Params**:
 
-| Field |  Type  | Required | Description                         |
-| ----- | :----: | :------: | ----------------------------------- |
-| page  | number |    No    | Trang hiện tại (mặc định: 1)        |
-| limit | number |    No    | Số bản ghi mỗi trang (mặc định: 10) |
-| year  | string |    No    | Lọc theo năm học                    |
+| Field |  Type  | Required | Description                              |
+| ----- | :----: | :------: | ---------------------------------------- |
+| page  | number |    No    | Current page (default: 1)                |
+| limit | number |    No    | Number of records per page (default: 10) |
+| year  | string |    No    | Filter by school year                    |
 
 ```
 GET /api/sections/my-sections?year=2024-2025
@@ -1878,7 +1878,7 @@ GET /api/sections/my-sections?year=2024-2025
 
 #### 5.8. Update Section Status
 
-**Description**: Cập nhật trạng thái lớp học phần. Yêu cầu role: `ADMIN`, `LECTURER`.
+**Description**: Update section class status. Role requirements: `ADMIN`, `LECTURER`.
 
 **URL**: `/api/sections/{sectionId}/status`
 
@@ -1886,9 +1886,9 @@ GET /api/sections/my-sections?year=2024-2025
 
 **Body Request**:
 
-| Field  |  Type  | Required | Description    |
-| ------ | :----: | :------: | -------------- |
-| status | number |   Yes    | Trạng thái mới |
+| Field  |  Type  | Required | Description |
+| ------ | :----: | :------: | ----------- |
+| status | number |   Yes    | New Status  |
 
 ```json
 {
@@ -1923,7 +1923,7 @@ GET /api/sections/my-sections?year=2024-2025
 
 #### 5.9. Update Section Visibility
 
-**Description**: Cập nhật visibility (hiển thị/ẩn) lớp học phần. Yêu cầu role: `ADMIN`, `LECTURER`.
+**Description**: Update the visibility (show/hide) of the section class. Role requirements: `ADMIN`, `LECTURER`.
 
 **URL**: `/api/sections/{sectionId}/visibility`
 
@@ -1931,9 +1931,9 @@ GET /api/sections/my-sections?year=2024-2025
 
 **Body Request**:
 
-| Field      |  Type  | Required | Description         |
-| ---------- | :----: | :------: | ------------------- |
-| visibility | number |   Yes    | Trạng thái hiển thị |
+| Field      |  Type  | Required | Description    |
+| ---------- | :----: | :------: | -------------- |
+| visibility | number |   Yes    | Display status |
 
 ```json
 {
@@ -1970,7 +1970,7 @@ GET /api/sections/my-sections?year=2024-2025
 
 #### 6.1. Get Registration List
 
-**Description**: Lấy danh sách tất cả đăng ký học phần. Yêu cầu role: `ADMIN`.
+**Description**: Get a list of all course registrations. Requires role: `ADMIN`.
 
 **URL**: `/api/registrations`
 
@@ -1978,15 +1978,15 @@ GET /api/sections/my-sections?year=2024-2025
 
 **Query Params**:
 
-| Field            |  Type  | Required | Description                             |
-| ---------------- | :----: | :------: | --------------------------------------- |
-| page             | number |    No    | Trang hiện tại (mặc định: 1)            |
-| limit            | number |    No    | Số bản ghi mỗi trang (mặc định: 10)     |
-| sectionId        | number |    No    | Lọc theo lớp học phần                   |
-| studentProfileId | number |    No    | Lọc theo sinh viên                      |
-| status           | number |    No    | Lọc theo trạng thái đăng ký             |
-| registeredFrom   | string |    No    | Thời gian đăng ký từ ngày (YYYY-MM-DD)  |
-| registeredTo     | string |    No    | Thời gian đăng ký đến ngày (YYYY-MM-DD) |
+| Field            |  Type  | Required | Description                                |
+| ---------------- | :----: | :------: | ------------------------------------------ |
+| page             | number |    No    | Current page (default: 1)                  |
+| limit            | number |    No    | Number of records per page (default: 10)   |
+| sectionId        | number |    No    | Filter by class section                    |
+| studentProfileId | number |    No    | Filter by student                          |
+| status           | number |    No    | Filter by subscription status              |
+| registeredFrom   | string |    No    | Registration period from date (YYYY-MM-DD) |
+| registeredTo     | string |    No    | Registration period to date (YYYY-MM-DD)   |
 
 ```
 GET /api/registrations?page=1&limit=10&sectionId=1&status=1&registeredFrom=2025-01-01&registeredTo=2025-03-31
@@ -2031,7 +2031,7 @@ GET /api/registrations?page=1&limit=10&sectionId=1&status=1&registeredFrom=2025-
 
 #### 6.2. Register Section
 
-**Description**: Sinh viên đăng ký vào lớp học phần. Yêu cầu role: `STUDENT`.
+**Description**: Student registers for the module class. Requires role: `STUDENT`.
 
 **URL**: `/api/registrations`
 
@@ -2039,9 +2039,9 @@ GET /api/registrations?page=1&limit=10&sectionId=1&status=1&registeredFrom=2025-
 
 **Body Request**:
 
-| Field     |  Type  | Required | Description     |
-| --------- | :----: | :------: | --------------- |
-| sectionId | number |   Yes    | ID lớp học phần |
+| Field     |  Type  | Required | Description   |
+| --------- | :----: | :------: | ------------- |
+| sectionId | number |   Yes    | Part class ID |
 
 ```json
 {
@@ -2076,13 +2076,13 @@ GET /api/registrations?page=1&limit=10&sectionId=1&status=1&registeredFrom=2025-
 
 #### 6.3. Cancel Registration
 
-**Description**: Sinh viên hủy đăng ký lớp học phần. Yêu cầu role: `STUDENT`.
+**Description**: Student cancels class registration. Requires role: `STUDENT`.
 
 **URL**: `/api/registrations/{sectionId}`
 
 **Method**: `DELETE`
 
-**Query Params**: Không có.
+**Query Params**: None.
 
 **Example Response:**
 
@@ -2111,7 +2111,7 @@ GET /api/registrations?page=1&limit=10&sectionId=1&status=1&registeredFrom=2025-
 
 #### 6.4. Get My Registrations
 
-**Description**: Sinh viên xem danh sách lớp học phần đã đăng ký. Yêu cầu role: `STUDENT`.
+**Description**: Students see the list of registered classes. Requires role: `STUDENT`.
 
 **URL**: `/api/registrations/my-registrations`
 
@@ -2119,14 +2119,14 @@ GET /api/registrations?page=1&limit=10&sectionId=1&status=1&registeredFrom=2025-
 
 **Query Params**:
 
-| Field          |  Type  | Required | Description                             |
-| -------------- | :----: | :------: | --------------------------------------- |
-| page           | number |    No    | Trang hiện tại (mặc định: 1)            |
-| limit          | number |    No    | Số bản ghi mỗi trang (mặc định: 10)     |
-| status         | number |    No    | Lọc theo trạng thái đăng ký             |
-| year           | string |    No    | Lọc theo năm học                        |
-| registeredFrom | string |    No    | Thời gian đăng ký từ ngày (YYYY-MM-DD)  |
-| registeredTo   | string |    No    | Thời gian đăng ký đến ngày (YYYY-MM-DD) |
+| Field          |  Type  | Required | Description                                |
+| -------------- | :----: | :------: | ------------------------------------------ |
+| page           | number |    No    | Current page (default: 1)                  |
+| limit          | number |    No    | Number of records per page (default: 10)   |
+| status         | number |    No    | Filter by subscription status              |
+| year           | string |    No    | Filter by school year                      |
+| registeredFrom | string |    No    | Registration period from date (YYYY-MM-DD) |
+| registeredTo   | string |    No    | Registration period to date (YYYY-MM-DD)   |
 
 ```
 GET /api/registrations/my-registrations?page=1&limit=10&status=1&year=2024-2025
@@ -2172,7 +2172,7 @@ GET /api/registrations/my-registrations?page=1&limit=10&status=1&year=2024-2025
 
 #### 6.5. Get Registrations by Section
 
-**Description**: Lấy danh sách đăng ký của một lớp học phần cụ thể. Yêu cầu role: `ADMIN`, `LECTURER`.
+**Description**: Get the registration list of a specific class. Role requirements: `ADMIN`, `LECTURER`.
 
 **URL**: `/api/sections/{sectionId}/registrations`
 
@@ -2180,12 +2180,12 @@ GET /api/registrations/my-registrations?page=1&limit=10&status=1&year=2024-2025
 
 **Query Params**:
 
-| Field  |  Type  | Required | Description                         |
-| ------ | :----: | :------: | ----------------------------------- |
-| page   | number |    No    | Trang hiện tại (mặc định: 1)        |
-| limit  | number |    No    | Số bản ghi mỗi trang (mặc định: 10) |
-| search | string |    No    | Tìm theo tên hoặc email sinh viên   |
-| status | number |    No    | Lọc theo trạng thái đăng ký         |
+| Field  |  Type  | Required | Description                              |
+| ------ | :----: | :------: | ---------------------------------------- |
+| page   | number |    No    | Current page (default: 1)                |
+| limit  | number |    No    | Number of records per page (default: 10) |
+| search | string |    No    | Search by student name or email          |
+| status | number |    No    | Filter by registration status            |
 
 ```
 GET /api/sections/1/registrations?page=1&limit=30&search=Tran&status=1
@@ -2231,7 +2231,7 @@ GET /api/sections/1/registrations?page=1&limit=30&search=Tran&status=1
 
 #### 7.1. Get Room List
 
-**Description**: Lấy danh sách phòng học. Yêu cầu xác thực: `Authorization: Bearer <token>`.
+**Description**: Get the list of classrooms. Authentication request: `Authorization: Bearer <token>`.
 
 **URL**: `/api/rooms`
 
@@ -2239,16 +2239,16 @@ GET /api/sections/1/registrations?page=1&limit=30&search=Tran&status=1
 
 **Query Params**:
 
-| Field       |  Type  | Required | Description                                        |
-| ----------- | :----: | :------: | -------------------------------------------------- |
-| page        | number |    No    | Trang hiện tại (mặc định: 1)                       |
-| limit       | number |    No    | Số bản ghi mỗi trang (mặc định: 10)                |
-| search      | string |    No    | Tìm theo tên phòng                                 |
-| campus      | string |    No    | Lọc theo cơ sở                                     |
-| roomType    | string |    No    | Lọc theo loại phòng: LECTURE, LAB                  |
-| status      | string |    No    | Lọc theo trạng thái: ACTIVE, INACTIVE, MAINTENANCE |
-| minCapacity | number |    No    | Lọc sức chứa tối thiểu                             |
-| maxCapacity | number |    No    | Lọc sức chứa tối đa                                |
+| Field       |  Type  | Required | Description                                     |
+| ----------- | :----: | :------: | ----------------------------------------------- |
+| page        | number |    No    | Current page (default: 1)                       |
+| limit       | number |    No    | Number of records per page (default: 10)        |
+| search      | string |    No    | Search by room name                             |
+| campus      | string |    No    | Filter by facility                              |
+| roomType    | string |    No    | Filter by room type: LECTURE, LAB               |
+| status      | string |    No    | Filter by status: ACTIVE, INACTIVE, MAINTENANCE |
+| minCapacity | number |    No    | Filter minimum capacity                         |
+| maxCapacity | number |    No    | Filter maximum capacity                         |
 
 ```
 GET /api/rooms?page=1&limit=10&search=A1&campus=A&roomType=LECTURE&status=ACTIVE&minCapacity=30
@@ -2295,7 +2295,7 @@ GET /api/rooms?page=1&limit=10&search=A1&campus=A&roomType=LECTURE&status=ACTIVE
 
 #### 7.2. Create Room
 
-**Description**: Tạo phòng học mới. Yêu cầu role: `ADMIN`.
+**Description**: Create a new classroom. Requires role: `ADMIN`.
 
 **URL**: `/api/rooms`
 
@@ -2303,13 +2303,13 @@ GET /api/rooms?page=1&limit=10&search=A1&campus=A&roomType=LECTURE&status=ACTIVE
 
 **Body Request**:
 
-| Field    |  Type  | Required | Description                   |
-| -------- | :----: | :------: | ----------------------------- |
-| roomName | string |   Yes    | Tên phòng (duy nhất)          |
-| roomType | string |   Yes    | Loại phòng                    |
-| campus   | string |   Yes    | Cơ sở                         |
-| capacity | number |   Yes    | Sức chứa                      |
-| status   | string |    No    | Trạng thái (mặc định: ACTIVE) |
+| Field    |  Type  | Required | Description              |
+| -------- | :----: | :------: | ------------------------ |
+| roomName | string |   Yes    | Room name (unique)       |
+| roomType | string |   Yes    | Room type                |
+| campus   | string |   Yes    | Facility                 |
+| capacity | number |   Yes    | Capacity                 |
+| status   | string |    No    | Status (default: ACTIVE) |
 
 ```json
 {
@@ -2355,13 +2355,13 @@ GET /api/rooms?page=1&limit=10&search=A1&campus=A&roomType=LECTURE&status=ACTIVE
 
 #### 7.3. Get Room Detail
 
-**Description**: Lấy chi tiết phòng học. Yêu cầu xác thực: `Authorization: Bearer <token>`.
+**Description**: Get classroom details. Authentication request: `Authorization: Bearer <token>`.
 
 **URL**: `/api/rooms/{roomId}`
 
 **Method**: `GET`
 
-**Query Params**: Không có.
+**Query Params**: None.
 
 **Example Response:**
 
@@ -2397,7 +2397,7 @@ GET /api/rooms?page=1&limit=10&search=A1&campus=A&roomType=LECTURE&status=ACTIVE
 
 #### 7.4. Update Room
 
-**Description**: Cập nhật thông tin phòng học. Yêu cầu role: `ADMIN`.
+**Description**: Update classroom information. Requires role: `ADMIN`.
 
 **URL**: `/api/rooms/{roomId}`
 
@@ -2407,11 +2407,11 @@ GET /api/rooms?page=1&limit=10&search=A1&campus=A&roomType=LECTURE&status=ACTIVE
 
 | Field    |  Type  | Required | Description |
 | -------- | :----: | :------: | ----------- |
-| roomName | string |    No    | Tên phòng   |
-| roomType | string |    No    | Loại phòng  |
-| campus   | string |    No    | Cơ sở       |
-| capacity | number |    No    | Sức chứa    |
-| status   | string |    No    | Trạng thái  |
+| roomName | string |    No    | Room name   |
+| roomType | string |    No    | Room type   |
+| campus   | string |    No    | Facility    |
+| capacity | number |    No    | Capacity    |
+| status   | string |    No    | Status      |
 
 ```json
 {
@@ -2452,13 +2452,13 @@ GET /api/rooms?page=1&limit=10&search=A1&campus=A&roomType=LECTURE&status=ACTIVE
 
 #### 7.5. Delete Room
 
-**Description**: Xóa phòng học. Yêu cầu role: `ADMIN`.
+**Description**: Delete classroom. Requires role: `ADMIN`.
 
 **URL**: `/api/rooms/{roomId}`
 
 **Method**: `DELETE`
 
-**Query Params**: Không có.
+**Query Params**: None.
 
 **Example Response:**
 
@@ -2487,7 +2487,7 @@ GET /api/rooms?page=1&limit=10&search=A1&campus=A&roomType=LECTURE&status=ACTIVE
 
 #### 7.6. Get Room Schedules
 
-**Description**: Lấy danh sách lịch học của một phòng. Yêu cầu role: `ADMIN`.
+**Description**: Get a list of class schedules for a room. Requires role: `ADMIN`.
 
 **URL**: `/api/rooms/{roomId}/schedules`
 
@@ -2495,10 +2495,10 @@ GET /api/rooms?page=1&limit=10&search=A1&campus=A&roomType=LECTURE&status=ACTIVE
 
 **Query Params**:
 
-| Field     |  Type  | Required | Description           |
-| --------- | :----: | :------: | --------------------- |
-| startDate | string |    No    | Từ ngày (YYYY-MM-DD)  |
-| endDate   | string |    No    | Đến ngày (YYYY-MM-DD) |
+| Field     |  Type  | Required | Description            |
+| --------- | :----: | :------: | ---------------------- |
+| startDate | string |    No    | From date (YYYY-MM-DD) |
+| endDate   | string |    No    | To date (YYYY-MM-DD)   |
 
 ```
 GET /api/rooms/1/schedules?startDate=2025-01-01&endDate=2025-06-30
@@ -2542,7 +2542,7 @@ GET /api/rooms/1/schedules?startDate=2025-01-01&endDate=2025-06-30
 
 #### 7.7. Get Available Rooms
 
-**Description**: Lấy danh sách phòng học còn trống theo tiêu chí ngày, tiết và sức chứa. Yêu cầu role: `ADMIN`.
+**Description**: Get a list of available classrooms based on date, period and capacity criteria. Requires role: `ADMIN`.
 
 **URL**: `/api/rooms/available`
 
@@ -2550,12 +2550,12 @@ GET /api/rooms/1/schedules?startDate=2025-01-01&endDate=2025-06-30
 
 **Query Params**:
 
-| Field       |  Type  | Required | Description               |
-| ----------- | :----: | :------: | ------------------------- |
-| date        | string |   Yes    | Ngày cần đặt (YYYY-MM-DD) |
-| startPeriod | number |   Yes    | Tiết bắt đầu              |
-| endPeriod   | number |   Yes    | Tiết kết thúc             |
-| capacity    | number |    No    | Sức chứa tối thiểu        |
+| Field       |  Type  | Required | Description                |
+| ----------- | :----: | :------: | -------------------------- |
+| date        | string |   Yes    | Date to order (YYYY-MM-DD) |
+| startPeriod | number |   Yes    | Lesson starts              |
+| endPeriod   | number |   Yes    | End of section             |
+| capacity    | number |    No    | Minimum capacity           |
 
 ```
 GET /api/rooms/available?date=2025-03-15&startPeriod=1&endPeriod=3&capacity=30
@@ -2598,7 +2598,7 @@ GET /api/rooms/available?date=2025-03-15&startPeriod=1&endPeriod=3&capacity=30
 
 #### 8.1. Get Schedule List
 
-**Description**: Lấy danh sách lịch học. Yêu cầu role: `ADMIN`.
+**Description**: Get a list of class schedules. Requires role: `ADMIN`.
 
 **URL**: `/api/schedules`
 
@@ -2606,15 +2606,15 @@ GET /api/rooms/available?date=2025-03-15&startPeriod=1&endPeriod=3&capacity=30
 
 **Query Params**:
 
-| Field     |  Type  | Required | Description                         |
-| --------- | :----: | :------: | ----------------------------------- |
-| page      | number |    No    | Trang hiện tại (mặc định: 1)        |
-| limit     | number |    No    | Số bản ghi mỗi trang (mặc định: 10) |
-| roomId    | number |    No    | Lọc theo phòng học                  |
-| sectionId | number |    No    | Lọc theo lớp học phần               |
-| dayOfWeek | string |    No    | Lọc theo thứ: MONDAY ... SUNDAY     |
-| startDate | string |    No    | Từ ngày (YYYY-MM-DD)                |
-| endDate   | string |    No    | Đến ngày (YYYY-MM-DD)               |
+| Field     |  Type  | Required | Description                              |
+| --------- | :----: | :------: | ---------------------------------------- |
+| page      | number |    No    | Current page (default: 1)                |
+| limit     | number |    No    | Number of records per page (default: 10) |
+| roomId    | number |    No    | Filter by classroom                      |
+| sectionId | number |    No    | Filter by class section                  |
+| dayOfWeek | string |    No    | Filter by day: MONDAY ... SUNDAY         |
+| startDate | string |    No    | From date (YYYY-MM-DD)                   |
+| endDate   | string |    No    | To date (YYYY-MM-DD)                     |
 
 ```
 GET /api/schedules?page=1&limit=10&sectionId=1&dayOfWeek=MONDAY&startDate=2025-01-01&endDate=2025-03-31
@@ -2666,7 +2666,7 @@ GET /api/schedules?page=1&limit=10&sectionId=1&dayOfWeek=MONDAY&startDate=2025-0
 
 #### 8.2. Create Schedule
 
-**Description**: Tạo lịch học mới. Yêu cầu role: `ADMIN`.
+**Description**: Create a new class schedule. Requires role: `ADMIN`.
 
 **URL**: `/api/schedules`
 
@@ -2674,16 +2674,16 @@ GET /api/schedules?page=1&limit=10&sectionId=1&dayOfWeek=MONDAY&startDate=2025-0
 
 **Body Request**:
 
-| Field        |  Type  | Required | Description                |
-| ------------ | :----: | :------: | -------------------------- |
-| roomId       | number |   Yes    | ID phòng học               |
-| sectionId    | number |   Yes    | ID lớp học phần            |
-| dayOfWeek    | string |   Yes    | Thứ trong tuần             |
-| startPeriod  | number |   Yes    | Tiết bắt đầu               |
-| endPeriod    | number |   Yes    | Tiết kết thúc              |
-| totalPeriods | number |   Yes    | Tổng số tiết               |
-| startDate    | string |   Yes    | Ngày bắt đầu (YYYY-MM-DD)  |
-| endDate      | string |   Yes    | Ngày kết thúc (YYYY-MM-DD) |
+| Field        |  Type  | Required | Description             |
+| ------------ | :----: | :------: | ----------------------- |
+| roomId       | number |   Yes    | Classroom ID            |
+| sectionId    | number |   Yes    | Part class ID           |
+| dayOfWeek    | string |   Yes    | Day of the week         |
+| startPeriod  | number |   Yes    | Lesson starts           |
+| endPeriod    | number |   Yes    | End of section          |
+| totalPeriods | number |   Yes    | Total number of periods |
+| startDate    | string |   Yes    | Start date (YYYY-MM-DD) |
+| endDate      | string |   Yes    | End Date (YYYY-MM-DD)   |
 
 ```json
 {
@@ -2725,13 +2725,13 @@ GET /api/schedules?page=1&limit=10&sectionId=1&dayOfWeek=MONDAY&startDate=2025-0
 
 #### 8.3. Get Schedule Detail
 
-**Description**: Lấy chi tiết một lịch học. Yêu cầu xác thực: `Authorization: Bearer <token>`.
+**Description**: Get details of a class schedule. Authentication request: `Authorization: Bearer <token>`.
 
 **URL**: `/api/schedules/{scheduleId}`
 
 **Method**: `GET`
 
-**Query Params**: Không có.
+**Query Params**: None.
 
 **Example Response:**
 
@@ -2772,7 +2772,7 @@ GET /api/schedules?page=1&limit=10&sectionId=1&dayOfWeek=MONDAY&startDate=2025-0
 
 #### 8.4. Update Schedule
 
-**Description**: Cập nhật lịch học. Yêu cầu role: `ADMIN`.
+**Description**: Updated class schedule. Requires role: `ADMIN`.
 
 **URL**: `/api/schedules/{scheduleId}`
 
@@ -2780,15 +2780,15 @@ GET /api/schedules?page=1&limit=10&sectionId=1&dayOfWeek=MONDAY&startDate=2025-0
 
 **Body Request**:
 
-| Field        |  Type  | Required | Description                |
-| ------------ | :----: | :------: | -------------------------- |
-| roomId       | number |    No    | ID phòng học mới           |
-| dayOfWeek    | string |    No    | Thứ trong tuần             |
-| startPeriod  | number |    No    | Tiết bắt đầu               |
-| endPeriod    | number |    No    | Tiết kết thúc              |
-| totalPeriods | number |    No    | Tổng số tiết               |
-| startDate    | string |    No    | Ngày bắt đầu (YYYY-MM-DD)  |
-| endDate      | string |    No    | Ngày kết thúc (YYYY-MM-DD) |
+| Field        |  Type  | Required | Description             |
+| ------------ | :----: | :------: | ----------------------- |
+| roomId       | number |    No    | New classroom ID        |
+| dayOfWeek    | string |    No    | Day of the week         |
+| startPeriod  | number |    No    | Lesson starts           |
+| endPeriod    | number |    No    | End of section          |
+| totalPeriods | number |    No    | Total number of periods |
+| startDate    | string |    No    | Start date (YYYY-MM-DD) |
+| endDate      | string |    No    | End Date (YYYY-MM-DD)   |
 
 ```json
 {
@@ -2828,13 +2828,13 @@ GET /api/schedules?page=1&limit=10&sectionId=1&dayOfWeek=MONDAY&startDate=2025-0
 
 #### 8.5. Delete Schedule
 
-**Description**: Xóa lịch học. Yêu cầu role: `ADMIN`.
+**Description**: Delete class schedule. Requires role: `ADMIN`.
 
 **URL**: `/api/schedules/{scheduleId}`
 
 **Method**: `DELETE`
 
-**Query Params**: Không có.
+**Query Params**: None.
 
 **Example Response:**
 
@@ -2863,7 +2863,7 @@ GET /api/schedules?page=1&limit=10&sectionId=1&dayOfWeek=MONDAY&startDate=2025-0
 
 #### 8.6. Get My Schedule
 
-**Description**: Lấy lịch học của người dùng đang đăng nhập (sinh viên xem lịch học phần đã đăng ký, giảng viên xem lịch dạy). Yêu cầu xác thực: `Authorization: Bearer <token>`.
+**Description**: Get the class schedule of the currently logged in user (students see the registered course schedule, lecturers see the teaching schedule). Authentication request: `Authorization: Bearer <token>`.
 
 **URL**: `/api/schedules/my-schedule`
 
@@ -2871,13 +2871,13 @@ GET /api/schedules?page=1&limit=10&sectionId=1&dayOfWeek=MONDAY&startDate=2025-0
 
 **Query Params**:
 
-| Field     |  Type  | Required | Description                     |
-| --------- | :----: | :------: | ------------------------------- |
-| sectionId | number |    No    | Lọc theo lớp học phần           |
-| roomId    | number |    No    | Lọc theo phòng học              |
-| dayOfWeek | string |    No    | Lọc theo thứ: MONDAY ... SUNDAY |
-| startDate | string |    No    | Từ ngày (YYYY-MM-DD)            |
-| endDate   | string |    No    | Đến ngày (YYYY-MM-DD)           |
+| Field     |  Type  | Required | Description                      |
+| --------- | :----: | :------: | -------------------------------- |
+| sectionId | number |    No    | Filter by class section          |
+| roomId    | number |    No    | Filter by classroom              |
+| dayOfWeek | string |    No    | Filter by day: MONDAY ... SUNDAY |
+| startDate | string |    No    | From date (YYYY-MM-DD)           |
+| endDate   | string |    No    | To date (YYYY-MM-DD)             |
 
 ```
 GET /api/schedules/my-schedule?sectionId=1&dayOfWeek=MONDAY&startDate=2025-03-01&endDate=2025-03-31
@@ -2919,13 +2919,13 @@ GET /api/schedules/my-schedule?sectionId=1&dayOfWeek=MONDAY&startDate=2025-03-01
 
 #### 8.7. Get Schedules by Section
 
-**Description**: Lấy toàn bộ lịch học của một lớp học phần. Yêu cầu xác thực: `Authorization: Bearer <token>`.
+**Description**: Get the entire class schedule of a section class. Authentication request: `Authorization: Bearer <token>`.
 
 **URL**: `/api/sections/{sectionId}/schedules`
 
 **Method**: `GET`
 
-**Query Params**: Không có.
+**Query Params**: None.
 
 **Example Response:**
 
@@ -2968,7 +2968,7 @@ GET /api/schedules/my-schedule?sectionId=1&dayOfWeek=MONDAY&startDate=2025-03-01
 
 #### 9.1. Get Usage History List
 
-**Description**: Lấy danh sách lịch sử sử dụng phòng. Yêu cầu role: `ADMIN`.
+**Description**: Get a list of room usage history. Requires role: `ADMIN`.
 
 **URL**: `/api/usage-histories`
 
@@ -2976,14 +2976,14 @@ GET /api/schedules/my-schedule?sectionId=1&dayOfWeek=MONDAY&startDate=2025-03-01
 
 **Query Params**:
 
-| Field     |  Type  | Required | Description                         |
-| --------- | :----: | :------: | ----------------------------------- |
-| page      | number |    No    | Trang hiện tại (mặc định: 1)        |
-| limit     | number |    No    | Số bản ghi mỗi trang (mặc định: 10) |
-| roomId    | number |    No    | Lọc theo phòng học                  |
-| sectionId | number |    No    | Lọc theo lớp học phần               |
-| startDate | string |    No    | Từ ngày (YYYY-MM-DD)                |
-| endDate   | string |    No    | Đến ngày (YYYY-MM-DD)               |
+| Field     |  Type  | Required | Description                              |
+| --------- | :----: | :------: | ---------------------------------------- |
+| page      | number |    No    | Current page (default: 1)                |
+| limit     | number |    No    | Number of records per page (default: 10) |
+| roomId    | number |    No    | Filter by classroom                      |
+| sectionId | number |    No    | Filter by class section                  |
+| startDate | string |    No    | From date (YYYY-MM-DD)                   |
+| endDate   | string |    No    | To date (YYYY-MM-DD)                     |
 
 ```
 GET /api/usage-histories?page=1&limit=10&roomId=1&sectionId=2&startDate=2025-01-01&endDate=2025-06-30
@@ -3030,7 +3030,7 @@ GET /api/usage-histories?page=1&limit=10&roomId=1&sectionId=2&startDate=2025-01-
 
 #### 9.2. Create Usage History
 
-**Description**: Tạo bản ghi sử dụng phòng học. Yêu cầu role: `ADMIN`.
+**Description**: Create a classroom usage record. Requires role: `ADMIN`.
 
 **URL**: `/api/usage-histories`
 
@@ -3038,12 +3038,12 @@ GET /api/usage-histories?page=1&limit=10&roomId=1&sectionId=2&startDate=2025-01-
 
 **Body Request**:
 
-| Field     |  Type  | Required | Description                     |
-| --------- | :----: | :------: | ------------------------------- |
-| roomId    | number |   Yes    | ID phòng học                    |
-| startTime | string |   Yes    | Thời gian bắt đầu (YYYY-MM-DD)  |
-| endTime   | string |   Yes    | Thời gian kết thúc (YYYY-MM-DD) |
-| note      | string |    No    | Ghi chú                         |
+| Field     |  Type  | Required | Description             |
+| --------- | :----: | :------: | ----------------------- |
+| roomId    | number |   Yes    | Classroom ID            |
+| startTime | string |   Yes    | Start time (YYYY-MM-DD) |
+| endTime   | string |   Yes    | End time (YYYY-MM-DD)   |
+| notes     | string |    No    | Notes                   |
 
 ```json
 {
@@ -3087,13 +3087,13 @@ GET /api/usage-histories?page=1&limit=10&roomId=1&sectionId=2&startDate=2025-01-
 
 #### 9.3. Get Usage History Detail
 
-**Description**: Lấy chi tiết bản ghi sử dụng phòng. Yêu cầu role: `ADMIN`.
+**Description**: Get room usage record details. Requires role: `ADMIN`.
 
 **URL**: `/api/usage-histories/{usageHistoryId}`
 
 **Method**: `GET`
 
-**Query Params**: Không có.
+**Query Params**: None.
 
 **Example Response:**
 
@@ -3135,7 +3135,7 @@ GET /api/usage-histories?page=1&limit=10&roomId=1&sectionId=2&startDate=2025-01-
 
 #### 9.4. Update Usage History
 
-**Description**: Cập nhật bản ghi sử dụng phòng. Yêu cầu role: `ADMIN`.
+**Description**: Update room usage record. Requires role: `ADMIN`.
 
 **URL**: `/api/usage-histories/{usageHistoryId}`
 
@@ -3143,11 +3143,11 @@ GET /api/usage-histories?page=1&limit=10&roomId=1&sectionId=2&startDate=2025-01-
 
 **Body Request**:
 
-| Field     |  Type  | Required | Description                     |
-| --------- | :----: | :------: | ------------------------------- |
-| startTime | string |    No    | Thời gian bắt đầu (YYYY-MM-DD)  |
-| endTime   | string |    No    | Thời gian kết thúc (YYYY-MM-DD) |
-| note      | string |    No    | Ghi chú                         |
+| Field     |  Type  | Required | Description             |
+| --------- | :----: | :------: | ----------------------- |
+| startTime | string |    No    | Start time (YYYY-MM-DD) |
+| endTime   | string |    No    | End time (YYYY-MM-DD)   |
+| notes     | string |    No    | Notes                   |
 
 ```json
 {
@@ -3185,13 +3185,13 @@ GET /api/usage-histories?page=1&limit=10&roomId=1&sectionId=2&startDate=2025-01-
 
 #### 9.5. Delete Usage History
 
-**Description**: Xóa bản ghi sử dụng phòng. Yêu cầu role: `ADMIN`.
+**Description**: Delete room usage record. Requires role: `ADMIN`.
 
 **URL**: `/api/usage-histories/{usageHistoryId}`
 
 **Method**: `DELETE`
 
-**Query Params**: Không có.
+**Query Params**: None.
 
 **Example Response:**
 
@@ -3220,7 +3220,7 @@ GET /api/usage-histories?page=1&limit=10&roomId=1&sectionId=2&startDate=2025-01-
 
 #### 9.6. Get Usage Histories by Room
 
-**Description**: Lấy toàn bộ lịch sử sử dụng của một phòng học. Yêu cầu role: `ADMIN`.
+**Description**: Get the entire usage history of a classroom. Requires role: `ADMIN`.
 
 **URL**: `/api/rooms/{roomId}/usage-histories`
 
@@ -3228,13 +3228,13 @@ GET /api/usage-histories?page=1&limit=10&roomId=1&sectionId=2&startDate=2025-01-
 
 **Query Params**:
 
-| Field     |  Type  | Required | Description                         |
-| --------- | :----: | :------: | ----------------------------------- |
-| page      | number |    No    | Trang hiện tại (mặc định: 1)        |
-| limit     | number |    No    | Số bản ghi mỗi trang (mặc định: 10) |
-| sectionId | number |    No    | Lọc theo lớp học phần               |
-| startDate | string |    No    | Từ ngày (YYYY-MM-DD)                |
-| endDate   | string |    No    | Đến ngày (YYYY-MM-DD)               |
+| Field     |  Type  | Required | Description                              |
+| --------- | :----: | :------: | ---------------------------------------- |
+| page      | number |    No    | Current page (default: 1)                |
+| limit     | number |    No    | Number of records per page (default: 10) |
+| sectionId | number |    No    | Filter by class section                  |
+| startDate | string |    No    | From date (YYYY-MM-DD)                   |
+| endDate   | string |    No    | To date (YYYY-MM-DD)                     |
 
 ```
 GET /api/rooms/1/usage-histories?page=1&limit=10&sectionId=2&startDate=2025-01-01&endDate=2025-06-30
@@ -3279,7 +3279,7 @@ GET /api/rooms/1/usage-histories?page=1&limit=10&sectionId=2&startDate=2025-01-0
 
 #### 9.7. Add Section to Usage History
 
-**Description**: Gắn một lớp học phần vào bản ghi sử dụng phòng. Yêu cầu role: `ADMIN`.
+**Description**: Attach a section class to the room occupancy record. Requires role: `ADMIN`.
 
 **URL**: `/api/usage-histories/{usageHistoryId}/sections`
 
@@ -3287,9 +3287,9 @@ GET /api/rooms/1/usage-histories?page=1&limit=10&sectionId=2&startDate=2025-01-0
 
 **Body Request**:
 
-| Field     |  Type  | Required | Description     |
-| --------- | :----: | :------: | --------------- |
-| sectionId | number |   Yes    | ID lớp học phần |
+| Field     |  Type  | Required | Description   |
+| --------- | :----: | :------: | ------------- |
+| sectionId | number |   Yes    | Part class ID |
 
 ```json
 {
@@ -3327,13 +3327,13 @@ GET /api/rooms/1/usage-histories?page=1&limit=10&sectionId=2&startDate=2025-01-0
 
 #### 9.8. Remove Section from Usage History
 
-**Description**: Gỡ một lớp học phần khỏi bản ghi sử dụng phòng. Yêu cầu role: `ADMIN`.
+**Description**: Removes a section class from the room usage record. Requires role: `ADMIN`.
 
 **URL**: `/api/usage-histories/{usageHistoryId}/sections/{sectionId}`
 
 **Method**: `DELETE`
 
-**Query Params**: Không có.
+**Query Params**: None.
 
 **Example Response:**
 
@@ -3364,7 +3364,7 @@ GET /api/rooms/1/usage-histories?page=1&limit=10&sectionId=2&startDate=2025-01-0
 
 #### 10.1. Get Attendance List
 
-**Description**: Lấy danh sách buổi điểm danh. Yêu cầu role: `ADMIN`.
+**Description**: Get the roll call list. Requires role: `ADMIN`.
 
 **URL**: `/api/attendances`
 
@@ -3372,13 +3372,13 @@ GET /api/rooms/1/usage-histories?page=1&limit=10&sectionId=2&startDate=2025-01-0
 
 **Query Params**:
 
-| Field          |  Type  | Required | Description                          |
-| -------------- | :----: | :------: | ------------------------------------ |
-| page           | number |    No    | Trang hiện tại (mặc định: 1)         |
-| limit          | number |    No    | Số bản ghi mỗi trang (mặc định: 10)  |
-| sectionId      | number |    No    | Lọc theo lớp học phần                |
-| attendanceDate | string |    No    | Lọc theo ngày điểm danh (YYYY-MM-DD) |
-| slot           | number |    No    | Lọc theo tiết                        |
+| Field          |  Type  | Required | Description                              |
+| -------------- | :----: | :------: | ---------------------------------------- |
+| page           | number |    No    | Current page (default: 1)                |
+| limit          | number |    No    | Number of records per page (default: 10) |
+| sectionId      | number |    No    | Filter by class section                  |
+| attendanceDate | string |    No    | Filter by attendance date (YYYY-MM-DD)   |
+| slots          | number |    No    | Filter by period                         |
 
 ```
 GET /api/attendances?page=1&limit=10&sectionId=1&attendanceDate=2025-02-10&slot=1
@@ -3426,7 +3426,7 @@ GET /api/attendances?page=1&limit=10&sectionId=1&attendanceDate=2025-02-10&slot=
 
 #### 10.2. Create Attendance
 
-**Description**: Tạo buổi điểm danh mới cho lớp học phần. Yêu cầu role: `LECTURER`.
+**Description**: Create a new attendance session for the module class. Requires role: `LECTURER`.
 
 **URL**: `/api/attendances`
 
@@ -3434,12 +3434,12 @@ GET /api/attendances?page=1&limit=10&sectionId=1&attendanceDate=2025-02-10&slot=
 
 **Body Request**:
 
-| Field          |  Type  | Required | Description                 |
-| -------------- | :----: | :------: | --------------------------- |
-| sectionId      | number |   Yes    | ID lớp học phần             |
-| attendanceDate | string |   Yes    | Ngày điểm danh (YYYY-MM-DD) |
-| slot           | number |   Yes    | Tiết học                    |
-| note           | string |    No    | Ghi chú                     |
+| Field          |  Type  | Required | Description                  |
+| -------------- | :----: | :------: | ---------------------------- |
+| sectionId      | number |   Yes    | Part class ID                |
+| attendanceDate | string |   Yes    | Attendance date (YYYY-MM-DD) |
+| slots          | number |   Yes    | Lesson                       |
+| notes          | string |    No    | Notes                        |
 
 ```json
 {
@@ -3477,13 +3477,13 @@ GET /api/attendances?page=1&limit=10&sectionId=1&attendanceDate=2025-02-10&slot=
 
 #### 10.3. Get Attendance Detail
 
-**Description**: Lấy chi tiết một buổi điểm danh. Yêu cầu role: `ADMIN`, `LECTURER`.
+**Description**: Get details of a roll call session. Role requirements: `ADMIN`, `LECTURER`.
 
 **URL**: `/api/attendances/{attendanceId}`
 
 **Method**: `GET`
 
-**Query Params**: Không có.
+**Query Params**: None.
 
 **Example Response:**
 
@@ -3520,7 +3520,7 @@ GET /api/attendances?page=1&limit=10&sectionId=1&attendanceDate=2025-02-10&slot=
 
 #### 10.4. Update Attendance
 
-**Description**: Cập nhật thông tin buổi điểm danh. Yêu cầu role: `LECTURER`.
+**Description**: Update roll call information. Requires role: `LECTURER`.
 
 **URL**: `/api/attendances/{attendanceId}`
 
@@ -3528,11 +3528,11 @@ GET /api/attendances?page=1&limit=10&sectionId=1&attendanceDate=2025-02-10&slot=
 
 **Body Request**:
 
-| Field          |  Type  | Required | Description                 |
-| -------------- | :----: | :------: | --------------------------- |
-| attendanceDate | string |    No    | Ngày điểm danh (YYYY-MM-DD) |
-| slot           | number |    No    | Tiết học                    |
-| note           | string |    No    | Ghi chú                     |
+| Field          |  Type  | Required | Description                  |
+| -------------- | :----: | :------: | ---------------------------- |
+| attendanceDate | string |    No    | Attendance date (YYYY-MM-DD) |
+| slots          | number |    No    | Lesson                       |
+| notes          | string |    No    | Notes                        |
 
 ```json
 {
@@ -3570,13 +3570,13 @@ GET /api/attendances?page=1&limit=10&sectionId=1&attendanceDate=2025-02-10&slot=
 
 #### 10.5. Delete Attendance
 
-**Description**: Xóa buổi điểm danh. Yêu cầu role: `ADMIN`, `LECTURER`.
+**Description**: Delete the roll call session. Role requirements: `ADMIN`, `LECTURER`.
 
 **URL**: `/api/attendances/{attendanceId}`
 
 **Method**: `DELETE`
 
-**Query Params**: Không có.
+**Query Params**: None.
 
 **Example Response:**
 
@@ -3605,7 +3605,7 @@ GET /api/attendances?page=1&limit=10&sectionId=1&attendanceDate=2025-02-10&slot=
 
 #### 10.6. Get Attendances by Section
 
-**Description**: Lấy danh sách các buổi điểm danh của một lớp học phần. Yêu cầu role: `ADMIN`, `LECTURER`.
+**Description**: Get the list of attendance of a module class. Role requirements: `ADMIN`, `LECTURER`.
 
 **URL**: `/api/sections/{sectionId}/attendances`
 
@@ -3613,12 +3613,12 @@ GET /api/attendances?page=1&limit=10&sectionId=1&attendanceDate=2025-02-10&slot=
 
 **Query Params**:
 
-| Field          |  Type  | Required | Description                          |
-| -------------- | :----: | :------: | ------------------------------------ |
-| page           | number |    No    | Trang hiện tại (mặc định: 1)         |
-| limit          | number |    No    | Số bản ghi mỗi trang (mặc định: 10)  |
-| attendanceDate | string |    No    | Lọc theo ngày điểm danh (YYYY-MM-DD) |
-| slot           | number |    No    | Lọc theo tiết                        |
+| Field          |  Type  | Required | Description                              |
+| -------------- | :----: | :------: | ---------------------------------------- |
+| page           | number |    No    | Current page (default: 1)                |
+| limit          | number |    No    | Number of records per page (default: 10) |
+| attendanceDate | string |    No    | Filter by attendance date (YYYY-MM-DD)   |
+| slots          | number |    No    | Filter by period                         |
 
 ```
 GET /api/sections/1/attendances?page=1&limit=20&attendanceDate=2025-02-10&slot=1
@@ -3665,7 +3665,7 @@ GET /api/sections/1/attendances?page=1&limit=20&attendanceDate=2025-02-10&slot=1
 
 #### 11.1. Get Attendance Details
 
-**Description**: Lấy danh sách trạng thái điểm danh từng sinh viên trong một buổi. Yêu cầu role: `ADMIN`, `LECTURER`.
+**Description**: Get a list of attendance status for each student in a session. Role requirements: `ADMIN`, `LECTURER`.
 
 **URL**: `/api/attendances/{attendanceId}/details`
 
@@ -3673,12 +3673,12 @@ GET /api/sections/1/attendances?page=1&limit=20&attendanceDate=2025-02-10&slot=1
 
 **Query Params**:
 
-| Field            |  Type  | Required | Description                                                 |
-| ---------------- | :----: | :------: | ----------------------------------------------------------- |
-| page             | number |    No    | Trang hiện tại (mặc định: 1)                                |
-| limit            | number |    No    | Số bản ghi mỗi trang (mặc định: 50)                         |
-| studentProfileId | number |    No    | Lọc theo sinh viên                                          |
-| status           | string |    No    | Lọc theo trạng thái: PRESENT, ABSENT, EXCUSED_ABSENCE, LATE |
+| Field            |  Type  | Required | Description                                              |
+| ---------------- | :----: | :------: | -------------------------------------------------------- |
+| page             | number |    No    | Current page (default: 1)                                |
+| limit            | number |    No    | Number of records per page (default: 50)                 |
+| studentProfileId | number |    No    | Filter by student                                        |
+| status           | string |    No    | Filter by status: PRESENT, ABSENT, EXCUSED_ABSENCE, LATE |
 
 ```
 GET /api/attendances/1/details?page=1&limit=50&status=PRESENT
@@ -3724,7 +3724,7 @@ GET /api/attendances/1/details?page=1&limit=50&status=PRESENT
 
 #### 11.2. Create Attendance Details (Bulk)
 
-**Description**: Tạo hàng loạt chi tiết điểm danh cho toàn bộ sinh viên trong một buổi. Yêu cầu role: `LECTURER`.
+**Description**: Create a series of attendance details for all students in one session. Requires role: `LECTURER`.
 
 **URL**: `/api/attendances/{attendanceId}/details`
 
@@ -3732,12 +3732,12 @@ GET /api/attendances/1/details?page=1&limit=50&status=PRESENT
 
 **Body Request**:
 
-| Field                      |  Type  | Required | Description                       |
-| -------------------------- | :----: | :------: | --------------------------------- |
-| details                    | array  |   Yes    | Mảng chi tiết điểm danh           |
-| details[].studentProfileId | number |   Yes    | ID hồ sơ sinh viên                |
-| details[].status           | string |   Yes    | Trạng thái: PRESENT, ABSENT, LATE |
-| details[].note             | string |    No    | Ghi chú cho sinh viên             |
+| Field                      |  Type  | Required | Description                   |
+| -------------------------- | :----: | :------: | ----------------------------- |
+| details                    | array  |   Yes    | Attendance detail array       |
+| details[].studentProfileId | number |   Yes    | Student profile ID            |
+| details[].status           | string |   Yes    | Status: PRESENT, ABSENT, LATE |
+| details[].note             | string |    No    | Notes for students            |
 
 ```json
 {
@@ -3786,7 +3786,7 @@ GET /api/attendances/1/details?page=1&limit=50&status=PRESENT
 
 #### 11.3. Update Attendance Detail
 
-**Description**: Cập nhật trạng thái điểm danh của một sinh viên trong buổi học. Yêu cầu role: `LECTURER`.
+**Description**: Update the attendance status of a student during a class session. Requires role: `LECTURER`.
 
 **URL**: `/api/attendances/{attendanceId}/details/{detailId}`
 
@@ -3794,10 +3794,10 @@ GET /api/attendances/1/details?page=1&limit=50&status=PRESENT
 
 **Body Request**:
 
-| Field  |  Type  | Required | Description                       |
-| ------ | :----: | :------: | --------------------------------- |
-| status | string |    No    | Trạng thái: PRESENT, ABSENT, LATE |
-| note   | string |    No    | Ghi chú                           |
+| Field  |  Type  | Required | Description                   |
+| ------ | :----: | :------: | ----------------------------- |
+| status | string |    No    | Status: PRESENT, ABSENT, LATE |
+| notes  | string |    No    | Notes                         |
 
 ```json
 {
@@ -3837,7 +3837,7 @@ GET /api/attendances/1/details?page=1&limit=50&status=PRESENT
 
 #### 11.4. Get Attendance Summary by Student
 
-**Description**: Lấy tổng hợp điểm danh của một sinh viên (số buổi có mặt, vắng, muộn) trong toàn bộ hoặc một lớp cụ thể. Yêu cầu role: `ADMIN`, `LECTURER`, hoặc chính chủ.
+**Description**: Get the total attendance of a student (number of sessions present, absent, late) in the entire or a specific class. Requires role: `ADMIN`, `LECTURER`, or owner.
 
 **URL**: `/api/profiles/{profileId}/attendance-summary`
 
@@ -3845,9 +3845,9 @@ GET /api/attendances/1/details?page=1&limit=50&status=PRESENT
 
 **Query Params**:
 
-| Field     |  Type  | Required | Description           |
-| --------- | :----: | :------: | --------------------- |
-| sectionId | number |    No    | Lọc theo lớp học phần |
+| Field     |  Type  | Required | Description             |
+| --------- | :----: | :------: | ----------------------- |
+| sectionId | number |    No    | Filter by class section |
 
 ```
 GET /api/profiles/3/attendance-summary?sectionId=1
@@ -3892,7 +3892,7 @@ GET /api/profiles/3/attendance-summary?sectionId=1
 
 #### 12.1. Get Application List
 
-**Description**: Lấy danh sách hồ sơ xét duyệt. Yêu cầu role: `ADMIN`.
+**Description**: Get the application list. Requires role: `ADMIN`.
 
 **URL**: `/api/profile-applications`
 
@@ -3900,14 +3900,14 @@ GET /api/profiles/3/attendance-summary?sectionId=1
 
 **Query Params**:
 
-| Field             |  Type  | Required | Description                                                 |
-| ----------------- | :----: | :------: | ----------------------------------------------------------- |
-| page              | number |    No    | Trang hiện tại (mặc định: 1)                                |
-| limit             | number |    No    | Số bản ghi mỗi trang (mặc định: 10)                         |
-| search            | string |    No    | Tìm theo tên sinh viên                                      |
-| applicationStatus | string |    No    | Lọc theo trạng thái: PENDING, APPROVED, REJECTED, CANCELLED |
-| submissionFrom    | string |    No    | Ngày nộp từ (YYYY-MM-DD)                                    |
-| submissionTo      | string |    No    | Ngày nộp đến (YYYY-MM-DD)                                   |
+| Field             |  Type  | Required | Description                                              |
+| ----------------- | :----: | :------: | -------------------------------------------------------- |
+| page              | number |    No    | Current page (default: 1)                                |
+| limit             | number |    No    | Number of records per page (default: 10)                 |
+| search            | string |    No    | Search by student name                                   |
+| applicationStatus | string |    No    | Filter by status: PENDING, APPROVED, REJECTED, CANCELLED |
+| submissionFrom    | string |    No    | Date submitted from (YYYY-MM-DD)                         |
+| submissionTo      | string |    No    | Submission date to (YYYY-MM-DD)                          |
 
 ```
 GET /api/profile-applications?page=1&limit=10&search=Tran&applicationStatus=PENDING&submissionFrom=2025-03-01&submissionTo=2025-03-31
@@ -3953,7 +3953,7 @@ GET /api/profile-applications?page=1&limit=10&search=Tran&applicationStatus=PEND
 
 #### 12.2. Submit Application
 
-**Description**: Sinh viên nộp hồ sơ xét duyệt. Yêu cầu role: `STUDENT`.
+**Description**: Student submits application for review. Requires role: `STUDENT`.
 
 **URL**: `/api/profile-applications`
 
@@ -3961,9 +3961,9 @@ GET /api/profile-applications?page=1&limit=10&search=Tran&applicationStatus=PEND
 
 **Body Request**:
 
-| Field                                      | Type | Required | Description                                 |
-| ------------------------------------------ | :--: | :------: | ------------------------------------------- |
-| (Không có body thêm; dữ liệu lấy từ token) |  —   |    —     | Hồ sơ được tạo cho sinh viên đang đăng nhập |
+| Field                                       | Type | Required | Description                                     |
+| ------------------------------------------- | :--: | :------: | ----------------------------------------------- |
+| (No additional body; data taken from token) |  —   |    —     | Profile created for currently logged in student |
 
 ```json
 {}
@@ -4001,13 +4001,13 @@ GET /api/profile-applications?page=1&limit=10&search=Tran&applicationStatus=PEND
 
 #### 12.3. Get Application Detail
 
-**Description**: Lấy chi tiết hồ sơ xét duyệt. Yêu cầu role: `ADMIN` hoặc chính chủ.
+**Description**: Get details of the approval file. Requires role: `ADMIN` or owner.
 
 **URL**: `/api/profile-applications/{applicationId}`
 
 **Method**: `GET`
 
-**Query Params**: Không có.
+**Query Params**: None.
 
 **Example Response:**
 
@@ -4045,7 +4045,7 @@ GET /api/profile-applications?page=1&limit=10&search=Tran&applicationStatus=PEND
 
 #### 12.4. Update Application
 
-**Description**: Sinh viên cập nhật hồ sơ chưa được duyệt. Yêu cầu role: `STUDENT` (chính chủ).
+**Description**: Student's profile update has not been approved. Role requirement: `STUDENT` (owner).
 
 **URL**: `/api/profile-applications/{applicationId}`
 
@@ -4053,9 +4053,9 @@ GET /api/profile-applications?page=1&limit=10&search=Tran&applicationStatus=PEND
 
 **Body Request**:
 
-| Field                                                     | Type | Required | Description |
-| --------------------------------------------------------- | :--: | :------: | ----------- |
-| (Thêm/thay đổi chứng chỉ qua endpoint certificates riêng) |  —   |    —     | —           |
+| Field                                                       | Type | Required | Description |
+| ----------------------------------------------------------- | :--: | :------: | ----------- |
+| (Add/change certificates via private certificates endpoint) |  —   |    —     | —           |
 
 ```json
 {}
@@ -4091,7 +4091,7 @@ GET /api/profile-applications?page=1&limit=10&search=Tran&applicationStatus=PEND
 
 #### 12.5. Review Application
 
-**Description**: Admin duyệt hoặc từ chối hồ sơ xét duyệt. Yêu cầu role: `ADMIN`.
+**Description**: Admin approves or rejects the review application. Requires role: `ADMIN`.
 
 **URL**: `/api/profile-applications/{applicationId}/review`
 
@@ -4099,10 +4099,10 @@ GET /api/profile-applications?page=1&limit=10&search=Tran&applicationStatus=PEND
 
 **Body Request**:
 
-| Field             |  Type  | Required | Description                        |
-| ----------------- | :----: | :------: | ---------------------------------- |
-| applicationStatus | string |   Yes    | Trạng thái mới: APPROVED, REJECTED |
-| reviewNotes       | string |    No    | Ghi chú xét duyệt                  |
+| Field             |  Type  | Required | Description                    |
+| ----------------- | :----: | :------: | ------------------------------ |
+| applicationStatus | string |   Yes    | New status: APPROVED, REJECTED |
+| reviewNotes       | string |    No    | Review notes                   |
 
 ```json
 {
@@ -4144,7 +4144,7 @@ GET /api/profile-applications?page=1&limit=10&search=Tran&applicationStatus=PEND
 
 #### 12.6. Get My Applications
 
-**Description**: Sinh viên xem danh sách hồ sơ đã nộp. Yêu cầu role: `STUDENT`.
+**Description**: Students see the list of submitted documents. Requires role: `STUDENT`.
 
 **URL**: `/api/profile-applications/my-applications`
 
@@ -4152,10 +4152,10 @@ GET /api/profile-applications?page=1&limit=10&search=Tran&applicationStatus=PEND
 
 **Query Params**:
 
-| Field |  Type  | Required | Description                         |
-| ----- | :----: | :------: | ----------------------------------- |
-| page  | number |    No    | Trang hiện tại (mặc định: 1)        |
-| limit | number |    No    | Số bản ghi mỗi trang (mặc định: 10) |
+| Field |  Type  | Required | Description                              |
+| ----- | :----: | :------: | ---------------------------------------- |
+| page  | number |    No    | Current page (default: 1)                |
+| limit | number |    No    | Number of records per page (default: 10) |
 
 ```
 GET /api/profile-applications/my-applications
@@ -4202,7 +4202,7 @@ GET /api/profile-applications/my-applications
 
 #### 13.1. Get Certificate Type List
 
-**Description**: Lấy danh sách loại chứng chỉ. Yêu cầu xác thực: `Authorization: Bearer <token>`.
+**Description**: Get the list of certificate types. Authentication request: `Authorization: Bearer <token>`.
 
 **URL**: `/api/certificate-types`
 
@@ -4210,11 +4210,11 @@ GET /api/profile-applications/my-applications
 
 **Query Params**:
 
-| Field  |  Type  | Required | Description                         |
-| ------ | :----: | :------: | ----------------------------------- |
-| page   | number |    No    | Trang hiện tại (mặc định: 1)        |
-| limit  | number |    No    | Số bản ghi mỗi trang (mặc định: 10) |
-| search | string |    No    | Tìm theo tên loại chứng chỉ         |
+| Field  |  Type  | Required | Description                              |
+| ------ | :----: | :------: | ---------------------------------------- |
+| page   | number |    No    | Current page (default: 1)                |
+| limit  | number |    No    | Number of records per page (default: 10) |
+| search | string |    No    | Search by certificate type name          |
 
 ```
 GET /api/certificate-types?page=1&limit=10&search=IELTS
@@ -4258,7 +4258,7 @@ GET /api/certificate-types?page=1&limit=10&search=IELTS
 
 #### 13.2. Create Certificate Type
 
-**Description**: Tạo loại chứng chỉ mới. Yêu cầu role: `ADMIN`.
+**Description**: Create a new certificate type. Requires role: `ADMIN`.
 
 **URL**: `/api/certificate-types`
 
@@ -4266,10 +4266,10 @@ GET /api/certificate-types?page=1&limit=10&search=IELTS
 
 **Body Request**:
 
-| Field       |  Type  | Required | Description        |
-| ----------- | :----: | :------: | ------------------ |
-| typeName    | string |   Yes    | Tên loại chứng chỉ |
-| description | string |    No    | Mô tả chi tiết     |
+| Field       |  Type  | Required | Description           |
+| ----------- | :----: | :------: | --------------------- |
+| typeName    | string |   Yes    | Certificate type name |
+| description | string |    No    | Detailed description  |
 
 ```json
 {
@@ -4309,13 +4309,13 @@ GET /api/certificate-types?page=1&limit=10&search=IELTS
 
 #### 13.3. Get Certificate Type Detail
 
-**Description**: Lấy chi tiết loại chứng chỉ. Yêu cầu xác thực: `Authorization: Bearer <token>`.
+**Description**: Get details of the certificate type. Authentication request: `Authorization: Bearer <token>`.
 
 **URL**: `/api/certificate-types/{typeId}`
 
 **Method**: `GET`
 
-**Query Params**: Không có.
+**Query Params**: None.
 
 **Example Response:**
 
@@ -4348,7 +4348,7 @@ GET /api/certificate-types?page=1&limit=10&search=IELTS
 
 #### 13.4. Update Certificate Type
 
-**Description**: Cập nhật loại chứng chỉ. Yêu cầu role: `ADMIN`.
+**Description**: Update certificate type. Requires role: `ADMIN`.
 
 **URL**: `/api/certificate-types/{typeId}`
 
@@ -4356,10 +4356,10 @@ GET /api/certificate-types?page=1&limit=10&search=IELTS
 
 **Body Request**:
 
-| Field       |  Type  | Required | Description        |
-| ----------- | :----: | :------: | ------------------ |
-| typeName    | string |    No    | Tên loại chứng chỉ |
-| description | string |    No    | Mô tả chi tiết     |
+| Field       |  Type  | Required | Description           |
+| ----------- | :----: | :------: | --------------------- |
+| typeName    | string |    No    | Certificate type name |
+| description | string |    No    | Detailed description  |
 
 ```json
 {
@@ -4398,13 +4398,13 @@ GET /api/certificate-types?page=1&limit=10&search=IELTS
 
 #### 13.5. Delete Certificate Type
 
-**Description**: Xóa loại chứng chỉ. Yêu cầu role: `ADMIN`.
+**Description**: Delete certificate type. Requires role: `ADMIN`.
 
 **URL**: `/api/certificate-types/{typeId}`
 
 **Method**: `DELETE`
 
-**Query Params**: Không có.
+**Query Params**: None.
 
 **Example Response:**
 
@@ -4435,7 +4435,7 @@ GET /api/certificate-types?page=1&limit=10&search=IELTS
 
 #### 14.1. Get Certificate List
 
-**Description**: Lấy danh sách tất cả chứng chỉ. Yêu cầu role: `ADMIN`.
+**Description**: Get a list of all certificates. Requires role: `ADMIN`.
 
 **URL**: `/api/certificates`
 
@@ -4443,17 +4443,17 @@ GET /api/certificate-types?page=1&limit=10&search=IELTS
 
 **Query Params**:
 
-| Field             |  Type   | Required | Description                                     |
-| ----------------- | :-----: | :------: | ----------------------------------------------- |
-| page              | number  |    No    | Trang hiện tại (mặc định: 1)                    |
-| limit             | number  |    No    | Số bản ghi mỗi trang (mặc định: 10)             |
-| search            | string  |    No    | Tìm theo tên loại chứng chỉ hoặc URL minh chứng |
-| certificateTypeId | number  |    No    | Lọc theo loại chứng chỉ                         |
-| isVerified        | boolean |    No    | Lọc theo trạng thái xác minh chứng chỉ          |
-| issueDateFrom     | string  |    No    | Ngày cấp từ (YYYY-MM-DD)                        |
-| issueDateTo       | string  |    No    | Ngày cấp đến (YYYY-MM-DD)                       |
-| expiryDateFrom    | string  |    No    | Ngày hết hạn từ (YYYY-MM-DD)                    |
-| expiryDateTo      | string  |    No    | Ngày hết hạn đến (YYYY-MM-DD)                   |
+| Field             |  Type   | Required | Description                                          |
+| ----------------- | :-----: | :------: | ---------------------------------------------------- |
+| page              | number  |    No    | Current page (default: 1)                            |
+| limit             | number  |    No    | Number of records per page (default: 10)             |
+| search            | string  |    No    | Search by certificate type name or demonstration URL |
+| certificateTypeId | number  |    No    | Filter by certificate type                           |
+| isVerified        | boolean |    No    | Filter by certificate verification status            |
+| issueDateFrom     | string  |    No    | Date issued from (YYYY-MM-DD)                        |
+| issueDateTo       | string  |    No    | Date issued to (YYYY-MM-DD)                          |
+| expiryDateFrom    | string  |    No    | Expiration date from (YYYY-MM-DD)                    |
+| expiryDateTo      | string  |    No    | Expiry date to (YYYY-MM-DD)                          |
 
 ```
 GET /api/certificates?page=1&limit=10&search=IELTS&certificateTypeId=1&isVerified=true&issueDateFrom=2024-01-01
@@ -4502,7 +4502,7 @@ GET /api/certificates?page=1&limit=10&search=IELTS&certificateTypeId=1&isVerifie
 
 #### 14.2. Create Certificate
 
-**Description**: Tạo chi tiết chứng chỉ cho một hồ sơ. Yêu cầu role: `ADMIN`.
+**Description**: Creates certificate details for a profile. Requires role: `ADMIN`.
 
 **URL**: `/api/certificates`
 
@@ -4510,15 +4510,15 @@ GET /api/certificates?page=1&limit=10&search=IELTS&certificateTypeId=1&isVerifie
 
 **Body Request**:
 
-| Field             |  Type  | Required | Description                 |
-| ----------------- | :----: | :------: | --------------------------- |
-| applicationId     | number |   Yes    | ID hồ sơ xét duyệt          |
-| certificateTypeId | number |   Yes    | ID loại chứng chỉ           |
-| score             | number |    No    | Điểm số                     |
-| issueDate         | string |    No    | Ngày cấp (YYYY-MM-DD)       |
-| expiryDate        | string |    No    | Ngày hết hạn (YYYY-MM-DD)   |
-| evidenceURL       | string |    No    | URL minh chứng              |
-| metadata          | object |    No    | Thông tin bổ sung dạng JSON |
+| Field             |  Type  | Required | Description                    |
+| ----------------- | :----: | :------: | ------------------------------ |
+| applicationId     | number |   Yes    | ID of review file              |
+| certificateTypeId | number |   Yes    | Certificate type ID            |
+| scores            | number |    No    | Score                          |
+| issueDate         | string |    No    | Issue date (YYYY-MM-DD)        |
+| expiryDate        | string |    No    | Expiration date (YYYY-MM-DD)   |
+| evidenceURL       | string |    No    | Demonstration URL              |
+| metadata          | object |    No    | Additional information in JSON |
 
 ```json
 {
@@ -4567,13 +4567,13 @@ GET /api/certificates?page=1&limit=10&search=IELTS&certificateTypeId=1&isVerifie
 
 #### 14.3. Get Certificate Detail
 
-**Description**: Lấy chi tiết một chứng chỉ. Yêu cầu role: `ADMIN` hoặc chính chủ.
+**Description**: Get details of a certificate. Requires role: `ADMIN` or owner.
 
 **URL**: `/api/certificates/{certificateId}`
 
 **Method**: `GET`
 
-**Query Params**: Không có.
+**Query Params**: None.
 
 **Example Response:**
 
@@ -4612,7 +4612,7 @@ GET /api/certificates?page=1&limit=10&search=IELTS&certificateTypeId=1&isVerifie
 
 #### 14.4. Update Certificate
 
-**Description**: Cập nhật thông tin chứng chỉ. Yêu cầu role: `ADMIN`.
+**Description**: Update certificate information. Requires role: `ADMIN`.
 
 **URL**: `/api/certificates/{certificateId}`
 
@@ -4620,13 +4620,13 @@ GET /api/certificates?page=1&limit=10&search=IELTS&certificateTypeId=1&isVerifie
 
 **Body Request**:
 
-| Field       |  Type  | Required | Description                 |
-| ----------- | :----: | :------: | --------------------------- |
-| score       | number |    No    | Điểm số                     |
-| issueDate   | string |    No    | Ngày cấp (YYYY-MM-DD)       |
-| expiryDate  | string |    No    | Ngày hết hạn (YYYY-MM-DD)   |
-| evidenceURL | string |    No    | URL minh chứng              |
-| metadata    | object |    No    | Thông tin bổ sung dạng JSON |
+| Field       |  Type  | Required | Description                    |
+| ----------- | :----: | :------: | ------------------------------ |
+| scores      | number |    No    | Score                          |
+| issueDate   | string |    No    | Issue date (YYYY-MM-DD)        |
+| expiryDate  | string |    No    | Expiration date (YYYY-MM-DD)   |
+| evidenceURL | string |    No    | Demonstration URL              |
+| metadata    | object |    No    | Additional information in JSON |
 
 ```json
 {
@@ -4666,13 +4666,13 @@ GET /api/certificates?page=1&limit=10&search=IELTS&certificateTypeId=1&isVerifie
 
 #### 14.5. Delete Certificate
 
-**Description**: Xóa chứng chỉ. Yêu cầu role: `ADMIN`.
+**Description**: Delete certificate. Requires role: `ADMIN`.
 
 **URL**: `/api/certificates/{certificateId}`
 
 **Method**: `DELETE`
 
-**Query Params**: Không có.
+**Query Params**: None.
 
 **Example Response:**
 
@@ -4701,13 +4701,13 @@ GET /api/certificates?page=1&limit=10&search=IELTS&certificateTypeId=1&isVerifie
 
 #### 14.6. Get Certificates by Application
 
-**Description**: Lấy danh sách chứng chỉ thuộc một hồ sơ xét duyệt. Yêu cầu role: `ADMIN` hoặc chính chủ.
+**Description**: Get a list of certificates belonging to an approval profile. Requires role: `ADMIN` or owner.
 
 **URL**: `/api/profile-applications/{applicationId}/certificates`
 
 **Method**: `GET`
 
-**Query Params**: Không có.
+**Query Params**: None.
 
 **Example Response:**
 
@@ -4748,7 +4748,7 @@ GET /api/certificates?page=1&limit=10&search=IELTS&certificateTypeId=1&isVerifie
 
 #### 15.1. Get Student Certificates
 
-**Description**: Lấy danh sách chứng chỉ của một sinh viên. Yêu cầu role: `ADMIN` hoặc chính chủ.
+**Description**: Get a list of a student's certificates. Requires role: `ADMIN` or owner.
 
 **URL**: `/api/profiles/{profileId}/certificates`
 
@@ -4756,13 +4756,13 @@ GET /api/certificates?page=1&limit=10&search=IELTS&certificateTypeId=1&isVerifie
 
 **Query Params**:
 
-| Field             |  Type   | Required | Description                         |
-| ----------------- | :-----: | :------: | ----------------------------------- |
-| page              | number  |    No    | Trang hiện tại (mặc định: 1)        |
-| limit             | number  |    No    | Số bản ghi mỗi trang (mặc định: 10) |
-| search            | string  |    No    | Tìm theo tên loại chứng chỉ         |
-| certificateTypeId | number  |    No    | Lọc theo loại chứng chỉ             |
-| isVerified        | boolean |    No    | Lọc theo trạng thái xác minh        |
+| Field             |  Type   | Required | Description                              |
+| ----------------- | :-----: | :------: | ---------------------------------------- |
+| page              | number  |    No    | Current page (default: 1)                |
+| limit             | number  |    No    | Number of records per page (default: 10) |
+| search            | string  |    No    | Search by certificate type name          |
+| certificateTypeId | number  |    No    | Filter by certificate type               |
+| isVerified        | boolean |    No    | Filter by verification status            |
 
 ```
 GET /api/profiles/3/certificates?page=1&limit=10&search=IELTS&certificateTypeId=1&isVerified=true
@@ -4809,7 +4809,7 @@ GET /api/profiles/3/certificates?page=1&limit=10&search=IELTS&certificateTypeId=
 
 #### 15.2. Add Certificate to Student
 
-**Description**: Gắn một chứng chỉ cho sinh viên. Yêu cầu role: `ADMIN`.
+**Description**: Attach a certificate to the student. Requires role: `ADMIN`.
 
 **URL**: `/api/profiles/{profileId}/certificates`
 
@@ -4817,9 +4817,9 @@ GET /api/profiles/3/certificates?page=1&limit=10&search=IELTS&certificateTypeId=
 
 **Body Request**:
 
-| Field         |  Type  | Required | Description  |
-| ------------- | :----: | :------: | ------------ |
-| certificateId | number |   Yes    | ID chứng chỉ |
+| Field         |  Type  | Required | Description    |
+| ------------- | :----: | :------: | -------------- |
+| certificateId | number |   Yes    | Certificate ID |
 
 ```json
 {
@@ -4857,13 +4857,13 @@ GET /api/profiles/3/certificates?page=1&limit=10&search=IELTS&certificateTypeId=
 
 #### 15.3. Remove Certificate from Student
 
-**Description**: Gỡ một chứng chỉ khỏi sinh viên. Yêu cầu role: `ADMIN`.
+**Description**: Remove a certificate from a student. Requires role: `ADMIN`.
 
 **URL**: `/api/profiles/{profileId}/certificates/{certificateId}`
 
 **Method**: `DELETE`
 
-**Query Params**: Không có.
+**Query Params**: None.
 
 **Example Response:**
 
