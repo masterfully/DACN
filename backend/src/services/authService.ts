@@ -21,6 +21,10 @@ export interface LoginInput {
   password: string;
 }
 
+export interface LogoutInput {
+  refreshToken: string;
+}
+
 interface AuthTokenPayload {
   accountId: number;
   role: RoleEnum;
@@ -347,4 +351,49 @@ export const register = async (input: RegisterInput) => {
   }
 
   return result;
+};
+
+export const logout = async (input: LogoutInput) => {
+  const normalizedRefreshToken = input.refreshToken.trim();
+
+  const refreshTokenRecord = await prisma.refreshToken.findUnique({
+    where: {
+      Token: normalizedRefreshToken,
+    },
+    select: {
+      RefreshTokenID: true,
+      ExpiresAt: true,
+      RevokedAt: true,
+    },
+  });
+
+  const now = new Date();
+  const isTokenInvalid =
+    !refreshTokenRecord ||
+    refreshTokenRecord.RevokedAt !== null ||
+    refreshTokenRecord.ExpiresAt <= now;
+
+  if (isTokenInvalid) {
+    throw new AppError(AUTH_ERROR_MESSAGES.AUTH_LOGOUT_INVALID_TOKEN, {
+      statusCode: 401,
+      code: AUTH_ERROR_CODES.AUTH_LOGOUT_INVALID_TOKEN,
+      details: {
+        formErrors: [AUTH_ERROR_MESSAGES.AUTH_LOGOUT_INVALID_TOKEN],
+        fieldErrors: {},
+      },
+    });
+  }
+
+  await prisma.refreshToken.update({
+    where: {
+      RefreshTokenID: refreshTokenRecord.RefreshTokenID,
+    },
+    data: {
+      RevokedAt: now,
+    },
+  });
+
+  return {
+    message: AUTH_ERROR_MESSAGES.AUTH_LOGOUT_SUCCESS,
+  };
 };

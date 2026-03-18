@@ -30,6 +30,12 @@ const loginSchema = z.object({
     .min(1, AUTH_FIELD_ERROR_MESSAGES.PASSWORD_REQUIRED),
 });
 
+const logoutSchema = z.object({
+  refreshToken: requiredString(AUTH_FIELD_ERROR_MESSAGES.REFRESH_TOKEN_REQUIRED)
+    .trim()
+    .min(1, AUTH_FIELD_ERROR_MESSAGES.REFRESH_TOKEN_REQUIRED),
+});
+
 const registerSchema = z
   .object({
     fullName: requiredString(AUTH_FIELD_ERROR_MESSAGES.FULL_NAME_REQUIRED)
@@ -92,6 +98,19 @@ export const login = async (req: Request, res: Response): Promise<void> => {
   const result = await authService.login({
     username: parsed.username,
     password: parsed.password,
+  });
+
+  sendSuccess(res, result, 200);
+};
+
+export const logout = async (req: Request, res: Response): Promise<void> => {
+  const parsed = parseOrThrow(logoutSchema, req.body, {
+    code: AUTH_ERROR_CODES.AUTH_LOGOUT_INVALID_INPUT,
+    message: AUTH_ERROR_MESSAGES.AUTH_LOGOUT_INVALID_INPUT,
+  });
+
+  const result = await authService.logout({
+    refreshToken: parsed.refreshToken,
   });
 
   sendSuccess(res, result, 200);
