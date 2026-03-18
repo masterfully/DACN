@@ -7,9 +7,10 @@
   - [II. Endpoints](#ii-endpoints)
     - [1. Auth](#1-auth)
       - [1.1. Login](#11-login)
-      - [1.2. Refresh Token](#12-refresh-token)
-      - [1.3. Change Password](#13-change-password)
-      - [1.4. Register](#14-register)
+      - [1.2. Logout](#12-logout)
+      - [1.3. Refresh Token](#13-refresh-token)
+      - [1.4. Change Password](#14-change-password)
+      - [1.5. Register](#15-register)
     - [2. Account](#2-account)
       - [2.1. Get Account List](#21-get-account-list)
       - [2.2. Create Account](#22-create-account)
@@ -303,7 +304,86 @@ Response Structure:
 
 ---
 
-#### 1.2. Refresh Token
+#### 1.2. Logout
+
+**Description**: Log out of the current session by invalidating the provided refresh token. No prior authentication required.
+
+**URL**: `/api/auth/logout`
+
+**Method**: `POST`
+
+**Body Request**:
+
+| Field        |  Type  | Required | Description   |
+| ------------ | :----: | :------: | ------------- |
+| refreshToken | string |   Yes    | Refresh token |
+
+```json
+{
+  "refreshToken": "dGhpcyBpcyBhIHJlZnJlc2ggdG9rZW4..."
+}
+```
+
+**Example Response:**
+
+- Success:
+
+  ```json
+  {
+    "success": true,
+    "data": {
+      "message": "Đăng xuất thành công"
+    },
+    "error": null,
+    "meta": null
+  }
+  ```
+
+- Error - Validation (`AUTH_LOGOUT_INVALID_INPUT`):
+
+  ```json
+  {
+    "success": false,
+    "data": null,
+    "error": {
+      "code": "AUTH_LOGOUT_INVALID_INPUT",
+      "message": "Dữ liệu đăng xuất không hợp lệ",
+      "details": {
+        "formErrors": [],
+        "fieldErrors": {
+          "refreshToken": [
+            "Refresh token là bắt buộc"
+          ]
+        }
+      }
+    },
+    "meta": null
+  }
+  ```
+
+- Error - Invalid Token (`AUTH_LOGOUT_INVALID_TOKEN`):
+
+  ```json
+  {
+    "success": false,
+    "data": null,
+    "error": {
+      "code": "AUTH_LOGOUT_INVALID_TOKEN",
+      "message": "Refresh token không hợp lệ hoặc đã hết hạn",
+      "details": {
+        "formErrors": [
+          "Refresh token không hợp lệ hoặc đã hết hạn"
+        ],
+        "fieldErrors": {}
+      }
+    },
+    "meta": null
+  }
+  ```
+
+---
+
+#### 1.3. Refresh Token
 
 **Description**: Refresh access token with existing refresh token.
 
@@ -351,7 +431,7 @@ Response Structure:
 
 ---
 
-#### 1.3. Change Password
+#### 1.4. Change Password
 
 **Description**: Change current account password. Authentication request: `Authorization: Bearer <token>`.
 
@@ -398,7 +478,7 @@ Response Structure:
 
 ---
 
-#### 1.4. Register
+#### 1.5. Register
 
 **Description**: Self-register for a new account (for students). The system automatically creates `Account` with the corresponding roles `STUDENT` ​​and `UserProfile`. No prior authentication required.
 
