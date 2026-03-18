@@ -1,9 +1,18 @@
+import { PageContainer } from "@/components/page-container";
+import { PageSectionHeader } from "@/components/page-section-header";
+import { SubjectsTable } from "./subjects-table";
+
 export default function SubjectsPage() {
   return (
-    <div className="flex flex-1 flex-col gap-4">
-      <h1 className="text-2xl font-semibold tracking-tight">Môn học</h1>
-      <div className="min-h-[50vh] rounded-xl bg-muted/50" />
-    </div>
+    <PageContainer
+      header={
+        <PageSectionHeader
+          title="Môn học"
+          description="Quản lý môn học và các thông tin liên quan."
+        />
+      }
+    >
+      <SubjectsTable />
+    </PageContainer>
   );
 }
-

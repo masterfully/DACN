@@ -1,5 +1,11 @@
 import type { ColumnDef } from "@tanstack/react-table";
-import { ActivityIcon, MailIcon, PhoneIcon, UserIcon } from "lucide-react";
+import {
+  ActivityIcon,
+  HashIcon,
+  MailIcon,
+  PhoneIcon,
+  UserIcon,
+} from "lucide-react";
 import { ColHeader } from "@/components/data-table";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -25,6 +31,15 @@ export function LecturerStatusBadge({ status }: { status: string | null }) {
 }
 
 export const lecturerColumns: ColumnDef<ProfileListItem>[] = [
+  {
+    accessorKey: "profileId",
+    header: () => <ColHeader icon={HashIcon} label="Mã hồ sơ" center />,
+    meta: { visibilityLabel: "Mã hồ sơ" },
+    enableSorting: false,
+    cell: ({ row }) => (
+      <div className="text-center">{row.original.profileId}</div>
+    ),
+  },
   {
     accessorKey: "fullName",
     header: () => <ColHeader icon={UserIcon} label="Họ và tên" />,
