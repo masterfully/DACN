@@ -2,6 +2,7 @@ import { Router } from "express";
 import { sendSuccess } from "../utils/response";
 import authRouter from "./authRoute";
 import subjectRoute from "./subjectRoute";
+import authRoute from "./authRoute";
 
 const router = Router();
 
@@ -20,5 +21,8 @@ router.use("/auth", authRouter);
 
 // Mount subject routes
 router.use("/subjects", subjectRoute);
+
+// Mount auth routes
+router.use("/auth", authRoute);
 
 export default router;
