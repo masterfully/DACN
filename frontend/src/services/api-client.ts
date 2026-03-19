@@ -6,6 +6,7 @@ import axios, {
 import { AUTH_STORAGE_KEYS } from "@/lib/auth-storage";
 import type {
   ApiError,
+  ApiErrorDetails,
   ApiMeta,
   ApiResponse,
   PaginatedData,
@@ -20,6 +21,54 @@ export const apiClient = axios.create({
     "Content-Type": "application/json",
   },
 });
+
+const EMPTY_ERROR_DETAILS: ApiErrorDetails = {
+  formErrors: [],
+  fieldErrors: {},
+};
+
+const toErrorDetails = (details: unknown): ApiErrorDetails => {
+  if (!details || typeof details !== "object") return EMPTY_ERROR_DETAILS;
+
+  const rawFormErrors = (details as { formErrors?: unknown }).formErrors;
+  const rawFieldErrors = (details as { fieldErrors?: unknown }).fieldErrors;
+
+  const formErrors = Array.isArray(rawFormErrors)
+    ? rawFormErrors.filter(
+        (item): item is string => typeof item === "string" && item.length > 0,
+      )
+    : [];
+
+  const fieldErrors: Record<string, string[]> = {};
+  if (rawFieldErrors && typeof rawFieldErrors === "object") {
+    for (const [field, value] of Object.entries(rawFieldErrors)) {
+      if (!Array.isArray(value)) continue;
+      const messages = value.filter(
+        (item): item is string => typeof item === "string" && item.length > 0,
+      );
+      if (messages.length > 0) {
+        fieldErrors[field] = messages;
+      }
+    }
+  }
+
+  return { formErrors, fieldErrors };
+};
+
+const buildApiError = (
+  backendError: ApiResponse<unknown>["error"] | null | undefined,
+  statusCode: number,
+  fallbackMessage: string,
+  fallbackCode?: string,
+): ApiError => {
+  const details = toErrorDetails(backendError?.details);
+  return {
+    message: backendError?.message ?? details.formErrors[0] ?? fallbackMessage,
+    errorCode: backendError?.code ?? fallbackCode,
+    statusCode,
+    details,
+  };
+};
 
 /**
  * Request interceptor - attach auth token if available
@@ -62,11 +111,7 @@ apiClient.interceptors.response.use(
     }
 
     // Backend returned success: false with an error payload
-    const error: ApiError = {
-      message: body.error?.message ?? "An error occurred",
-      errorCode: body.error?.code,
-      statusCode: response.status,
-    };
+    const error = buildApiError(body.error, response.status, "An error occurred");
 
     return Promise.reject(error);
   },
@@ -76,12 +121,12 @@ apiClient.interceptors.response.use(
     // Attempt to read the nested error object from backend contract
     const backendError = body && typeof body === "object" ? body.error : null;
 
-    const apiError: ApiError = {
-      message:
-        backendError?.message ?? error.message ?? "Network error occurred",
-      errorCode: backendError?.code ?? "NETWORK_ERROR",
-      statusCode: error.response?.status ?? 500,
-    };
+    const apiError = buildApiError(
+      backendError,
+      error.response?.status ?? 500,
+      error.message || "Network error occurred",
+      backendError ? undefined : "NETWORK_ERROR",
+    );
 
     if (apiError.statusCode === 401 && typeof window !== "undefined") {
       localStorage.removeItem(AUTH_STORAGE_KEYS.accessToken);

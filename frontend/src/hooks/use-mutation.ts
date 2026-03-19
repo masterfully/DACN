@@ -1,10 +1,11 @@
 "use client";
 
 import useSWRMutation from "swr/mutation";
-import type { ApiError } from "@/types/api";
+import type { ApiError, MutationResult } from "@/types/api";
 
 export interface UseMutationResult<TData, TVariables> {
   mutate: (variables: TVariables) => Promise<TData | undefined>;
+  mutateWithResult: (variables: TVariables) => Promise<MutationResult<TData>>;
   isLoading: boolean;
   error: ApiError | undefined;
 }
@@ -42,8 +43,25 @@ export function useMutation<TData, TVariables>(
     );
   };
 
+  const mutateWithResult = async (
+    variables: TVariables,
+  ): Promise<MutationResult<TData>> => {
+    try {
+      const data = await (
+        trigger as (
+          arg: TVariables,
+          options?: { throwOnError?: boolean },
+        ) => Promise<TData>
+      )(variables, { throwOnError: true });
+      return { ok: true, data };
+    } catch (caughtError) {
+      return { ok: false, error: caughtError as ApiError };
+    }
+  };
+
   return {
     mutate,
+    mutateWithResult,
     isLoading: isMutating,
     error,
   };
