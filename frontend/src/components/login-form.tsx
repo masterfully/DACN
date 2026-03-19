@@ -3,8 +3,9 @@
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { useLogin } from "@/hooks/use-auth";
-import { useRouter } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { useAuthStore } from "@/stores/auth-store";
+import { Separator } from "./ui/separator";
 
 export function LoginForm() {
   const [username, setUsername] = React.useState("");
@@ -89,10 +90,19 @@ export function LoginForm() {
       </div>
 
       {submitError ? (
-        <p className="text-sm text-destructive" role="alert">
+        <p className="text-destructive text-sm" role="alert">
           {submitError}
         </p>
       ) : null}
+
+      <Separator />
+
+      <div className="text-center text-sm">
+        Bạn chưa có tài khoản?{" "}
+        <Link href="/signup" className="underline">
+          Đăng ký
+        </Link>
+      </div>
 
       <Button type="submit" className="w-full" disabled={isLoading}>
         {isLoading ? "Đang đăng nhập..." : "Đăng nhập"}
