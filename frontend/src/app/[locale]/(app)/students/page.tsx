@@ -1,18 +1,9 @@
-import { PageContainer } from "@/components/page-container";
-import { PageSectionHeader } from "@/components/page-section-header";
-import { StudentsTable } from "./students-table";
-
 export default function StudentsPage() {
   return (
-    <PageContainer
-      header={
-        <PageSectionHeader
-          title="Sinh viên"
-          description="Quản lý sinh viên và các thông tin liên quan."
-        />
-      }
-    >
-      <StudentsTable />
-    </PageContainer>
+    <div className="flex flex-1 flex-col gap-4">
+      <h1 className="text-2xl font-semibold tracking-tight">Sinh viên</h1>
+      <div className="min-h-[50vh] rounded-xl bg-muted/50" />
+    </div>
   );
 }
+
