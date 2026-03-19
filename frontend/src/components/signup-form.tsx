@@ -3,8 +3,9 @@
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { useRegister } from "@/hooks/use-auth";
-import { useRouter } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { useAuthStore } from "@/stores/auth-store";
+import { Separator } from "./ui/separator";
 
 export function SignupForm() {
   const [fullName, setFullName] = React.useState("");
@@ -51,7 +52,7 @@ export function SignupForm() {
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-2 text-center md:text-left">
         <h1 className="text-2xl font-semibold tracking-tight">Đăng ký</h1>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-muted-foreground text-sm">
           Tạo tài khoản để bắt đầu sử dụng hệ thống.
         </p>
       </div>
@@ -60,7 +61,7 @@ export function SignupForm() {
         <div className="space-y-2 text-left">
           <label
             htmlFor="full-name"
-            className="text-sm font-medium leading-none text-foreground"
+            className="text-foreground text-sm leading-none font-medium"
           >
             Họ và tên
           </label>
@@ -69,7 +70,7 @@ export function SignupForm() {
             type="text"
             autoComplete="name"
             required
-            className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-xs transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
+            className="border-input bg-background placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/60 flex h-9 w-full rounded-md border px-3 py-1 text-sm shadow-xs transition-colors focus-visible:ring-2 focus-visible:outline-none"
             value={fullName}
             onChange={(event) => setFullName(event.target.value)}
           />
@@ -78,7 +79,7 @@ export function SignupForm() {
         <div className="space-y-2 text-left">
           <label
             htmlFor="username"
-            className="text-sm font-medium leading-none text-foreground"
+            className="text-foreground text-sm leading-none font-medium"
           >
             Tên đăng nhập
           </label>
@@ -87,7 +88,7 @@ export function SignupForm() {
             type="text"
             autoComplete="username"
             required
-            className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-xs transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
+            className="border-input bg-background placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/60 flex h-9 w-full rounded-md border px-3 py-1 text-sm shadow-xs transition-colors focus-visible:ring-2 focus-visible:outline-none"
             value={username}
             onChange={(event) => setUsername(event.target.value)}
           />
@@ -96,7 +97,7 @@ export function SignupForm() {
         <div className="space-y-2 text-left">
           <label
             htmlFor="email"
-            className="text-sm font-medium leading-none text-foreground"
+            className="text-foreground text-sm leading-none font-medium"
           >
             Email
           </label>
@@ -105,7 +106,7 @@ export function SignupForm() {
             type="email"
             autoComplete="email"
             required
-            className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-xs transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
+            className="border-input bg-background placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/60 flex h-9 w-full rounded-md border px-3 py-1 text-sm shadow-xs transition-colors focus-visible:ring-2 focus-visible:outline-none"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
           />
@@ -114,7 +115,7 @@ export function SignupForm() {
         <div className="space-y-2 text-left">
           <label
             htmlFor="password"
-            className="text-sm font-medium leading-none text-foreground"
+            className="text-foreground text-sm leading-none font-medium"
           >
             Mật khẩu
           </label>
@@ -123,7 +124,7 @@ export function SignupForm() {
             type="password"
             autoComplete="new-password"
             required
-            className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-xs transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
+            className="border-input bg-background placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/60 flex h-9 w-full rounded-md border px-3 py-1 text-sm shadow-xs transition-colors focus-visible:ring-2 focus-visible:outline-none"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
           />
@@ -132,7 +133,7 @@ export function SignupForm() {
         <div className="space-y-2 text-left">
           <label
             htmlFor="confirm-password"
-            className="text-sm font-medium leading-none text-foreground"
+            className="text-foreground text-sm leading-none font-medium"
           >
             Xác nhận mật khẩu
           </label>
@@ -141,7 +142,7 @@ export function SignupForm() {
             type="password"
             autoComplete="new-password"
             required
-            className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-xs transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
+            className="border-input bg-background placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/60 flex h-9 w-full rounded-md border px-3 py-1 text-sm shadow-xs transition-colors focus-visible:ring-2 focus-visible:outline-none"
             value={confirmPassword}
             onChange={(event) => setConfirmPassword(event.target.value)}
           />
@@ -149,10 +150,19 @@ export function SignupForm() {
       </div>
 
       {submitError ? (
-        <p className="text-sm text-destructive" role="alert">
+        <p className="text-destructive text-sm" role="alert">
           {submitError}
         </p>
       ) : null}
+
+      <Separator />
+
+      <div className="text-center text-sm">
+        Bạn đã có tài khoản?{" "}
+        <Link href="/login" className="underline">
+          Đăng nhập
+        </Link>
+      </div>
 
       <Button type="submit" className="w-full" disabled={isLoading}>
         {isLoading ? "Đang tạo tài khoản..." : "Đăng ký"}
