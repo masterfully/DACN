@@ -1,24 +1,49 @@
 "use client";
 
 import * as React from "react";
-
 import { Button } from "@/components/ui/button";
+import { useRegister } from "@/hooks/use-auth";
+import { useRouter } from "@/i18n/navigation";
+import { useAuthStore } from "@/stores/auth-store";
 
 export function SignupForm() {
   const [fullName, setFullName] = React.useState("");
+  const [username, setUsername] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [confirmPassword, setConfirmPassword] = React.useState("");
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [submitError, setSubmitError] = React.useState<string | null>(null);
+  const { mutate: register, isLoading } = useRegister();
+  const setAuth = useAuthStore((state) => state.setAuth);
+  const router = useRouter();
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setIsSubmitting(true);
+    setSubmitError(null);
+
     try {
-      // TODO: integrate real signup API here
-      await new Promise((resolve) => setTimeout(resolve, 800));
-    } finally {
-      setIsSubmitting(false);
+      const result = await register({
+        fullName,
+        username,
+        email,
+        password,
+        confirmPassword,
+      });
+
+      if (!result) {
+        setSubmitError("Không thể đăng ký. Vui lòng thử lại.");
+        return;
+      }
+
+      setAuth({
+        user: result.account,
+        accessToken: result.accessToken,
+        refreshToken: result.refreshToken,
+      });
+
+      router.replace("/dashboard");
+    } catch {
+      setSubmitError("Đăng ký thất bại. Vui lòng kiểm tra lại thông tin.");
     }
   }
 
@@ -47,6 +72,24 @@ export function SignupForm() {
             className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-xs transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
             value={fullName}
             onChange={(event) => setFullName(event.target.value)}
+          />
+        </div>
+
+        <div className="space-y-2 text-left">
+          <label
+            htmlFor="username"
+            className="text-sm font-medium leading-none text-foreground"
+          >
+            Tên đăng nhập
+          </label>
+          <input
+            id="username"
+            type="text"
+            autoComplete="username"
+            required
+            className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-xs transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
+            value={username}
+            onChange={(event) => setUsername(event.target.value)}
           />
         </div>
 
@@ -105,10 +148,15 @@ export function SignupForm() {
         </div>
       </div>
 
-      <Button type="submit" className="w-full" disabled={isSubmitting}>
-        {isSubmitting ? "Đang tạo tài khoản..." : "Đăng ký"}
+      {submitError ? (
+        <p className="text-sm text-destructive" role="alert">
+          {submitError}
+        </p>
+      ) : null}
+
+      <Button type="submit" className="w-full" disabled={isLoading}>
+        {isLoading ? "Đang tạo tài khoản..." : "Đăng ký"}
       </Button>
     </form>
   );
 }
-

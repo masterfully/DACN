@@ -18,8 +18,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { useLogout } from "@/hooks/use-auth";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
+import { useAuthStore } from "@/stores/auth-store";
 
 const DEFAULT_ACCOUNT_NAME = "Nguyễn Văn A";
 
@@ -43,8 +45,14 @@ export function AppTopbar({
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
+  const currentUser = useAuthStore((state) => state.currentUser);
+  const refreshToken = useAuthStore((state) => state.refreshToken);
+  const clearAuth = useAuthStore((state) => state.clearAuth);
+  const { mutate: logout, isLoading: isLoggingOut } = useLogout();
 
   // const initials = getInitials(accountName);
+  const resolvedAccountName =
+    currentUser?.profile?.fullName ?? currentUser?.username ?? accountName;
 
   const languages = [
     {
@@ -59,6 +67,17 @@ export function AppTopbar({
 
   function changeLocale(targetLocale: string) {
     router.replace(pathname, { locale: targetLocale });
+  }
+
+  async function handleLogout() {
+    try {
+      if (refreshToken) {
+        await logout({ refreshToken });
+      }
+    } finally {
+      clearAuth();
+      router.replace("/login");
+    }
   }
 
   return (
@@ -79,7 +98,7 @@ export function AppTopbar({
 
           <DropdownMenuContent align="end" className="w-64">
             <DropdownMenuLabel className="font-medium">
-              {accountName}
+              {resolvedAccountName}
             </DropdownMenuLabel>
 
             <DropdownMenuSeparator />
@@ -170,11 +189,15 @@ export function AppTopbar({
 
             <DropdownMenuSeparator />
 
-            <DropdownMenuItem asChild variant="destructive">
-              <Link href="/">
-                <LogOut />
-                <span>Đăng xuất</span>
-              </Link>
+            <DropdownMenuItem
+              variant="destructive"
+              disabled={isLoggingOut}
+              onClick={() => {
+                void handleLogout();
+              }}
+            >
+              <LogOut />
+              <span>{isLoggingOut ? "Đang đăng xuất..." : "Đăng xuất"}</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

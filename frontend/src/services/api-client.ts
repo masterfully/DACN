@@ -3,9 +3,15 @@ import axios, {
   type AxiosResponse,
   type InternalAxiosRequestConfig,
 } from "axios";
-import type { ApiError, ApiMeta, ApiResponse, PaginatedData } from "@/types/api";
+import { AUTH_STORAGE_KEYS } from "@/lib/auth-storage";
+import type {
+  ApiError,
+  ApiMeta,
+  ApiResponse,
+  PaginatedData,
+} from "@/types/api";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
 
 export const apiClient = axios.create({
   baseURL: BASE_URL,
@@ -22,7 +28,7 @@ apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const token =
       typeof window !== "undefined"
-        ? localStorage.getItem("accessToken")
+        ? localStorage.getItem(AUTH_STORAGE_KEYS.accessToken)
         : null;
 
     if (token && config.headers) {
@@ -71,13 +77,16 @@ apiClient.interceptors.response.use(
     const backendError = body && typeof body === "object" ? body.error : null;
 
     const apiError: ApiError = {
-      message: backendError?.message ?? error.message ?? "Network error occurred",
+      message:
+        backendError?.message ?? error.message ?? "Network error occurred",
       errorCode: backendError?.code ?? "NETWORK_ERROR",
       statusCode: error.response?.status ?? 500,
     };
 
     if (apiError.statusCode === 401 && typeof window !== "undefined") {
-      localStorage.removeItem("accessToken");
+      localStorage.removeItem(AUTH_STORAGE_KEYS.accessToken);
+      localStorage.removeItem(AUTH_STORAGE_KEYS.refreshToken);
+      localStorage.removeItem(AUTH_STORAGE_KEYS.currentUser);
     }
 
     return Promise.reject(apiError);
