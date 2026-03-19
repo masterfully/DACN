@@ -47,7 +47,9 @@ const isAuthTokenPayload = (value: unknown): value is AuthTokenPayload => {
     typeof payload.accountId === "number" &&
     typeof payload.username === "string" &&
     typeof payload.role === "string" &&
-    [RoleEnum.ADMIN, RoleEnum.LECTURER, RoleEnum.STUDENT].includes(payload.role as RoleEnum)
+    [RoleEnum.ADMIN, RoleEnum.LECTURER, RoleEnum.STUDENT, RoleEnum.PARENT].includes(
+      payload.role as RoleEnum,
+    )
   );
 };
 

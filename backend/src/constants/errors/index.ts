@@ -9,3 +9,6 @@ export { SECTION_ERROR_MESSAGES } from "./section/messages";
 
 export { ROOM_ERROR_CODES } from "./room/codes";
 export { ROOM_ERROR_MESSAGES } from "./room/messages";
+
+export { ACCOUNT_ERROR_CODES } from "./account/codes";
+export { ACCOUNT_ERROR_MESSAGES } from "./account/messages";

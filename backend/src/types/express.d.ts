@@ -6,7 +6,7 @@ declare global {
       requestId?: string;
       user?: {
         accountId: number;
-        role: "ADMIN" | "LECTURER" | "STUDENT";
+        role: "ADMIN" | "LECTURER" | "STUDENT" | "PARENT";
         username?: string;
       };
     }

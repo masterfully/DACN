@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "47a33ac3-01fc-4ee1-9cb2-095c3c74adec",
+    "_postman_id": "11dd85a7-13ce-4d8f-8608-6e299b7567a8",
     "name": "DACN Backend - Full API Test Cases",
     "description": "Comprehensive test cases for existing modules: health, auth, subjects, rooms, sections.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
@@ -865,6 +865,554 @@
               "response": []
             }
           ]
+        }
+      ]
+    },
+    {
+      "name": "Accounts",
+      "item": [
+        {
+          "name": "Get Accounts - Success (ADMIN)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjIsInJvbGUiOiJBRE1JTiIsInVzZXJuYW1lIjoic3R1ZGVudF90ZXN0XzAwMSIsImlhdCI6MTc3MzgyNTU3OSwiZXhwIjozNjAwMDAxNzczODI1NTc5fQ.FeX3PXNKyyuBeCDx9GEYshS9w290mapxnjft1DxZTfg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/accounts?page=1&limit=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "accounts"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Accounts - Role filter",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjIsInJvbGUiOiJBRE1JTiIsInVzZXJuYW1lIjoic3R1ZGVudF90ZXN0XzAwMSIsImlhdCI6MTc3MzgyNTU3OSwiZXhwIjozNjAwMDAxNzczODI1NTc5fQ.FeX3PXNKyyuBeCDx9GEYshS9w290mapxnjft1DxZTfg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/accounts?role=PARENT&page=1&limit=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "accounts"
+              ],
+              "query": [
+                {
+                  "key": "role",
+                  "value": "PARENT"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Accounts - Search by username/email",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjIsInJvbGUiOiJBRE1JTiIsInVzZXJuYW1lIjoic3R1ZGVudF90ZXN0XzAwMSIsImlhdCI6MTc3MzgyNTU3OSwiZXhwIjozNjAwMDAxNzczODI1NTc5fQ.FeX3PXNKyyuBeCDx9GEYshS9w290mapxnjft1DxZTfg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/accounts?search=admin&page=1&limit=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "accounts"
+              ],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "admin"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Accounts - Legacy roles param should fail",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjIsInJvbGUiOiJBRE1JTiIsInVzZXJuYW1lIjoic3R1ZGVudF90ZXN0XzAwMSIsImlhdCI6MTc3MzgyNTU3OSwiZXhwIjozNjAwMDAxNzczODI1NTc5fQ.FeX3PXNKyyuBeCDx9GEYshS9w290mapxnjft1DxZTfg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/accounts?roles=ADMIN&page=1&limit=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "accounts"
+              ],
+              "query": [
+                {
+                  "key": "roles",
+                  "value": "ADMIN"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Accounts - Forbidden (STUDENT)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjksInJvbGUiOiJTVFVERU5UIiwidXNlcm5hbWUiOiJzdHVkZW50X3Rlc3RfMTc3Mzg0Mjk4MCIsImlhdCI6MTc3Mzg0Mjk4MCwiZXhwIjoxNzc0NDQ3NzgwfQ.f2CffXNSG950EZO-xY_8AcE1vmFJbTtlH1soI5-bjpo",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/accounts?page=1&limit=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "accounts"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Accounts - Missing token",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/accounts?page=1&limit=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "accounts"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Account - Success (PARENT)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const ts = Date.now();",
+                  "pm.collectionVariables.set('account_new_username', `parent_${ts}`);",
+                  "pm.collectionVariables.set('account_new_email', `parent_${ts}@example.com`);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjIsInJvbGUiOiJBRE1JTiIsInVzZXJuYW1lIjoic3R1ZGVudF90ZXN0XzAwMSIsImlhdCI6MTc3MzgyNTU3OSwiZXhwIjozNjAwMDAxNzczODI1NTc5fQ.FeX3PXNKyyuBeCDx9GEYshS9w290mapxnjft1DxZTfg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{account_new_username}}\",\n  \"email\": \"{{account_new_email}}\",\n  \"password\": \"Admin@123\",\n  \"role\": \"PARENT\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/accounts",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "accounts"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Account - Duplicate username",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjIsInJvbGUiOiJBRE1JTiIsInVzZXJuYW1lIjoic3R1ZGVudF90ZXN0XzAwMSIsImlhdCI6MTc3MzgyNTU3OSwiZXhwIjozNjAwMDAxNzczODI1NTc5fQ.FeX3PXNKyyuBeCDx9GEYshS9w290mapxnjft1DxZTfg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{account_new_username}}\",\n  \"email\": \"dup_user_{{$timestamp}}@example.com\",\n  \"password\": \"Admin@123\",\n  \"role\": \"PARENT\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/accounts",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "accounts"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Account - Duplicate email",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjIsInJvbGUiOiJBRE1JTiIsInVzZXJuYW1lIjoic3R1ZGVudF90ZXN0XzAwMSIsImlhdCI6MTc3MzgyNTU3OSwiZXhwIjozNjAwMDAxNzczODI1NTc5fQ.FeX3PXNKyyuBeCDx9GEYshS9w290mapxnjft1DxZTfg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"dup_email_{{$timestamp}}\",\n  \"email\": \"{{account_new_email}}\",\n  \"password\": \"Admin@123\",\n  \"role\": \"PARENT\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/accounts",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "accounts"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Account - Invalid role",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjIsInJvbGUiOiJBRE1JTiIsInVzZXJuYW1lIjoic3R1ZGVudF90ZXN0XzAwMSIsImlhdCI6MTc3MzgyNTU3OSwiZXhwIjozNjAwMDAxNzczODI1NTc5fQ.FeX3PXNKyyuBeCDx9GEYshS9w290mapxnjft1DxZTfg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"invalid_role_{{$timestamp}}\",\n  \"email\": \"invalid_role_{{$timestamp}}@example.com\",\n  \"password\": \"Admin@123\",\n  \"role\": \"SUPER_ADMIN\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/accounts",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "accounts"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Account - Weak password",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjIsInJvbGUiOiJBRE1JTiIsInVzZXJuYW1lIjoic3R1ZGVudF90ZXN0XzAwMSIsImlhdCI6MTc3MzgyNTU3OSwiZXhwIjozNjAwMDAxNzczODI1NTc5fQ.FeX3PXNKyyuBeCDx9GEYshS9w290mapxnjft1DxZTfg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"weak_pwd_{{$timestamp}}\",\n  \"email\": \"weak_pwd_{{$timestamp}}@example.com\",\n  \"password\": \"password\",\n  \"role\": \"PARENT\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/accounts",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "accounts"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Account - Forbidden (STUDENT)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjksInJvbGUiOiJTVFVERU5UIiwidXNlcm5hbWUiOiJzdHVkZW50X3Rlc3RfMTc3Mzg0Mjk4MCIsImlhdCI6MTc3Mzg0Mjk4MCwiZXhwIjoxNzc0NDQ3NzgwfQ.f2CffXNSG950EZO-xY_8AcE1vmFJbTtlH1soI5-bjpo",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"forbidden_{{$timestamp}}\",\n  \"email\": \"forbidden_{{$timestamp}}@example.com\",\n  \"password\": \"Admin@123\",\n  \"role\": \"PARENT\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/accounts",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "accounts"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Account - Missing token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"missing_token_{{$timestamp}}\",\n  \"email\": \"missing_token_{{$timestamp}}@example.com\",\n  \"password\": \"Admin@123\",\n  \"role\": \"PARENT\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/accounts",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "accounts"
+              ]
+            }
+          },
+          "response": []
         }
       ]
     },
@@ -2741,6 +3289,14 @@
     {
       "key": "section_end_date",
       "value": "2026-12-28"
+    },
+    {
+      "key": "account_new_username",
+      "value": ""
+    },
+    {
+      "key": "account_new_email",
+      "value": ""
     }
   ]
 }
