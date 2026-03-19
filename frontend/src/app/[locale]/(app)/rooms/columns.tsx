@@ -4,19 +4,22 @@ import { ColHeader } from "@/components/data-table";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import type { Room } from "@/types/room";
-import { ROOM_STATUS_LABELS, ROOM_STATUS_STYLES } from "./room.constants";
+import {
+  ROOM_STATUS_LABELS,
+  ROOM_STATUS_STYLES,
+  ROOM_TYPE_LABELS,
+} from "./room.constants";
 
-export function RoomStatusBadge({ status }: { status: string | null }) {
+export function RoomStatusBadge({ status }: { status: Room["status"] }) {
   if (!status) return <span className="text-muted-foreground">—</span>;
-  const key = status.toLowerCase();
   return (
     <Badge
       variant="ghost"
       className={cn(
-        ROOM_STATUS_STYLES[key] ?? "bg-muted text-muted-foreground",
+        ROOM_STATUS_STYLES[status] ?? "bg-muted text-muted-foreground",
       )}
     >
-      {ROOM_STATUS_LABELS[key] ?? status}
+      {ROOM_STATUS_LABELS[status] ?? status}
     </Badge>
   );
 }
@@ -39,7 +42,10 @@ export const roomColumns: ColumnDef<Room>[] = [
     header: () => <ColHeader icon={TagIcon} label="Loại phòng" />,
     meta: { visibilityLabel: "Loại phòng" },
     enableSorting: false,
-    cell: ({ row }) => row.original.roomType ?? "—",
+    cell: ({ row }) =>
+      row.original.roomType
+        ? (ROOM_TYPE_LABELS[row.original.roomType] ?? row.original.roomType)
+        : "—",
   },
   {
     accessorKey: "campus",
