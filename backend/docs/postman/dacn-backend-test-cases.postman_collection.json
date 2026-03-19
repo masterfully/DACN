@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "0ce9939c-7250-433c-9081-96f0366978c5",
     "name": "DACN Backend - Full API Test Cases",
-    "description": "Comprehensive test cases for existing modules: health, auth, subjects, rooms.",
+    "description": "Comprehensive test cases for existing modules: health, auth, subjects, rooms, sections.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "38545466"
   },
@@ -1080,6 +1080,379 @@
       ]
     },
     {
+      "name": "Sections",
+      "item": [
+        {
+          "name": "Create Section - Success (ADMIN)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"subjectId\": \"{{existing_subject_id}}\",\n  \"lecturerProfileId\": \"{{existing_lecturer_profile_id}}\",\n  \"year\": \"{{section_year}}\",\n  \"maxCapacity\": 40,\n  \"status\": 1,\n  \"visibility\": 1,\n  \"schedule\": [\n    {\n      \"roomId\": \"{{existing_room_id}}\",\n      \"dayOfWeek\": \"MONDAY\",\n      \"startPeriod\": 1,\n      \"endPeriod\": 3,\n      \"startDate\": \"{{section_start_date}}\",\n      \"endDate\": \"{{section_end_date}}\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sections",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Section - Missing Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"subjectId\": \"{{existing_subject_id}}\",\n  \"lecturerProfileId\": \"{{existing_lecturer_profile_id}}\",\n  \"year\": \"{{section_year}}\",\n  \"maxCapacity\": 40,\n  \"status\": 1,\n  \"visibility\": 1,\n  \"schedule\": [\n    {\n      \"roomId\": \"{{existing_room_id}}\",\n      \"dayOfWeek\": \"MONDAY\",\n      \"startPeriod\": 1,\n      \"endPeriod\": 3,\n      \"startDate\": \"{{section_start_date}}\",\n      \"endDate\": \"{{section_end_date}}\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sections",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Section - Forbidden (STUDENT)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"subjectId\": \"{{existing_subject_id}}\",\n  \"lecturerProfileId\": \"{{existing_lecturer_profile_id}}\",\n  \"year\": \"{{section_year}}\",\n  \"maxCapacity\": 40,\n  \"status\": 1,\n  \"visibility\": 1,\n  \"schedule\": [\n    {\n      \"roomId\": \"{{existing_room_id}}\",\n      \"dayOfWeek\": \"MONDAY\",\n      \"startPeriod\": 1,\n      \"endPeriod\": 3,\n      \"startDate\": \"{{section_start_date}}\",\n      \"endDate\": \"{{section_end_date}}\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sections",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Section - Invalid Year Format",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"subjectId\": \"{{existing_subject_id}}\",\n  \"lecturerProfileId\": \"{{existing_lecturer_profile_id}}\",\n  \"year\": \"2026/2027\",\n  \"maxCapacity\": 40,\n  \"status\": 1,\n  \"visibility\": 1,\n  \"schedule\": [\n    {\n      \"roomId\": \"{{existing_room_id}}\",\n      \"dayOfWeek\": \"MONDAY\",\n      \"startPeriod\": 1,\n      \"endPeriod\": 3,\n      \"startDate\": \"{{section_start_date}}\",\n      \"endDate\": \"{{section_end_date}}\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sections",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Section - Invalid Period Range",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"subjectId\": \"{{existing_subject_id}}\",\n  \"lecturerProfileId\": \"{{existing_lecturer_profile_id}}\",\n  \"year\": \"{{section_year}}\",\n  \"maxCapacity\": 40,\n  \"status\": 1,\n  \"visibility\": 1,\n  \"schedule\": [\n    {\n      \"roomId\": \"{{existing_room_id}}\",\n      \"dayOfWeek\": \"MONDAY\",\n      \"startPeriod\": 5,\n      \"endPeriod\": 2,\n      \"startDate\": \"{{section_start_date}}\",\n      \"endDate\": \"{{section_end_date}}\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sections",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Section - Empty Schedule",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"subjectId\": \"{{existing_subject_id}}\",\n  \"lecturerProfileId\": \"{{existing_lecturer_profile_id}}\",\n  \"year\": \"{{section_year}}\",\n  \"maxCapacity\": 40,\n  \"status\": 1,\n  \"visibility\": 1,\n  \"schedule\": []\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sections",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Section - Duplicate Schedules In Payload",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"subjectId\": \"{{existing_subject_id}}\",\n  \"lecturerProfileId\": \"{{existing_lecturer_profile_id}}\",\n  \"year\": \"{{section_year}}\",\n  \"maxCapacity\": 40,\n  \"status\": 1,\n  \"visibility\": 1,\n  \"schedule\": [\n    {\n      \"roomId\": \"{{existing_room_id}}\",\n      \"dayOfWeek\": \"MONDAY\",\n      \"startPeriod\": 1,\n      \"endPeriod\": 3,\n      \"startDate\": \"{{section_start_date}}\",\n      \"endDate\": \"{{section_end_date}}\"\n    },\n    {\n      \"roomId\": \"{{existing_room_id}}\",\n      \"dayOfWeek\": \"MONDAY\",\n      \"startPeriod\": 2,\n      \"endPeriod\": 4,\n      \"startDate\": \"{{section_start_date}}\",\n      \"endDate\": \"{{section_end_date}}\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sections",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Section - Subject Not Found",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"subjectId\": \"{{not_found_subject_id}}\",\n  \"lecturerProfileId\": \"{{existing_lecturer_profile_id}}\",\n  \"year\": \"{{section_year}}\",\n  \"maxCapacity\": 40,\n  \"status\": 1,\n  \"visibility\": 1,\n  \"schedule\": [\n    {\n      \"roomId\": \"{{existing_room_id}}\",\n      \"dayOfWeek\": \"MONDAY\",\n      \"startPeriod\": 1,\n      \"endPeriod\": 3,\n      \"startDate\": \"{{section_start_date}}\",\n      \"endDate\": \"{{section_end_date}}\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sections",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Section - Lecturer Not Found",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"subjectId\": \"{{existing_subject_id}}\",\n  \"lecturerProfileId\": \"{{not_found_lecturer_profile_id}}\",\n  \"year\": \"{{section_year}}\",\n  \"maxCapacity\": 40,\n  \"status\": 1,\n  \"visibility\": 1,\n  \"schedule\": [\n    {\n      \"roomId\": \"{{existing_room_id}}\",\n      \"dayOfWeek\": \"MONDAY\",\n      \"startPeriod\": 1,\n      \"endPeriod\": 3,\n      \"startDate\": \"{{section_start_date}}\",\n      \"endDate\": \"{{section_end_date}}\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sections",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Section - Lecturer Invalid Role",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"subjectId\": \"{{existing_subject_id}}\",\n  \"lecturerProfileId\": \"{{non_lecturer_profile_id}}\",\n  \"year\": \"{{section_year}}\",\n  \"maxCapacity\": 40,\n  \"status\": 1,\n  \"visibility\": 1,\n  \"schedule\": [\n    {\n      \"roomId\": \"{{existing_room_id}}\",\n      \"dayOfWeek\": \"MONDAY\",\n      \"startPeriod\": 1,\n      \"endPeriod\": 3,\n      \"startDate\": \"{{section_start_date}}\",\n      \"endDate\": \"{{section_end_date}}\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sections",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Section - Room Not Found",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"subjectId\": \"{{existing_subject_id}}\",\n  \"lecturerProfileId\": \"{{existing_lecturer_profile_id}}\",\n  \"year\": \"{{section_year}}\",\n  \"maxCapacity\": 40,\n  \"status\": 1,\n  \"visibility\": 1,\n  \"schedule\": [\n    {\n      \"roomId\": \"{{not_found_room_id}}\",\n      \"dayOfWeek\": \"MONDAY\",\n      \"startPeriod\": 1,\n      \"endPeriod\": 3,\n      \"startDate\": \"{{section_start_date}}\",\n      \"endDate\": \"{{section_end_date}}\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sections",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Section - Conflict With Existing Schedule",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"subjectId\": \"{{existing_subject_id}}\",\n  \"lecturerProfileId\": \"{{existing_lecturer_profile_id}}\",\n  \"year\": \"{{section_year}}\",\n  \"maxCapacity\": 40,\n  \"status\": 1,\n  \"visibility\": 1,\n  \"schedule\": [\n    {\n      \"roomId\": \"{{existing_room_id}}\",\n      \"dayOfWeek\": \"MONDAY\",\n      \"startPeriod\": 1,\n      \"endPeriod\": 3,\n      \"startDate\": \"{{section_start_date}}\",\n      \"endDate\": \"{{section_end_date}}\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sections",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
       "name": "Rooms",
       "item": [
         {
@@ -2031,6 +2404,7 @@
       "value": "Distributed Systems"
     },
     {
+
       "key": "login_username",
       "value": "admin01"
     },
@@ -2061,6 +2435,38 @@
     {
       "key": "logout_invalid_refresh_token",
       "value": "invalid.refresh.token"
+    },
+    {
+      "key": "existing_subject_id",
+      "value": "1"
+    },
+    {
+      "key": "existing_lecturer_profile_id",
+      "value": "1"
+    },
+    {
+      "key": "non_lecturer_profile_id",
+      "value": "2"
+    },
+    {
+      "key": "not_found_subject_id",
+      "value": "999999"
+    },
+    {
+      "key": "not_found_lecturer_profile_id",
+      "value": "999999"
+    },
+    {
+      "key": "section_year",
+      "value": "2026-2027"
+    },
+    {
+      "key": "section_start_date",
+      "value": "2026-09-07"
+    },
+    {
+      "key": "section_end_date",
+      "value": "2026-12-28"
     }
   ]
 }

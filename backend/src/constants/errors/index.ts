@@ -4,5 +4,8 @@ export { AUTH_ERROR_MESSAGES } from "./auth/messages";
 export { SUBJECT_ERROR_CODES } from "./subject/codes";
 export { SUBJECT_ERROR_MESSAGES } from "./subject/messages";
 
+export { SECTION_ERROR_CODES } from "./section/codes";
+export { SECTION_ERROR_MESSAGES } from "./section/messages";
+
 export { ROOM_ERROR_CODES } from "./room/codes";
 export { ROOM_ERROR_MESSAGES } from "./room/messages";
