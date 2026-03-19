@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { sendSuccess } from "../utils/response";
+import accountRouter from "./accountRoute";
 import authRouter from "./authRoute";
 import roomRoute from "./roomRoute";
 import sectionRoute from "./sectionRoute";
@@ -19,6 +20,9 @@ router.get("/health", (_req, res) => {
 });
 
 router.use("/auth", authRouter);
+
+// Mount account routes
+router.use("/accounts", accountRouter);
 
 // Mount subject routes
 router.use("/subjects", subjectRoute);

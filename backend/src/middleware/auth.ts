@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import { AUTH_ERROR_CODES } from "../constants/errors/auth/codes";
 import { AUTH_ERROR_MESSAGES } from "../constants/errors/auth/messages";
 
-type UserRole = "ADMIN" | "LECTURER" | "STUDENT";
+type UserRole = "ADMIN" | "LECTURER" | "STUDENT" | "PARENT";
 
 export interface AuthUser {
   accountId: number;
@@ -47,12 +47,17 @@ export const requireAuth = (
   const token = getBearerToken(req.headers.authorization);
 
   if (!token) {
+    const message = AUTH_ERROR_MESSAGES.MISSING_OR_INVALID_BEARER_TOKEN;
     res.status(401).json({
       success: false,
       data: null,
       error: {
         code: AUTH_ERROR_CODES.UNAUTHORIZED,
-        message: AUTH_ERROR_MESSAGES.MISSING_OR_INVALID_BEARER_TOKEN,
+        message,
+        details: {
+          formErrors: [message],
+          fieldErrors: {},
+        },
       },
       meta: null,
     });
@@ -63,12 +68,17 @@ export const requireAuth = (
   try {
     jwtSecret = getJwtSecret();
   } catch {
+    const message = AUTH_ERROR_MESSAGES.SERVER_MISCONFIGURATION;
     res.status(500).json({
       success: false,
       data: null,
       error: {
         code: AUTH_ERROR_CODES.SERVER_MISCONFIGURATION,
-        message: AUTH_ERROR_MESSAGES.SERVER_MISCONFIGURATION,
+        message,
+        details: {
+          formErrors: [message],
+          fieldErrors: {},
+        },
       },
       meta: null,
     });
@@ -84,12 +94,17 @@ export const requireAuth = (
     };
     next();
   } catch {
+    const message = AUTH_ERROR_MESSAGES.TOKEN_INVALID_OR_EXPIRED;
     res.status(401).json({
       success: false,
       data: null,
       error: {
         code: AUTH_ERROR_CODES.UNAUTHORIZED,
-        message: AUTH_ERROR_MESSAGES.TOKEN_INVALID_OR_EXPIRED,
+        message,
+        details: {
+          formErrors: [message],
+          fieldErrors: {},
+        },
       },
       meta: null,
     });
@@ -99,12 +114,17 @@ export const requireAuth = (
 export const requireRole = (...allowedRoles: UserRole[]) => {
   return (req: Request, res: Response, next: NextFunction): void => {
     if (!req.user) {
+      const message = AUTH_ERROR_MESSAGES.LOGIN_REQUIRED;
       res.status(401).json({
         success: false,
         data: null,
         error: {
           code: AUTH_ERROR_CODES.UNAUTHORIZED,
-          message: AUTH_ERROR_MESSAGES.LOGIN_REQUIRED,
+          message,
+          details: {
+            formErrors: [message],
+            fieldErrors: {},
+          },
         },
         meta: null,
       });
@@ -112,12 +132,17 @@ export const requireRole = (...allowedRoles: UserRole[]) => {
     }
 
     if (!allowedRoles.includes(req.user.role)) {
+      const message = AUTH_ERROR_MESSAGES.FORBIDDEN;
       res.status(403).json({
         success: false,
         data: null,
         error: {
           code: AUTH_ERROR_CODES.FORBIDDEN,
-          message: AUTH_ERROR_MESSAGES.FORBIDDEN,
+          message,
+          details: {
+            formErrors: [message],
+            fieldErrors: {},
+          },
         },
         meta: null,
       });

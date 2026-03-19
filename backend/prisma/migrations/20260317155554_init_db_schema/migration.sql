@@ -2,7 +2,7 @@
 CREATE SCHEMA IF NOT EXISTS "public";
 
 -- CreateEnum
-CREATE TYPE "RoleEnum" AS ENUM ('ADMIN', 'LECTURER', 'STUDENT');
+CREATE TYPE "RoleEnum" AS ENUM ('ADMIN', 'LECTURER', 'STUDENT', 'PARENT');
 
 -- CreateTable
 CREATE TABLE "Account" (

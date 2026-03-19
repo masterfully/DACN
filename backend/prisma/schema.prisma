@@ -16,6 +16,7 @@ enum RoleEnum {
   ADMIN
   LECTURER
   STUDENT
+  PARENT
 }
 
 // 1. ACCOUNT & PROFILE
