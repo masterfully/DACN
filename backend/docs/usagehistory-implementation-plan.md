@@ -1,14 +1,17 @@
-# Kế hoạch triển khai UsageHistory Module
+# UsageHistory Module Implementation Plan
 
-## Nhiệm vụ: Full CRUD UsageHistory + Section Linking
+## Task: Full CRUD UsageHistory + Section Linking
 
-### Tổng quan
-Triển khai module hoàn chỉnh quản lý lịch sử sử dụng phòng học với CRUD đầy đủ và liên kết many-to-many với Section.
+### Overview
+Implement complete module for room usage history management with full CRUD and many-to-many linking with Section.
 
-### Yêu cầu
+### Requirements
+
 - **Base path**: `/api/usageHistories`
-- **Xác thực**: requireAuth tất cả endpoints
-- **Phân quyền**: ADMIN cho CREATE/UPDATE/DELETE/LINK
+- **Authentication**: requireAuth all endpoints
+
+- **Authorization**: ADMIN for CREATE/UPDATE/DELETE/LINK
+
 - **Key features**:
   - Time overlap detection
   - Section linking (many-to-many)
