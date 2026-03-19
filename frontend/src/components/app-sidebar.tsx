@@ -14,15 +14,15 @@ import {
 } from "@/components/ui/sidebar";
 import { navGroups } from "@/config/navigation";
 import { usePathname } from "@/i18n/navigation";
+import { useAuthStore } from "@/stores/auth-store";
 import type { NavItem } from "@/types/navigation";
 import { filterNavGroups } from "@/types/navigation";
 
 export function AppSidebar() {
   const pathname = usePathname() || "";
+  const role = useAuthStore((state) => state.currentUser?.role ?? null);
 
-  // Pass a role here when auth context is available, e.g. filterNavGroups(navGroups, role)
-  // Currently null means all items are shown (no role-gating).
-  const visibleGroups = filterNavGroups(navGroups, null);
+  const visibleGroups = filterNavGroups(navGroups, role);
 
   const renderItem = (item: NavItem) => {
     const isActive =
