@@ -947,7 +947,7 @@ GET /api/accounts?page=1&limit=10&search=student&role=STUDENT&status=ACTIVE
 | page   | number |    No    | Current page (default: 1)                        |
 | limit  | number |    No    | Number of records per page (default: 10)         |
 | search | string |    No    | Search by name or email                          |
-| roles  | string |    No    | Filter by role: ADMIN, LECTURER, STUDENT, PARENT |
+| role   | string |    No    | Filter by role: ADMIN, LECTURER, STUDENT, PARENT |
 | status | string |    No    | Filter by status: ACTIVE, INACTIVE, BANNED       |
 | gender | string |    No    | Filter by gender                                 |
 
