@@ -1,5 +1,7 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
+import { useLocale } from "next-intl";
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { useLogin } from "@/hooks/use-auth";
@@ -14,6 +16,8 @@ export function LoginForm() {
   const { mutate: login, isLoading } = useLogin();
   const setAuth = useAuthStore((state) => state.setAuth);
   const router = useRouter();
+  const locale = useLocale();
+  const searchParams = useSearchParams();
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -35,6 +39,26 @@ export function LoginForm() {
         accessToken: result.accessToken,
         refreshToken: result.refreshToken,
       });
+
+      const next = searchParams.get("next");
+      const isSafeNext =
+        typeof next === "string" &&
+        next.startsWith("/") &&
+        !next.startsWith("//") &&
+        !next.includes("\\");
+
+      if (isSafeNext) {
+        const localePrefix = `/${locale}`;
+        const nextPath =
+          next === localePrefix
+            ? "/"
+            : next.startsWith(`${localePrefix}/`)
+              ? next.slice(localePrefix.length)
+              : next;
+
+        router.replace(nextPath);
+        return;
+      }
 
       router.replace("/dashboard");
     } catch {
