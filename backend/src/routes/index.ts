@@ -3,6 +3,7 @@ import { sendSuccess } from "../utils/response";
 import accountRouter from "./accountRoute";
 import authRouter from "./authRoute";
 import roomRoute from "./roomRoute";
+import usageHistoryRoute from "./usageHistoryRoute";
 import sectionRoute from "./sectionRoute";
 import subjectRoute from "./subjectRoute";
 
@@ -32,5 +33,6 @@ router.use("/sections", sectionRoute);
 
 // Mount room routes
 router.use("/rooms", roomRoute);
+router.use("/usage-histories", usageHistoryRoute);
 
 export default router;
