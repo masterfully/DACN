@@ -413,7 +413,9 @@ Response Structure:
     "data": {
       "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
       "refreshToken": "bmV3UmVmcmVzaFRva2Vu..."
-    }
+    },
+    "error": null,
+    "meta": null
   }
   ```
 
@@ -422,10 +424,18 @@ Response Structure:
   ```json
   {
     "success": false,
+    "data": null,
     "error": {
-      "code": "REFRESH_TOKEN_EXPIRED",
-      "message": "Refresh token đã hết hạn, vui lòng đăng nhập lại"
-    }
+      "code": "AUTH_REFRESH_TOKEN_INVALID_TOKEN",
+      "message": "Refresh token không hợp lệ hoặc đã hết hạn",
+      "details": {
+        "formErrors": [
+          "Refresh token không hợp lệ hoặc đã hết hạn"
+        ],
+        "fieldErrors": {}
+      }
+    },
+    "meta": null
   }
   ```
 

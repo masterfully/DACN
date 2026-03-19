@@ -2,6 +2,8 @@ export const AUTH_ERROR_MESSAGES = {
   AUTH_LOGIN_INVALID_INPUT: "Dữ liệu đăng nhập không hợp lệ",
   AUTH_LOGIN_INVALID_CREDENTIALS: "Tên đăng nhập hoặc mật khẩu không đúng",
   AUTH_LOGIN_ACCOUNT_INACTIVE: "Tài khoản đã bị vô hiệu hóa hoặc bị khóa",
+  AUTH_REFRESH_TOKEN_INVALID_INPUT: "Dữ liệu làm mới token không hợp lệ",
+  AUTH_REFRESH_TOKEN_INVALID_TOKEN: "Refresh token không hợp lệ hoặc đã hết hạn",
   AUTH_LOGOUT_INVALID_INPUT: "Dữ liệu đăng xuất không hợp lệ",
   AUTH_LOGOUT_INVALID_TOKEN: "Refresh token không hợp lệ hoặc đã hết hạn",
   AUTH_LOGOUT_SUCCESS: "Đăng xuất thành công",

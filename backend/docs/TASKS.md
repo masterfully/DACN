@@ -58,7 +58,7 @@ Base path: `/api/auth`
 
 - [x] `POST /api/auth/login` — validate credentials, return `accessToken` + `refreshToken`, store refresh token in DB
 - [x] `POST /api/auth/logout` — invalidate refresh token record
-- [ ] `POST /api/auth/refresh-token` — verify stored refresh token, issue new pair (rotation)
+- [x] `POST /api/auth/refresh-token` — verify stored refresh token, issue new pair (rotation)
 - [ ] `PUT /api/auth/change-password` — verify `currentPassword`, hash and update `newPassword`
 - [x] `POST /api/auth/register` — create `Account` (role: STUDENT) + `UserProfile`, validate `password` = `confirmPassword`, return tokens
 - [x] Postman test cases for `POST /api/auth/register` (success + validation + duplicate) verified
