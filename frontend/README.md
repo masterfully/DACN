@@ -42,6 +42,7 @@ A simple and opinionated Next.js project template pre-configured with essential 
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+
 ## Docker
 
 1. **Build the image**
