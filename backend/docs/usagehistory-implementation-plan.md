@@ -9,9 +9,7 @@ Implement complete module for room usage history management with full CRUD and m
 
 - **Base path**: `/api/usageHistories`
 - **Authentication**: requireAuth all endpoints
-
 - **Authorization**: ADMIN for CREATE/UPDATE/DELETE/LINK
-
 - **Key features**:
   - Time overlap detection
   - Section linking (many-to-many)
@@ -40,7 +38,7 @@ curl -X POST http://localhost:8080/api/usageHistories \
     "roomId": 1,
     "startTime": "2024-01-01T09:00:00Z",
     "endTime": "2024-01-01T11:00:00Z",
-    "note": "Họp ban giám hiệu"
+    "note": "Management meeting"
   }'
 ```
 
@@ -53,13 +51,13 @@ curl -X POST http://localhost:8080/api/usageHistories \
     "RoomID": 1,
     "StartTime": "2024-01-01T09:00:00.000Z",
     "EndTime": "2024-01-01T11:00:00.000Z",
-    "Note": "Họp ban giám hiệu"
+    "Note": "Management meeting"
   },
   "error": null
 }
 ```
 
-### File được tạo/cập nhật
+### Files Created/Updated
 1. **`src/services/usageHistoryService.ts`**
    - Zod schemas (create/update/list)
    - Prisma CRUD + timeOverlap check
@@ -73,25 +71,25 @@ curl -X POST http://localhost:8080/api/usageHistories \
    - All 7 routes + middleware stack
    
 4. **`src/constants/errors/usageHistory/`**
-   - codes.ts + messages.ts (Vietnamese)
+   - codes.ts + messages.ts
 
 5. **`src/routes/index.ts`** (Mount router)
 
-### Chi tiết triển khai
+### Implementation Details
 - **Validation**: Zod + refine(endTime > startTime), note max 255
 - **Business logic**: 
   - Transactional overlap check (RoomID + time range)
-  - Junction table cho Section links
-  - Prevent delete nếu có linked sections
+  - Junction table for Section links
+  - Prevent delete if linked sections exist
 - **Pagination**: skip/take + total count
-- **Projections**: Lean list, full detail với sections
+- **Projections**: Lean list, full detail with sections
 - **Errors**: 400/404/409/403 mapping
 
 ### How To Test (Postman)
-1. **Chuẩn bị**:
-   - Tạo Room ID=1
-   - Tạo Section ID=5  
-   - Lấy admin accessToken
+1. **Preparation**:
+   - Create Room ID=1
+   - Create Section ID=5  
+   - Get admin accessToken
 
 2. **Test sequence**:
 ```
@@ -109,12 +107,12 @@ curl -X POST http://localhost:8080/api/usageHistories \
    - Non-admin → 403
    - Invalid datetime → 400
 
-### Trạng thái
+### Status
 - [x] Service layer (Zod + Prisma + transactions)
 - [x] Controller handlers (7 endpoints)
 - [x] Routes + middleware (auth/roles)
-- [x] Error constants (codes + Vietnamese messages)
+- [x] Error constants (codes + English messages)
 - [x] Router mounting
 - [x] Business rules (overlap, links, delete guard)
-- [ ] Full Postman collection
+- [x] Full Postman collection
 
