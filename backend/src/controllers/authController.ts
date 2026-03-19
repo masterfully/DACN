@@ -36,6 +36,12 @@ const logoutSchema = z.object({
     .min(1, AUTH_FIELD_ERROR_MESSAGES.REFRESH_TOKEN_REQUIRED),
 });
 
+const refreshTokenSchema = z.object({
+  refreshToken: requiredString(AUTH_FIELD_ERROR_MESSAGES.REFRESH_TOKEN_REQUIRED)
+    .trim()
+    .min(1, AUTH_FIELD_ERROR_MESSAGES.REFRESH_TOKEN_REQUIRED),
+});
+
 const registerSchema = z
   .object({
     fullName: requiredString(AUTH_FIELD_ERROR_MESSAGES.FULL_NAME_REQUIRED)
@@ -110,6 +116,22 @@ export const logout = async (req: Request, res: Response): Promise<void> => {
   });
 
   const result = await authService.logout({
+    refreshToken: parsed.refreshToken,
+  });
+
+  sendSuccess(res, result, 200);
+};
+
+export const refreshToken = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  const parsed = parseOrThrow(refreshTokenSchema, req.body, {
+    code: AUTH_ERROR_CODES.AUTH_REFRESH_TOKEN_INVALID_INPUT,
+    message: AUTH_ERROR_MESSAGES.AUTH_REFRESH_TOKEN_INVALID_INPUT,
+  });
+
+  const result = await authService.refreshToken({
     refreshToken: parsed.refreshToken,
   });
 

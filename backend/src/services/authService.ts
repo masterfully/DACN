@@ -25,6 +25,10 @@ export interface LogoutInput {
   refreshToken: string;
 }
 
+export interface RefreshTokenInput {
+  refreshToken: string;
+}
+
 interface AuthTokenPayload {
   accountId: number;
   role: RoleEnum;
@@ -32,6 +36,20 @@ interface AuthTokenPayload {
 }
 
 type TokenExpiry = NonNullable<SignOptions["expiresIn"]>;
+
+const isAuthTokenPayload = (value: unknown): value is AuthTokenPayload => {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const payload = value as Record<string, unknown>;
+  return (
+    typeof payload.accountId === "number" &&
+    typeof payload.username === "string" &&
+    typeof payload.role === "string" &&
+    [RoleEnum.ADMIN, RoleEnum.LECTURER, RoleEnum.STUDENT].includes(payload.role as RoleEnum)
+  );
+};
 
 const getJwtSecret = (): string => {
   const secret = process.env.JWT_SECRET;
@@ -395,5 +413,151 @@ export const logout = async (input: LogoutInput) => {
 
   return {
     message: AUTH_ERROR_MESSAGES.AUTH_LOGOUT_SUCCESS,
+  };
+};
+
+export const refreshToken = async (input: RefreshTokenInput) => {
+  const normalizedRefreshToken = input.refreshToken.trim();
+
+  let decoded: unknown;
+  try {
+    decoded = jwt.verify(normalizedRefreshToken, getJwtSecret());
+  } catch {
+    throw new AppError(AUTH_ERROR_MESSAGES.AUTH_REFRESH_TOKEN_INVALID_TOKEN, {
+      statusCode: 401,
+      code: AUTH_ERROR_CODES.AUTH_REFRESH_TOKEN_INVALID_TOKEN,
+      details: {
+        formErrors: [AUTH_ERROR_MESSAGES.AUTH_REFRESH_TOKEN_INVALID_TOKEN],
+        fieldErrors: {},
+      },
+    });
+  }
+
+  if (!isAuthTokenPayload(decoded)) {
+    throw new AppError(AUTH_ERROR_MESSAGES.AUTH_REFRESH_TOKEN_INVALID_TOKEN, {
+      statusCode: 401,
+      code: AUTH_ERROR_CODES.AUTH_REFRESH_TOKEN_INVALID_TOKEN,
+      details: {
+        formErrors: [AUTH_ERROR_MESSAGES.AUTH_REFRESH_TOKEN_INVALID_TOKEN],
+        fieldErrors: {},
+      },
+    });
+  }
+
+  const refreshTokenRecord = await prisma.refreshToken.findUnique({
+    where: {
+      Token: normalizedRefreshToken,
+    },
+    select: {
+      RefreshTokenID: true,
+      AccountID: true,
+      ExpiresAt: true,
+      RevokedAt: true,
+    },
+  });
+
+  const now = new Date();
+  const isTokenInvalid =
+    !refreshTokenRecord ||
+    refreshTokenRecord.RevokedAt !== null ||
+    refreshTokenRecord.ExpiresAt <= now;
+
+  if (isTokenInvalid || refreshTokenRecord.AccountID !== decoded.accountId) {
+    throw new AppError(AUTH_ERROR_MESSAGES.AUTH_REFRESH_TOKEN_INVALID_TOKEN, {
+      statusCode: 401,
+      code: AUTH_ERROR_CODES.AUTH_REFRESH_TOKEN_INVALID_TOKEN,
+      details: {
+        formErrors: [AUTH_ERROR_MESSAGES.AUTH_REFRESH_TOKEN_INVALID_TOKEN],
+        fieldErrors: {},
+      },
+    });
+  }
+
+  const account = await prisma.account.findUnique({
+    where: {
+      AccountID: refreshTokenRecord.AccountID,
+    },
+    select: {
+      AccountID: true,
+      Username: true,
+      Role: true,
+      profile: {
+        select: {
+          Status: true,
+        },
+      },
+    },
+  });
+
+  if (!account) {
+    throw new AppError(AUTH_ERROR_MESSAGES.AUTH_REFRESH_TOKEN_INVALID_TOKEN, {
+      statusCode: 401,
+      code: AUTH_ERROR_CODES.AUTH_REFRESH_TOKEN_INVALID_TOKEN,
+      details: {
+        formErrors: [AUTH_ERROR_MESSAGES.AUTH_REFRESH_TOKEN_INVALID_TOKEN],
+        fieldErrors: {},
+      },
+    });
+  }
+
+  const normalizedProfileStatus = account.profile?.Status?.trim().toUpperCase();
+  if (normalizedProfileStatus === "INACTIVE" || normalizedProfileStatus === "BANNED") {
+    throw new AppError(AUTH_ERROR_MESSAGES.AUTH_LOGIN_ACCOUNT_INACTIVE, {
+      statusCode: 403,
+      code: AUTH_ERROR_CODES.AUTH_LOGIN_ACCOUNT_INACTIVE,
+      details: {
+        formErrors: [AUTH_ERROR_MESSAGES.AUTH_LOGIN_ACCOUNT_INACTIVE],
+        fieldErrors: {},
+      },
+    });
+  }
+
+  const payload: AuthTokenPayload = {
+    accountId: account.AccountID,
+    role: account.Role,
+    username: account.Username,
+  };
+
+  const accessExpiresIn = getAccessTokenExpiry();
+  const refreshExpiresIn = getRefreshTokenExpiry();
+  const newRefreshExpiresAt = new Date(Date.now() + parseExpiryToMs(refreshExpiresIn));
+
+  const newAccessToken = signToken(payload, accessExpiresIn);
+  const newRefreshToken = signToken(payload, refreshExpiresIn);
+
+  await prisma.$transaction(async (tx) => {
+    const revoked = await tx.refreshToken.updateMany({
+      where: {
+        RefreshTokenID: refreshTokenRecord.RefreshTokenID,
+        RevokedAt: null,
+      },
+      data: {
+        RevokedAt: now,
+      },
+    });
+
+    if (revoked.count === 0) {
+      throw new AppError(AUTH_ERROR_MESSAGES.AUTH_REFRESH_TOKEN_INVALID_TOKEN, {
+        statusCode: 401,
+        code: AUTH_ERROR_CODES.AUTH_REFRESH_TOKEN_INVALID_TOKEN,
+        details: {
+          formErrors: [AUTH_ERROR_MESSAGES.AUTH_REFRESH_TOKEN_INVALID_TOKEN],
+          fieldErrors: {},
+        },
+      });
+    }
+
+    await tx.refreshToken.create({
+      data: {
+        AccountID: account.AccountID,
+        Token: newRefreshToken,
+        ExpiresAt: newRefreshExpiresAt,
+      },
+    });
+  });
+
+  return {
+    accessToken: newAccessToken,
+    refreshToken: newRefreshToken,
   };
 };
