@@ -11,8 +11,16 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import type { CreateRoomInput, Room, UpdateRoomInput } from "@/types/room";
-import { ROOM_STATUS_OPTIONS } from "./room.constants";
+import { getApiFormErrorMessage, mapApiFieldErrors } from "@/lib/api-error";
+import type { MutationResult } from "@/types/api";
+import type {
+  CreateRoomInput,
+  Room,
+  RoomStatus,
+  RoomType,
+  UpdateRoomInput,
+} from "@/types/room";
+import { ROOM_STATUS_OPTIONS, ROOM_TYPE_OPTIONS } from "./room.constants";
 
 // ---------------------------------------------------------------------------
 // Form state
@@ -20,28 +28,28 @@ import { ROOM_STATUS_OPTIONS } from "./room.constants";
 
 export interface RoomFormValues {
   roomName: string;
-  roomType: string;
+  roomType: RoomType;
   campus: string;
   capacity: string;
-  status: string;
+  status: RoomStatus;
 }
 
 export const ROOM_EMPTY_FORM: RoomFormValues = {
   roomName: "",
-  roomType: "",
+  roomType: "LECTURE",
   campus: "",
   capacity: "",
-  status: "active",
+  status: "ACTIVE",
 };
 
 /** Map an existing Room to editable form values. */
 export function roomToFormValues(room: Room): RoomFormValues {
   return {
     roomName: room.roomName ?? "",
-    roomType: room.roomType ?? "",
+    roomType: room.roomType ?? "LECTURE",
     campus: room.campus ?? "",
     capacity: room.capacity != null ? String(room.capacity) : "",
-    status: room.status ?? "active",
+    status: room.status ?? "ACTIVE",
   };
 }
 
@@ -60,8 +68,17 @@ export function validateRoomForm(
   if (!values.roomName.trim()) {
     return { field: "roomName", message: "Tên phòng không được để trống." };
   }
+  if (!values.roomType) {
+    return { field: "roomType", message: "Loại phòng không được để trống." };
+  }
+  if (!values.campus.trim()) {
+    return { field: "campus", message: "Cơ sở không được để trống." };
+  }
   if (values.capacity !== "" && Number.isNaN(Number(values.capacity))) {
     return { field: "capacity", message: "Sức chứa phải là số nguyên." };
+  }
+  if (values.capacity === "" || Number(values.capacity) <= 0) {
+    return { field: "capacity", message: "Sức chứa phải lớn hơn 0." };
   }
   return null;
 }
@@ -71,10 +88,10 @@ export function buildCreateRoomPayload(
 ): CreateRoomInput {
   return {
     roomName: values.roomName.trim(),
-    roomType: values.roomType.trim(),
+    roomType: values.roomType,
     campus: values.campus.trim(),
-    capacity: values.capacity !== "" ? Number(values.capacity) : 0,
-    status: values.status || undefined,
+    capacity: Number(values.capacity),
+    status: values.status,
   };
 }
 
@@ -83,10 +100,10 @@ export function buildUpdateRoomPayload(
 ): UpdateRoomInput {
   return {
     roomName: values.roomName.trim(),
-    roomType: values.roomType.trim(),
+    roomType: values.roomType,
     campus: values.campus.trim(),
-    capacity: values.capacity !== "" ? Number(values.capacity) : 0,
-    status: values.status || undefined,
+    capacity: Number(values.capacity),
+    status: values.status,
   };
 }
 
@@ -102,7 +119,7 @@ interface RoomFormDialogProps {
   onSubmit: (
     values: RoomFormValues,
     mode: "create" | "edit",
-  ) => Promise<boolean>;
+  ) => Promise<MutationResult<Room>>;
   isSubmitting?: boolean;
 }
 
@@ -115,12 +132,16 @@ export function RoomFormDialog({
 }: RoomFormDialogProps) {
   const [values, setValues] = React.useState<RoomFormValues>(ROOM_EMPTY_FORM);
   const [error, setError] = React.useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = React.useState<
+    Partial<Record<keyof RoomFormValues, string>>
+  >({});
 
   // Sync form values whenever the dialog opens or the target room changes.
   React.useEffect(() => {
     if (open) {
       setValues(editingRoom ? roomToFormValues(editingRoom) : ROOM_EMPTY_FORM);
       setError(null);
+      setFieldErrors({});
     }
   }, [open, editingRoom]);
 
@@ -131,20 +152,37 @@ export function RoomFormDialog({
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+    setFieldErrors({});
 
     const validationError = validateRoomForm(values);
     if (validationError) {
-      setError(validationError.message);
+      if (validationError.field === "general") {
+        setError(validationError.message);
+      } else {
+        setFieldErrors({ [validationError.field]: validationError.message });
+      }
       return;
     }
 
     const mode = editingRoom ? "edit" : "create";
-    const ok = await onSubmit(values, mode);
-    if (!ok) {
+    const result = await onSubmit(values, mode);
+    if (!result.ok) {
+      setFieldErrors(
+        mapApiFieldErrors<keyof RoomFormValues>(result.error, {
+          roomName: "roomName",
+          roomType: "roomType",
+          campus: "campus",
+          capacity: "capacity",
+          status: "status",
+        }),
+      );
       setError(
-        mode === "edit"
-          ? "Cập nhật phòng thất bại. Vui lòng thử lại."
-          : "Thêm phòng thất bại. Vui lòng thử lại.",
+        getApiFormErrorMessage(
+          result.error,
+          mode === "edit"
+            ? "Cập nhật phòng thất bại. Vui lòng thử lại."
+            : "Thêm phòng thất bại. Vui lòng thử lại.",
+        ),
       );
     }
   }
@@ -171,17 +209,31 @@ export function RoomFormDialog({
               disabled={isSubmitting}
               required
             />
+            {fieldErrors.roomName ? (
+              <p className="text-destructive text-sm">{fieldErrors.roomName}</p>
+            ) : null}
           </div>
 
           <div className="grid gap-1.5">
             <Label htmlFor="roomType">Loại phòng</Label>
-            <Input
+            <select
               id="roomType"
-              placeholder="VD: Lý thuyết, Thực hành, Hội trường"
               value={values.roomType}
-              onChange={(e) => handleFieldChange("roomType", e.target.value)}
+              onChange={(e) =>
+                handleFieldChange("roomType", e.target.value as RoomType)
+              }
               disabled={isSubmitting}
-            />
+              className="border-input focus-visible:border-ring focus-visible:ring-ring/50 h-9 w-full rounded-md border bg-transparent px-3 py-1 text-sm shadow-xs outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {ROOM_TYPE_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+            {fieldErrors.roomType ? (
+              <p className="text-destructive text-sm">{fieldErrors.roomType}</p>
+            ) : null}
           </div>
 
           <div className="grid gap-1.5">
@@ -192,7 +244,11 @@ export function RoomFormDialog({
               value={values.campus}
               onChange={(e) => handleFieldChange("campus", e.target.value)}
               disabled={isSubmitting}
+              required
             />
+            {fieldErrors.campus ? (
+              <p className="text-destructive text-sm">{fieldErrors.campus}</p>
+            ) : null}
           </div>
 
           <div className="grid gap-1.5">
@@ -206,6 +262,9 @@ export function RoomFormDialog({
               onChange={(e) => handleFieldChange("capacity", e.target.value)}
               disabled={isSubmitting}
             />
+            {fieldErrors.capacity ? (
+              <p className="text-destructive text-sm">{fieldErrors.capacity}</p>
+            ) : null}
           </div>
 
           <div className="grid gap-1.5">
@@ -213,7 +272,9 @@ export function RoomFormDialog({
             <select
               id="status"
               value={values.status}
-              onChange={(e) => handleFieldChange("status", e.target.value)}
+              onChange={(e) =>
+                handleFieldChange("status", e.target.value as RoomStatus)
+              }
               disabled={isSubmitting}
               className="border-input focus-visible:border-ring focus-visible:ring-ring/50 h-9 w-full rounded-md border bg-transparent px-3 py-1 text-sm shadow-xs outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
             >
@@ -223,6 +284,9 @@ export function RoomFormDialog({
                 </option>
               ))}
             </select>
+            {fieldErrors.status ? (
+              <p className="text-destructive text-sm">{fieldErrors.status}</p>
+            ) : null}
           </div>
 
           {error && <p className="text-destructive text-sm">{error}</p>}

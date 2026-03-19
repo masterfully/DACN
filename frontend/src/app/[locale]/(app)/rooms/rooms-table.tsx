@@ -6,6 +6,7 @@ import * as React from "react";
 import type { ToolbarActionGroup } from "@/components/data-table";
 import { DataTable } from "@/components/data-table";
 import { useCreateRoom, useRoomList, useUpdateRoom } from "@/hooks/use-rooms";
+import type { MutationResult } from "@/types/api";
 import type { Room } from "@/types/room";
 import { roomColumns } from "./columns";
 import { RoomDetailSheet } from "./room-detail-sheet";
@@ -17,40 +18,6 @@ import {
 } from "./room-form-dialog";
 import { RoomRowActions } from "./room-row-actions";
 
-// ---------------------------------------------------------------------------
-// Mock data — chỉ dùng để test hiển thị, xóa khi kết nối API thật
-// ---------------------------------------------------------------------------
-const MOCK_ROOMS: Room[] = Array.from({ length: 100 }, (_, i) => ({
-  roomId: i + 100,
-  roomName: `P.${100 + i + 1}`,
-  roomType: ["Lý thuyết", "Thực hành", "Hội trường"][i % 3],
-  campus: ["Cơ sở 1", "Cơ sở 2"][i % 2],
-  capacity: [30, 40, 50, 80, 120][i % 5],
-  status: ["active", "inactive", "maintenance"][i % 3],
-}));
-
-function useMockRoomList(page: number, pageSize: number) {
-  const start = (page - 1) * pageSize;
-  const items = MOCK_ROOMS.slice(start, start + pageSize);
-  return {
-    data: { items, meta: { page, limit: pageSize, total: MOCK_ROOMS.length } },
-    isLoading: false,
-    error: {
-      message: null,
-    },
-    mutate: () => {
-      return {
-        data: {
-          items,
-          meta: { page, limit: pageSize, total: MOCK_ROOMS.length },
-        },
-        isLoading: false,
-        error: undefined,
-      };
-    },
-  };
-}
-// ---------------------------------------------------------------------------
 export function RoomsTable() {
   // Pagination
   const [page, setPage] = React.useState(1);
@@ -68,10 +35,13 @@ export function RoomsTable() {
     isLoading,
     error,
     mutate: refreshRooms,
-  } = useMockRoomList(page, pageSize);
+  } = useRoomList({ page, limit: pageSize });
 
-  const { mutate: createRoom, isLoading: isCreating } = useCreateRoom();
-  const { mutate: updateRoom, isLoading: isUpdating } = useUpdateRoom(
+  console.log("data", data);
+
+  const { mutateWithResult: createRoom, isLoading: isCreating } =
+    useCreateRoom();
+  const { mutateWithResult: updateRoom, isLoading: isUpdating } = useUpdateRoom(
     editingRoom?.roomId ?? 0,
   );
   const isSubmitting = isCreating || isUpdating;
@@ -93,16 +63,24 @@ export function RoomsTable() {
   async function handleFormSubmit(
     values: RoomFormValues,
     mode: "create" | "edit",
-  ): Promise<boolean> {
+  ): Promise<MutationResult<Room>> {
     if (mode === "edit") {
-      const ok = await updateRoom(buildUpdateRoomPayload(values));
-      if (ok) refreshRooms();
-      return !!ok;
+      const result = await updateRoom(buildUpdateRoomPayload(values));
+      if (result.ok) {
+        await refreshRooms();
+        setDialogOpen(false);
+        setEditingRoom(null);
+      }
+      return result;
     }
 
-    const ok = await createRoom(buildCreateRoomPayload(values));
-    if (ok) refreshRooms();
-    return !!ok;
+    const result = await createRoom(buildCreateRoomPayload(values));
+    if (result.ok) {
+      await refreshRooms();
+      setDialogOpen(false);
+      setEditingRoom(null);
+    }
+    return result;
   }
 
   function handlePaginationChange(newPage: number, newPageSize: number) {
@@ -122,16 +100,16 @@ export function RoomsTable() {
         variant: "outline",
         onClick: openAddDialog,
       },
-      menuActions: [
-        {
-          label: `Xóa ${selectedRows.length > 0 ? `${selectedRows.length} phòng` : "phòng"}`,
-          icon: TrashIcon,
-          disabled: selectedRows.length === 0,
-          onClick: () => {
-            // TODO: gọi API xóa hàng loạt cho selectedRows
-          },
-        },
-      ],
+      // menuActions: [
+      //   {
+      //     label: `Xóa ${selectedRows.length > 0 ? `${selectedRows.length} phòng` : "phòng"}`,
+      //     icon: TrashIcon,
+      //     disabled: selectedRows.length === 0,
+      //     onClick: () => {
+      //       // TODO: gọi API xóa hàng loạt cho selectedRows
+      //     },
+      //   },
+      // ],
     };
   }
 

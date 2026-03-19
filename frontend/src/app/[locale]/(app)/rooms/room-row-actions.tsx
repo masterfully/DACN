@@ -27,11 +27,13 @@ export function RoomRowActions({
   onEdit,
   onDeleteSuccess,
 }: RoomRowActionsProps) {
-  const { mutate: mutateDeleteRoom, isLoading } = useDeleteRoom(room.roomId);
+  const { mutateWithResult: deleteRoom, isLoading } = useDeleteRoom(room.roomId);
 
   async function handleDelete() {
-    const ok = await mutateDeleteRoom();
-    if (ok) onDeleteSuccess?.();
+    const result = await deleteRoom();
+    if (result.ok) {
+      await onDeleteSuccess?.();
+    }
   }
 
   return (
