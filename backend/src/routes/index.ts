@@ -2,6 +2,7 @@ import { Router } from "express";
 import { sendSuccess } from "../utils/response";
 import authRouter from "./authRoute";
 import roomRoute from "./roomRoute";
+import sectionRoute from "./sectionRoute";
 import subjectRoute from "./subjectRoute";
 
 const router = Router();
@@ -21,6 +22,9 @@ router.use("/auth", authRouter);
 
 // Mount subject routes
 router.use("/subjects", subjectRoute);
+
+// Mount section routes
+router.use("/sections", sectionRoute);
 
 // Mount room routes
 router.use("/rooms", roomRoute);
