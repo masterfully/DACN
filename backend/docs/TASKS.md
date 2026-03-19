@@ -92,11 +92,12 @@ Base path: `/api/accounts`
 
 Base path: `/api/profiles`
 
-- [ ] `GET /api/profiles` — paginated, search by name/email. **Role: ADMIN**
-- [ ] `GET /api/profiles/me` — own profile. **Any auth** _(register before `/:id`)_
+- [x] `GET /api/profiles` — paginated, search by name/email. **Role: ADMIN**
+- [x] `POST /api/profiles` — create profile. **Role: ADMIN**
+- [x] `GET /api/profiles/me` — own profile. **Any auth** _(register before `/:id`)_
 - [ ] `PUT /api/profiles/me` — update own profile. **Any auth**
-- [ ] `GET /api/profiles/students` — student profiles. **Role: ADMIN, LECTURER** _(register before `/:id`)_
-- [ ] `GET /api/profiles/lecturers` — lecturer profiles. **Role: ADMIN** _(register before `/:id`)_
+- [x] `GET /api/profiles/students` — student profiles. **Role: ADMIN, LECTURER** _(register before `/:id`)_
+- [x] `GET /api/profiles/lecturers` — lecturer profiles. **Role: ADMIN** _(register before `/:id`)_
 - [ ] `GET /api/profiles/:profileId` — profile detail. **Role: ADMIN or owner**
 - [ ] `PUT /api/profiles/:profileId` — update profile. **Role: ADMIN or owner**
 - [ ] `GET /api/profiles/:profileId/attendance-summary` — attendance stats. **Role: ADMIN, LECTURER, or owner**
