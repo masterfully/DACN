@@ -1,5 +1,3 @@
-"use client";
-
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,6 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import type { MutationResult } from "@/types/api";
 import type {
   Account,
   CreateAccountInput,
@@ -36,7 +35,7 @@ export const ACCOUNT_EMPTY_FORM: AccountFormValues = {
 export function accountToFormValues(account: Account): AccountFormValues {
   return {
     username: account.username,
-    email: account.profile?.email ?? "",
+    email: account.email ?? account.profile?.email ?? "",
     password: "",
     role: account.role,
   };
@@ -97,7 +96,7 @@ interface AccountFormDialogProps {
   onSubmit: (
     values: AccountFormValues,
     mode: "create" | "edit",
-  ) => Promise<boolean>;
+  ) => Promise<MutationResult<Account>>;
   isSubmitting?: boolean;
 }
 
@@ -138,8 +137,8 @@ export function AccountFormDialog({
       return;
     }
 
-    const ok = await onSubmit(values, mode);
-    if (!ok) {
+    const result = await onSubmit(values, mode);
+    if (!result.ok) {
       setError(
         mode === "edit"
           ? "Cập nhật tài khoản thất bại. Vui lòng thử lại."

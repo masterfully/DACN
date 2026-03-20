@@ -14,27 +14,28 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { useDeleteAccount } from "@/hooks/use-accounts";
 import type { Account } from "@/types/account";
 
 interface AccountRowActionsProps {
   account: Account;
   onEdit: (account: Account) => void;
-  onDelete: (account: Account) => Promise<void> | void;
+  onDeleteSuccess?: () => void;
 }
 
 export function AccountRowActions({
   account,
   onEdit,
-  onDelete,
+  onDeleteSuccess,
 }: AccountRowActionsProps) {
-  const [isLoading, setIsLoading] = React.useState(false);
+  const { mutateWithResult: deleteAccount, isLoading } = useDeleteAccount(
+    account.accountId,
+  );
 
   async function handleDelete() {
-    setIsLoading(true);
-    try {
-      await onDelete(account);
-    } finally {
-      setIsLoading(false);
+    const result = await deleteAccount();
+    if (result.ok) {
+      await onDeleteSuccess?.();
     }
   }
 
