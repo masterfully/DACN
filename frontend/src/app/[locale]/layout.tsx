@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { JetBrains_Mono, Montserrat } from "next/font/google";
 import { ThemeProvider } from "@/components/theme/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
 import "@/app/globals.css";
 import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
@@ -45,6 +46,7 @@ export default async function RootLayout({
           disableTransitionOnChange
         >
           <NextIntlClientProvider>{children}</NextIntlClientProvider>
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>
