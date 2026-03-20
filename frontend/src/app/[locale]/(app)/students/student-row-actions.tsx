@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { PencilIcon, TrashIcon } from "lucide-react";
+import { toast } from "sonner";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,27 +15,31 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { useDeleteAccount } from "@/hooks/use-accounts";
 import type { Student } from "./student.types";
 
 interface StudentRowActionsProps {
   student: Student;
   onEdit: (student: Student) => void;
-  onDelete: (student: Student) => Promise<void> | void;
+  onDeleteSuccess?: () => Promise<void> | void;
 }
 
 export function StudentRowActions({
   student,
   onEdit,
-  onDelete,
+  onDeleteSuccess,
 }: StudentRowActionsProps) {
-  const [isLoading, setIsLoading] = React.useState(false);
+  const { mutateWithResult: deleteAccount, isLoading } = useDeleteAccount(
+    student.accountId,
+  );
 
   async function handleDelete() {
-    setIsLoading(true);
-    try {
-      await onDelete(student);
-    } finally {
-      setIsLoading(false);
+    const result = await deleteAccount();
+    if (result.ok) {
+      toast.success("Xóa sinh viên thành công.");
+      await onDeleteSuccess?.();
+    } else {
+      toast.error("Xóa sinh viên thất bại. Vui lòng thử lại.");
     }
   }
 

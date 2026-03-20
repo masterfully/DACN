@@ -5,6 +5,7 @@ import type {
   Profile,
   ProfileListItem,
   GetProfileListParams,
+  CreateProfileInput,
   UpdateProfileInput,
   AttendanceSummary,
 } from "@/types/profile";
@@ -46,6 +47,11 @@ export async function getProfileDetail(profileId: number): Promise<Profile> {
 
 export async function getMyProfile(): Promise<Profile> {
   const res = await apiClient.get<Profile>("/profiles/me");
+  return res.data as Profile;
+}
+
+export async function createProfile(input: CreateProfileInput): Promise<Profile> {
+  const res = await apiClient.post<Profile>("/profiles", input);
   return res.data as Profile;
 }
 

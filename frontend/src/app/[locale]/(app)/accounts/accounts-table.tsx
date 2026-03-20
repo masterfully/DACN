@@ -4,6 +4,7 @@ import type { Row } from "@tanstack/react-table";
 import { PlusIcon, TrashIcon } from "lucide-react";
 import * as React from "react";
 import type { ToolbarActionGroup } from "@/components/data-table";
+import { toast } from "@/components/ui/sonner";
 import { DataTable } from "@/components/data-table";
 import {
   useAccountList,
@@ -74,18 +75,29 @@ export function AccountsTable() {
     if (mode === "edit") {
       const result = await updateAccount(buildUpdateAccountPayload(values));
       if (result.ok) {
+        toast.success("Cập nhật tài khoản thành công.");
         await refreshAccounts();
         setDialogOpen(false);
         setEditingAccount(null);
+      } else {
+        toast.error(
+          result.error?.message ??
+            "Cập nhật tài khoản thất bại. Vui lòng thử lại.",
+        );
       }
       return result;
     }
 
     const result = await createAccount(buildCreateAccountPayload(values));
     if (result.ok) {
+      toast.success("Tạo tài khoản thành công.");
       await refreshAccounts();
       setDialogOpen(false);
       setEditingAccount(null);
+    } else {
+      toast.error(
+        result.error?.message ?? "Tạo tài khoản thất bại. Vui lòng thử lại.",
+      );
     }
     return result;
   }
