@@ -11,6 +11,8 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { getApiFormErrorMessage, mapApiFieldErrors } from "@/lib/api-error";
+import type { MutationResult } from "@/types/api";
 import type {
   CreateSubjectInput,
   Subject,
@@ -82,7 +84,7 @@ interface SubjectFormDialogProps {
   onSubmit: (
     values: SubjectFormValues,
     mode: "create" | "edit",
-  ) => Promise<boolean>;
+  ) => Promise<MutationResult<Subject>>;
   isSubmitting?: boolean;
 }
 
@@ -96,6 +98,9 @@ export function SubjectFormDialog({
   const [values, setValues] =
     React.useState<SubjectFormValues>(SUBJECT_EMPTY_FORM);
   const [error, setError] = React.useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = React.useState<
+    Partial<Record<keyof SubjectFormValues, string>>
+  >({});
 
   const mode: "create" | "edit" = editingSubject ? "edit" : "create";
 
@@ -107,6 +112,7 @@ export function SubjectFormDialog({
           : SUBJECT_EMPTY_FORM,
       );
       setError(null);
+      setFieldErrors({});
     }
   }, [open, editingSubject]);
 
@@ -117,19 +123,33 @@ export function SubjectFormDialog({
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+    setFieldErrors({});
 
     const validationError = validateSubjectForm(values);
     if (validationError) {
-      setError(validationError.message);
+      if (validationError.field === "general") {
+        setError(validationError.message);
+      } else {
+        setFieldErrors({ [validationError.field]: validationError.message });
+      }
       return;
     }
 
-    const ok = await onSubmit(values, mode);
-    if (!ok) {
+    const result = await onSubmit(values, mode);
+    if (!result.ok) {
+      setFieldErrors(
+        mapApiFieldErrors<keyof SubjectFormValues>(result.error, {
+          subjectName: "subjectName",
+          periods: "periods",
+        }),
+      );
       setError(
-        mode === "edit"
-          ? "Cập nhật môn học thất bại. Vui lòng thử lại."
-          : "Tạo môn học thất bại. Vui lòng thử lại.",
+        getApiFormErrorMessage(
+          result.error,
+          mode === "edit"
+            ? "Cập nhật môn học thất bại. Vui lòng thử lại."
+            : "Tạo môn học thất bại. Vui lòng thử lại.",
+        ),
       );
     }
   }
@@ -154,6 +174,11 @@ export function SubjectFormDialog({
               disabled={isSubmitting}
               required
             />
+            {fieldErrors.subjectName ? (
+              <p className="text-destructive text-sm">
+                {fieldErrors.subjectName}
+              </p>
+            ) : null}
           </div>
 
           <div className="grid gap-1.5">
@@ -168,6 +193,9 @@ export function SubjectFormDialog({
               disabled={isSubmitting}
               required
             />
+            {fieldErrors.periods ? (
+              <p className="text-destructive text-sm">{fieldErrors.periods}</p>
+            ) : null}
           </div>
 
           {error && <p className="text-destructive text-sm">{error}</p>}

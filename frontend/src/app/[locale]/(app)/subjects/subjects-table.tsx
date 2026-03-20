@@ -1,10 +1,17 @@
 "use client";
 
 import type { Row } from "@tanstack/react-table";
-import { PlusIcon, TrashIcon } from "lucide-react";
+import { PlusIcon } from "lucide-react";
 import * as React from "react";
+import { toast } from "sonner";
 import type { ToolbarActionGroup } from "@/components/data-table";
 import { DataTable } from "@/components/data-table";
+import {
+  useCreateSubject,
+  useSubjectList,
+  useUpdateSubject,
+} from "@/hooks/use-subjects";
+import type { MutationResult } from "@/types/api";
 import type { Subject } from "@/types/subject";
 import { subjectColumns } from "./columns";
 import { SubjectDetailSheet } from "./subject-detail-sheet";
@@ -16,55 +23,11 @@ import {
 } from "./subject-form-dialog";
 import { SubjectRowActions } from "./subject-row-actions";
 
-const SUBJECT_NAMES = [
-  "Cơ sở dữ liệu",
-  "Lập trình Java",
-  "Cấu trúc dữ liệu và giải thuật",
-  "Mạng máy tính",
-  "Hệ điều hành",
-  "Trí tuệ nhân tạo",
-  "Phân tích thiết kế hệ thống",
-  "An toàn thông tin",
-  "Xử lý ảnh số",
-  "Lập trình Web",
-];
-
-const MOCK_SUBJECTS: Subject[] = Array.from({ length: 80 }, (_, i) => ({
-  subjectId: i + 1,
-  subjectName: SUBJECT_NAMES[i % SUBJECT_NAMES.length],
-  periods: [30, 45, 60, 75][i % 4],
-}));
-
-function useMockSubjectList(
-  subjects: Subject[],
-  page: number,
-  pageSize: number,
-) {
-  const data = React.useMemo(() => {
-    const start = (page - 1) * pageSize;
-    const items = subjects.slice(start, start + pageSize);
-    return {
-      items,
-      meta: { page, limit: pageSize, total: subjects.length },
-    };
-  }, [subjects, page, pageSize]);
-
-  return {
-    data,
-    isLoading: false,
-    error: {
-      message: null,
-    },
-    mutate: () => undefined,
-  };
-}
-
 export function SubjectsTable() {
-  const [allSubjects, setAllSubjects] =
-    React.useState<Subject[]>(MOCK_SUBJECTS);
-
   const [page, setPage] = React.useState(1);
   const [pageSize, setPageSize] = React.useState(10);
+
+  const [search, setSearch] = React.useState<string>("");
 
   const [detailSubject, setDetailSubject] = React.useState<Subject | null>(
     null,
@@ -74,14 +37,23 @@ export function SubjectsTable() {
   const [editingSubject, setEditingSubject] = React.useState<Subject | null>(
     null,
   );
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   const {
     data,
     isLoading,
     error,
     mutate: refreshSubjects,
-  } = useMockSubjectList(allSubjects, page, pageSize);
+  } = useSubjectList({
+    page,
+    limit: pageSize,
+    search: search.trim() || undefined,
+  });
+
+  const { mutateWithResult: createSubject, isLoading: isCreating } =
+    useCreateSubject();
+  const { mutateWithResult: updateSubject, isLoading: isUpdating } =
+    useUpdateSubject(editingSubject?.subjectId ?? 0);
+  const isSubmitting = isCreating || isUpdating;
 
   function openAddDialog() {
     setEditingSubject(null);
@@ -93,48 +65,38 @@ export function SubjectsTable() {
     setDialogOpen(true);
   }
 
-  async function handleDelete(subject: Subject): Promise<boolean> {
-    setAllSubjects((prev) =>
-      prev.filter((item) => item.subjectId !== subject.subjectId),
-    );
-    return true;
-  }
-
   async function handleFormSubmit(
     values: SubjectFormValues,
     mode: "create" | "edit",
-  ): Promise<boolean> {
-    setIsSubmitting(true);
-    try {
-      if (mode === "edit" && editingSubject) {
-        const payload = buildUpdateSubjectPayload(values);
-        setAllSubjects((prev) =>
-          prev.map((subject) =>
-            subject.subjectId === editingSubject.subjectId
-              ? {
-                  ...subject,
-                  ...payload,
-                  subjectName: payload.subjectName ?? subject.subjectName,
-                  periods: payload.periods ?? subject.periods,
-                }
-              : subject,
-          ),
-        );
+  ): Promise<MutationResult<Subject>> {
+    if (mode === "edit") {
+      const result = await updateSubject(buildUpdateSubjectPayload(values));
+      if (result.ok) {
+        toast.success("Cập nhật môn học thành công.");
+        await refreshSubjects();
+        setDialogOpen(false);
+        setEditingSubject(null);
       } else {
-        const payload = buildCreateSubjectPayload(values);
-        setAllSubjects((prev) => {
-          const nextId =
-            prev.reduce((max, item) => Math.max(max, item.subjectId), 0) + 1;
-          return [{ subjectId: nextId, ...payload }, ...prev];
-        });
+        toast.error(
+          result.error?.message ??
+            "Cập nhật môn học thất bại. Vui lòng thử lại.",
+        );
       }
-
-      refreshSubjects();
-      setDialogOpen(false);
-      return true;
-    } finally {
-      setIsSubmitting(false);
+      return result;
     }
+
+    const result = await createSubject(buildCreateSubjectPayload(values));
+    if (result.ok) {
+      toast.success("Tạo môn học thành công.");
+      await refreshSubjects();
+      setDialogOpen(false);
+      setEditingSubject(null);
+    } else {
+      toast.error(
+        result.error?.message ?? "Tạo môn học thất bại. Vui lòng thử lại.",
+      );
+    }
+    return result;
   }
 
   function handlePaginationChange(newPage: number, newPageSize: number) {
@@ -146,18 +108,8 @@ export function SubjectsTable() {
     setDetailSubject(row.original);
   }
 
-  function handleBulkDelete(selectedRows: Row<Subject>[]) {
-    const selectedIds = new Set(
-      selectedRows.map((row) => row.original.subjectId),
-    );
-    setAllSubjects((prev) =>
-      prev.filter((item) => !selectedIds.has(item.subjectId)),
-    );
-    refreshSubjects();
-  }
-
   function buildToolbarActions(
-    selectedRows: Row<Subject>[],
+    _selectedRows: Row<Subject>[],
   ): ToolbarActionGroup {
     return {
       primary: {
@@ -166,25 +118,18 @@ export function SubjectsTable() {
         variant: "outline",
         onClick: openAddDialog,
       },
-      menuActions: [
-        {
-          label: `Xóa ${selectedRows.length > 0 ? `${selectedRows.length} môn` : "môn"}`,
-          icon: TrashIcon,
-          disabled: selectedRows.length === 0,
-          onClick: () => {
-            handleBulkDelete(selectedRows);
-          },
-        },
-      ],
+      // menuActions: [
+      //   {
+      //     label: `Xóa ${selectedRows.length > 0 ? `${selectedRows.length} môn` : "môn"}`,
+      //     icon: TrashIcon,
+      //     disabled: selectedRows.length === 0,
+      //     onClick: () => {
+      //       // TODO: gọi API xóa hàng loạt cho selectedRows
+      //     },
+      //   },
+      // ],
     };
   }
-
-  React.useEffect(() => {
-    const maxPage = Math.max(1, Math.ceil(allSubjects.length / pageSize));
-    if (page > maxPage) {
-      setPage(maxPage);
-    }
-  }, [allSubjects.length, page, pageSize]);
 
   return (
     <>
@@ -202,14 +147,21 @@ export function SubjectsTable() {
         getRowId={(row) => String(row.subjectId)}
         enableRowSelection
         enableColumnVisibility
+        searchValue={search}
+        // onSearchChange={(value) => {
+        //   setSearch(value);
+        //   setPage(1); // reset to first page when applying server-side search
+        // }}
+        onSearch={(value) => {
+          setSearch(value);
+          setPage(1);
+        }}
         toolbarActions={buildToolbarActions}
-        emptyMessage="Chưa có môn học nào."
         onRowDoubleClick={handleRowDoubleClick}
         renderRowActions={(row) => (
           <SubjectRowActions
             subject={row.original}
             onEdit={openEditDialog}
-            onDelete={handleDelete}
             onDeleteSuccess={refreshSubjects}
           />
         )}

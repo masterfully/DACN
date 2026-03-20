@@ -1,6 +1,7 @@
 "use client";
 
 import { PencilIcon, TrashIcon } from "lucide-react";
+import { toast } from "sonner";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,31 +14,41 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { useDeleteSubject } from "@/hooks/use-subjects";
 import type { Subject } from "@/types/subject";
 
 interface SubjectRowActionsProps {
   subject: Subject;
   onEdit: (subject: Subject) => void;
-  onDelete: (subject: Subject) => Promise<boolean>;
   onDeleteSuccess?: () => void;
 }
 
 export function SubjectRowActions({
   subject,
   onEdit,
-  onDelete,
   onDeleteSuccess,
 }: SubjectRowActionsProps) {
+  const { mutateWithResult: deleteSubject, isLoading } = useDeleteSubject(
+    subject.subjectId,
+  );
+
   async function handleDelete() {
-    const ok = await onDelete(subject);
-    if (ok) onDeleteSuccess?.();
+    const result = await deleteSubject();
+    if (result.ok) {
+      toast.success("Xóa môn học thành công.");
+      await onDeleteSuccess?.();
+    } else {
+      toast.error(
+        result.error?.message ?? "Xóa môn học thất bại. Vui lòng thử lại.",
+      );
+    }
   }
 
   return (
     <div className="flex w-full items-center justify-center gap-2">
       <AlertDialog>
         <AlertDialogTrigger asChild>
-          <Button variant="destructive">
+          <Button variant="destructive" disabled={isLoading}>
             <TrashIcon className="size-4" />
             Xóa
           </Button>
@@ -54,8 +65,12 @@ export function SubjectRowActions({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Hủy</AlertDialogCancel>
-            <AlertDialogAction variant="destructive" onClick={handleDelete}>
+            <AlertDialogCancel disabled={isLoading}>Hủy</AlertDialogCancel>
+            <AlertDialogAction
+              variant="destructive"
+              disabled={isLoading}
+              onClick={handleDelete}
+            >
               Xóa
             </AlertDialogAction>
           </AlertDialogFooter>

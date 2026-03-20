@@ -1,22 +1,22 @@
 "use client";
 
-import { useFetchWithFetcher } from "./use-fetch";
-import { useMutation } from "./use-mutation";
 import {
+  createSubject,
+  deleteSubject,
+  getSubjectDetail,
   getSubjectList,
   getSubjectListUrl,
-  getSubjectDetail,
-  createSubject,
   updateSubject,
-  deleteSubject,
 } from "@/services/subject-service";
 import type { PaginatedData } from "@/types/api";
 import type {
-  Subject,
-  GetSubjectListParams,
   CreateSubjectInput,
+  GetSubjectListParams,
+  Subject,
   UpdateSubjectInput,
 } from "@/types/subject";
+import { useFetchWithFetcher } from "./use-fetch";
+import { useMutation } from "./use-mutation";
 
 export function useSubjectList(params: GetSubjectListParams = {}) {
   return useFetchWithFetcher<PaginatedData<Subject>>(
@@ -28,7 +28,12 @@ export function useSubjectList(params: GetSubjectListParams = {}) {
 export function useSubjectDetail(subjectId?: number) {
   return useFetchWithFetcher<Subject>(
     subjectId ? `/subjects/${subjectId}` : null,
-    () => getSubjectDetail(subjectId!),
+    () => {
+      if (!subjectId) {
+        throw new Error("subjectId is required");
+      }
+      return getSubjectDetail(subjectId);
+    },
     { enabled: !!subjectId },
   );
 }
@@ -45,8 +50,7 @@ export function useUpdateSubject(subjectId: number) {
 }
 
 export function useDeleteSubject(subjectId: number) {
-  return useMutation<null, void>(
-    `/subjects/${subjectId}/delete`,
-    () => deleteSubject(subjectId),
+  return useMutation<null, void>(`/subjects/${subjectId}`, () =>
+    deleteSubject(subjectId),
   );
 }
