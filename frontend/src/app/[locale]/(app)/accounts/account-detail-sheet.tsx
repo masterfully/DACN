@@ -44,10 +44,10 @@ export function AccountDetailSheet({
             <dd>{ACCOUNT_ROLE_LABELS[account.role] ?? account.role}</dd>
 
             <dt className="text-muted-foreground font-medium">Họ và tên</dt>
-            <dd>{account.profile?.fullName ?? "—"}</dd>
+            <dd>{account.profile?.fullName ?? account.username ?? "—"}</dd>
 
             <dt className="text-muted-foreground font-medium">Email</dt>
-            <dd>{account.profile?.email ?? "—"}</dd>
+            <dd>{account.email ?? account.profile?.email ?? "—"}</dd>
 
             <dt className="text-muted-foreground font-medium">
               Trạng thái hồ sơ

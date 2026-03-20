@@ -45,14 +45,15 @@ export const accountColumns: ColumnDef<Account>[] = [
     header: () => <ColHeader icon={UserIcon} label="Họ và tên" />,
     meta: { visibilityLabel: "Họ và tên" },
     enableSorting: false,
-    cell: ({ row }) => row.original.profile?.fullName ?? "—",
+    cell: ({ row }) =>
+      row.original.profile?.fullName ?? row.original.username ?? "—",
   },
   {
     id: "email",
     header: () => <ColHeader label="Email" />,
     meta: { visibilityLabel: "Email" },
     enableSorting: false,
-    cell: ({ row }) => row.original.profile?.email ?? "—",
+    cell: ({ row }) => row.original.email ?? row.original.profile?.email ?? "—",
   },
   {
     accessorKey: "role",
