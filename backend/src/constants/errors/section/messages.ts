@@ -1,4 +1,5 @@
-export const SECTION_ERROR_MESSAGES = {
+﻿export const SECTION_ERROR_MESSAGES = {
+  SECTION_LIST_INVALID_QUERY: "Tham số truy vấn lớp học không hợp lệ",
   SECTION_CREATE_INVALID_INPUT: "Dữ liệu tạo lớp học không hợp lệ",
   SECTION_CREATE_SUBJECT_NOT_FOUND: "Không tìm thấy môn học",
   SECTION_CREATE_LECTURER_NOT_FOUND: "Không tìm thấy hồ sơ giảng viên",
@@ -9,6 +10,17 @@ export const SECTION_ERROR_MESSAGES = {
 } as const;
 
 export const SECTION_FIELD_ERROR_MESSAGES = {
+  QUERY_PAGE_INVALID_INTEGER: "page phải là số nguyên",
+  QUERY_PAGE_INVALID_POSITIVE: "page phải lớn hơn 0",
+  QUERY_LIMIT_INVALID_INTEGER: "limit phải là số nguyên",
+  QUERY_LIMIT_INVALID_POSITIVE: "limit phải lớn hơn 0",
+  QUERY_LIMIT_INVALID_MAX: "limit tối đa là 100",
+  QUERY_SEARCH_INVALID: "search phải là chuỗi",
+  QUERY_SUBJECT_ID_INVALID: "subjectId phải là số nguyên dương",
+  QUERY_LECTURER_PROFILE_ID_INVALID: "lecturerProfileId phải là số nguyên dương",
+  QUERY_YEAR_INVALID_FORMAT: "year phải đúng định dạng YYYY-YYYY",
+  QUERY_STATUS_INVALID: "status chỉ chấp nhận 0, 1, 2",
+  QUERY_VISIBILITY_INVALID: "visibility chỉ chấp nhận 0 hoặc 1",
   SUBJECT_ID_REQUIRED: "Bắt buộc nhập subjectId",
   SUBJECT_ID_INVALID: "subjectId phải là số nguyên dương",
   LECTURER_PROFILE_ID_REQUIRED: "Bắt buộc nhập lecturerProfileId",
