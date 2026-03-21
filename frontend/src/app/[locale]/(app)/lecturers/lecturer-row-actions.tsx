@@ -1,6 +1,7 @@
 "use client";
 
 import { PencilIcon, TrashIcon } from "lucide-react";
+import { toast } from "sonner";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,13 +28,22 @@ export function LecturerRowActions({
   onEdit,
   onDeleteSuccess,
 }: LecturerRowActionsProps) {
-  const { mutate: mutateDeleteAccount, isLoading } = useDeleteAccount(
+  const hasProfile = lecturer.profileId > 0;
+
+  const { mutateWithResult: deleteAccount, isLoading } = useDeleteAccount(
     lecturer.accountId,
   );
 
   async function handleDelete() {
-    const ok = await mutateDeleteAccount();
-    if (ok !== undefined) onDeleteSuccess?.();
+    const result = await deleteAccount();
+    if (result.ok) {
+      toast.success("Xóa giảng viên thành công.");
+      await onDeleteSuccess?.();
+    } else {
+      toast.error(
+        result.error?.message ?? "Xóa giảng viên thất bại. Vui lòng thử lại.",
+      );
+    }
   }
 
   return (
@@ -51,7 +61,7 @@ export function LecturerRowActions({
             <AlertDialogDescription>
               Bạn có chắc muốn xóa giảng viên{" "}
               <span className="text-foreground font-medium">
-                {lecturer.fullName ?? `#${lecturer.profileId}`}
+                {lecturer.fullName ?? `#A${lecturer.accountId}`}
               </span>
               ? Hành động này không thể hoàn tác.
             </AlertDialogDescription>
@@ -69,7 +79,12 @@ export function LecturerRowActions({
         </AlertDialogContent>
       </AlertDialog>
 
-      <Button variant="ghost" aria-label="Sửa" onClick={() => onEdit(lecturer)}>
+      <Button
+        variant="ghost"
+        aria-label="Sửa"
+        onClick={() => onEdit(lecturer)}
+        disabled={!hasProfile}
+      >
         <PencilIcon className="size-4" />
         Sửa
       </Button>

@@ -125,7 +125,67 @@ export const createSectionSchema = z
     }
   });
 
+export const getSectionsQuerySchema = z.object({
+  page: z.coerce
+    .number()
+    .int(SECTION_FIELD_ERROR_MESSAGES.QUERY_PAGE_INVALID_INTEGER)
+    .positive(SECTION_FIELD_ERROR_MESSAGES.QUERY_PAGE_INVALID_POSITIVE)
+    .default(1),
+  limit: z.coerce
+    .number()
+    .int(SECTION_FIELD_ERROR_MESSAGES.QUERY_LIMIT_INVALID_INTEGER)
+    .positive(SECTION_FIELD_ERROR_MESSAGES.QUERY_LIMIT_INVALID_POSITIVE)
+    .max(100, SECTION_FIELD_ERROR_MESSAGES.QUERY_LIMIT_INVALID_MAX)
+    .default(10),
+  search: z
+    .string({
+      error: SECTION_FIELD_ERROR_MESSAGES.QUERY_SEARCH_INVALID,
+    })
+    .trim()
+    .optional(),
+  subjectId: z.coerce
+    .number({
+      error: SECTION_FIELD_ERROR_MESSAGES.QUERY_SUBJECT_ID_INVALID,
+    })
+    .int(SECTION_FIELD_ERROR_MESSAGES.QUERY_SUBJECT_ID_INVALID)
+    .positive(SECTION_FIELD_ERROR_MESSAGES.QUERY_SUBJECT_ID_INVALID)
+    .optional(),
+  lecturerProfileId: z.coerce
+    .number({
+      error: SECTION_FIELD_ERROR_MESSAGES.QUERY_LECTURER_PROFILE_ID_INVALID,
+    })
+    .int(SECTION_FIELD_ERROR_MESSAGES.QUERY_LECTURER_PROFILE_ID_INVALID)
+    .positive(SECTION_FIELD_ERROR_MESSAGES.QUERY_LECTURER_PROFILE_ID_INVALID)
+    .optional(),
+  year: z
+    .string({
+      error: SECTION_FIELD_ERROR_MESSAGES.QUERY_YEAR_INVALID_FORMAT,
+    })
+    .trim()
+    .regex(yearRegex, SECTION_FIELD_ERROR_MESSAGES.QUERY_YEAR_INVALID_FORMAT)
+    .optional(),
+  status: z.coerce
+    .number({
+      error: SECTION_FIELD_ERROR_MESSAGES.QUERY_STATUS_INVALID,
+    })
+    .int(SECTION_FIELD_ERROR_MESSAGES.QUERY_STATUS_INVALID)
+    .refine((value) => [0, 1, 2].includes(value), {
+      message: SECTION_FIELD_ERROR_MESSAGES.QUERY_STATUS_INVALID,
+    })
+    .optional(),
+  visibility: z.coerce
+    .number({
+      error: SECTION_FIELD_ERROR_MESSAGES.QUERY_VISIBILITY_INVALID,
+    })
+    .int(SECTION_FIELD_ERROR_MESSAGES.QUERY_VISIBILITY_INVALID)
+    .refine((value) => [0, 1].includes(value), {
+      message: SECTION_FIELD_ERROR_MESSAGES.QUERY_VISIBILITY_INVALID,
+    })
+    .optional(),
+});
+
 type CreateSectionInput = z.infer<typeof createSectionSchema>;
+type GetSectionsQueryInput = z.infer<typeof getSectionsQuerySchema>;
 type DayOfWeek = z.infer<typeof dayOfWeekSchema>;
 
 const DAY_TO_UTC_INDEX: Record<DayOfWeek, number> = {
@@ -217,6 +277,123 @@ const buildAttendanceDates = (
   }
 
   return dates;
+};
+
+const buildSectionListWhere = (input: GetSectionsQueryInput): Prisma.SectionWhereInput => {
+  const andClauses: Prisma.SectionWhereInput[] = [];
+  const normalizedSearch = input.search?.trim();
+
+  if (normalizedSearch) {
+    andClauses.push({
+      OR: [
+        {
+          subject: {
+            is: {
+              SubjectName: {
+                contains: normalizedSearch,
+                mode: "insensitive",
+              },
+            },
+          },
+        },
+        {
+          lecturer: {
+            is: {
+              FullName: {
+                contains: normalizedSearch,
+                mode: "insensitive",
+              },
+            },
+          },
+        },
+      ],
+    });
+  }
+
+  if (input.subjectId !== undefined) {
+    andClauses.push({
+      SubjectID: input.subjectId,
+    });
+  }
+
+  if (input.lecturerProfileId !== undefined) {
+    andClauses.push({
+      LecturerProfileID: input.lecturerProfileId,
+    });
+  }
+
+  if (input.year !== undefined) {
+    andClauses.push({
+      Year: input.year,
+    });
+  }
+
+  if (input.status !== undefined) {
+    andClauses.push({
+      status: input.status,
+    });
+  }
+
+  if (input.visibility !== undefined) {
+    andClauses.push({
+      visibility: input.visibility,
+    });
+  }
+
+  return andClauses.length > 0 ? { AND: andClauses } : {};
+};
+
+export const getSections = async (input: GetSectionsQueryInput) => {
+  const skip = (input.page - 1) * input.limit;
+  const where = buildSectionListWhere(input);
+
+  const [sections, total] = await Promise.all([
+    prisma.section.findMany({
+      where,
+      skip,
+      take: input.limit,
+      orderBy: {
+        SectionID: "asc",
+      },
+      select: {
+        SectionID: true,
+        SubjectID: true,
+        LecturerProfileID: true,
+        Year: true,
+        EnrollmentCount: true,
+        MaxCapacity: true,
+        status: true,
+        visibility: true,
+        subject: {
+          select: {
+            SubjectName: true,
+          },
+        },
+        lecturer: {
+          select: {
+            FullName: true,
+          },
+        },
+      },
+    }),
+    prisma.section.count({ where }),
+  ]);
+
+  return {
+    sections: sections.map((section) => ({
+      sectionId: section.SectionID,
+      subjectId: section.SubjectID,
+      subjectName: section.subject.SubjectName,
+      lecturerProfileId: section.LecturerProfileID,
+      lecturerName: section.lecturer.FullName,
+      year: section.Year,
+      enrollmentCount: section.EnrollmentCount,
+      maxCapacity: section.MaxCapacity,
+      status: section.status,
+      visibility: section.visibility,
+    })),
+    total,
+  };
 };
 
 export const createSection = async (input: CreateSectionInput) => {

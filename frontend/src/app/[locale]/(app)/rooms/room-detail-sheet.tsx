@@ -7,7 +7,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import type { Room } from "@/types/room";
-import { ROOM_STATUS_LABELS } from "./room.constants";
+import { ROOM_STATUS_LABELS, ROOM_TYPE_LABELS } from "./room.constants";
 
 interface RoomDetailSheetProps {
   room: Room | null;
@@ -36,7 +36,11 @@ export function RoomDetailSheet({ room, onClose }: RoomDetailSheetProps) {
             <dd>{room.roomName}</dd>
 
             <dt className="text-muted-foreground font-medium">Loại phòng</dt>
-            <dd>{room.roomType ?? "—"}</dd>
+            <dd>
+              {room.roomType
+                ? (ROOM_TYPE_LABELS[room.roomType] ?? room.roomType)
+                : "—"}
+            </dd>
 
             <dt className="text-muted-foreground font-medium">Cơ sở</dt>
             <dd>{room.campus ?? "—"}</dd>

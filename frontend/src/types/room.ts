@@ -1,18 +1,24 @@
+export type RoomType = "LECTURE" | "LAB";
+export type RoomStatus = "ACTIVE" | "INACTIVE" | "MAINTENANCE";
+
 export interface Room {
   roomId: number;
   roomName: string;
-  roomType: string | null;
+  roomType: RoomType | null;
   campus: string | null;
   capacity: number | null;
-  status: string | null;
+  status: RoomStatus | null;
 }
 
 export interface GetRoomListParams {
   page?: number;
   limit?: number;
+  search?: string;
   campus?: string;
-  roomType?: string;
-  status?: string;
+  roomType?: RoomType;
+  status?: RoomStatus;
+  minCapacity?: number;
+  maxCapacity?: number;
 }
 
 export interface GetAvailableRoomsParams {
@@ -24,16 +30,16 @@ export interface GetAvailableRoomsParams {
 
 export interface CreateRoomInput {
   roomName: string;
-  roomType: string;
+  roomType: RoomType;
   campus: string;
   capacity: number;
-  status?: string;
+  status?: RoomStatus;
 }
 
 export interface UpdateRoomInput {
   roomName?: string;
-  roomType?: string;
+  roomType?: RoomType;
   campus?: string;
   capacity?: number;
-  status?: string;
+  status?: RoomStatus;
 }

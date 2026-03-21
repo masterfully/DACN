@@ -11,6 +11,7 @@ export interface AccountProfile {
 export interface Account {
   accountId: number;
   username: string;
+  email: string | null;
   role: Role;
   profile: AccountProfile | null;
 }

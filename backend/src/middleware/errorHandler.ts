@@ -119,6 +119,37 @@ export const errorHandler = (
     return;
   }
 
+  if (
+    err instanceof SyntaxError &&
+    Object.prototype.hasOwnProperty.call(err as object, "body")
+  ) {
+    const message = "Malformed JSON payload";
+
+    logErrorEvent("WARN", "request_failed", {
+      requestId,
+      method: req.method,
+      path: req.originalUrl,
+      statusCode: 400,
+      code: "INVALID_JSON",
+      message,
+    });
+
+    res.status(400).json({
+      success: false,
+      data: null,
+      error: {
+        code: "INVALID_JSON",
+        message,
+        details: {
+          formErrors: [message],
+          fieldErrors: {},
+        },
+      },
+      meta: null,
+    });
+    return;
+  }
+
   const unknownError = err as Error;
 
   logErrorEvent("ERROR", "request_crashed", {

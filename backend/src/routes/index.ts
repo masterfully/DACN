@@ -2,6 +2,7 @@ import { Router } from "express";
 import { sendSuccess } from "../utils/response";
 import accountRouter from "./accountRoute";
 import authRouter from "./authRoute";
+import profileRoute from "./profileRoute";
 import roomRoute from "./roomRoute";
 import usageHistoryRoute from "./usageHistoryRoute";
 import sectionRoute from "./sectionRoute";
@@ -24,6 +25,9 @@ router.use("/auth", authRouter);
 
 // Mount account routes
 router.use("/accounts", accountRouter);
+
+// Mount profile routes
+router.use("/profiles", profileRoute);
 
 // Mount subject routes
 router.use("/subjects", subjectRoute);

@@ -4,8 +4,17 @@ import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { useRegister } from "@/hooks/use-auth";
 import { Link, useRouter } from "@/i18n/navigation";
+import { getApiFormErrorMessage, mapApiFieldErrors } from "@/lib/api-error";
 import { useAuthStore } from "@/stores/auth-store";
+import type { ApiError } from "@/types/api";
 import { Separator } from "./ui/separator";
+
+type SignupField =
+  | "fullName"
+  | "username"
+  | "email"
+  | "password"
+  | "confirmPassword";
 
 export function SignupForm() {
   const [fullName, setFullName] = React.useState("");
@@ -14,38 +23,53 @@ export function SignupForm() {
   const [password, setPassword] = React.useState("");
   const [confirmPassword, setConfirmPassword] = React.useState("");
   const [submitError, setSubmitError] = React.useState<string | null>(null);
-  const { mutate: register, isLoading } = useRegister();
+  const [fieldErrors, setFieldErrors] = React.useState<
+    Partial<Record<SignupField, string>>
+  >({});
+  const { mutateWithResult: register, isLoading } = useRegister();
   const setAuth = useAuthStore((state) => state.setAuth);
   const router = useRouter();
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setSubmitError(null);
+    setFieldErrors({});
 
-    try {
-      const result = await register({
-        fullName,
-        username,
-        email,
-        password,
-        confirmPassword,
-      });
+    const result = await register({
+      fullName,
+      username,
+      email,
+      password,
+      confirmPassword,
+    });
 
-      if (!result) {
-        setSubmitError("Không thể đăng ký. Vui lòng thử lại.");
-        return;
-      }
-
-      setAuth({
-        user: result.account,
-        accessToken: result.accessToken,
-        refreshToken: result.refreshToken,
-      });
-
-      router.replace("/dashboard");
-    } catch {
-      setSubmitError("Đăng ký thất bại. Vui lòng kiểm tra lại thông tin.");
+    if (!result.ok || !result.data) {
+      const apiError = result.error as ApiError | undefined;
+      setFieldErrors(
+        mapApiFieldErrors<SignupField>(apiError, {
+          fullName: "fullName",
+          username: "username",
+          email: "email",
+          password: "password",
+          confirmPassword: ["confirmPassword", "passwordConfirmation"],
+        }),
+      );
+      setSubmitError(
+        getApiFormErrorMessage(
+          apiError,
+          "Đăng ký thất bại. Vui lòng kiểm tra lại thông tin.",
+        ),
+      );
+      return;
     }
+
+    setAuth({
+      user: result.data.account,
+      accessToken: result.data.accessToken,
+      refreshToken: result.data.refreshToken,
+    });
+
+    router.replace("/dashboard");
   }
 
   return (
@@ -74,6 +98,11 @@ export function SignupForm() {
             value={fullName}
             onChange={(event) => setFullName(event.target.value)}
           />
+          {fieldErrors.fullName ? (
+            <p className="text-destructive text-sm" role="alert">
+              {fieldErrors.fullName}
+            </p>
+          ) : null}
         </div>
 
         <div className="space-y-2 text-left">
@@ -92,6 +121,11 @@ export function SignupForm() {
             value={username}
             onChange={(event) => setUsername(event.target.value)}
           />
+          {fieldErrors.username ? (
+            <p className="text-destructive text-sm" role="alert">
+              {fieldErrors.username}
+            </p>
+          ) : null}
         </div>
 
         <div className="space-y-2 text-left">
@@ -110,6 +144,11 @@ export function SignupForm() {
             value={email}
             onChange={(event) => setEmail(event.target.value)}
           />
+          {fieldErrors.email ? (
+            <p className="text-destructive text-sm" role="alert">
+              {fieldErrors.email}
+            </p>
+          ) : null}
         </div>
 
         <div className="space-y-2 text-left">
@@ -128,6 +167,11 @@ export function SignupForm() {
             value={password}
             onChange={(event) => setPassword(event.target.value)}
           />
+          {fieldErrors.password ? (
+            <p className="text-destructive text-sm" role="alert">
+              {fieldErrors.password}
+            </p>
+          ) : null}
         </div>
 
         <div className="space-y-2 text-left">
@@ -146,6 +190,11 @@ export function SignupForm() {
             value={confirmPassword}
             onChange={(event) => setConfirmPassword(event.target.value)}
           />
+          {fieldErrors.confirmPassword ? (
+            <p className="text-destructive text-sm" role="alert">
+              {fieldErrors.confirmPassword}
+            </p>
+          ) : null}
         </div>
       </div>
 

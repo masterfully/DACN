@@ -1,9 +1,18 @@
 /**
  * Error payload returned by backend when success = false
  */
+export interface ApiErrorDetails {
+  formErrors: string[];
+  fieldErrors: Record<string, string[]>;
+}
+
+/**
+ * Error payload returned by backend when success = false
+ */
 export interface ApiErrorPayload {
   code: string;
   message: string;
+  details: ApiErrorDetails;
 }
 
 /**
@@ -27,8 +36,8 @@ export interface ApiMeta {
 export interface ApiResponse<T> {
   success: boolean;
   data: T | null;
-  error?: ApiErrorPayload | null;
-  meta?: ApiMeta;
+  error: ApiErrorPayload | null;
+  meta: ApiMeta | null;
 }
 
 /**
@@ -38,6 +47,16 @@ export interface ApiError {
   message: string;
   errorCode?: string;
   statusCode: number;
+  details?: ApiErrorDetails;
+}
+
+/**
+ * Structured mutation result for form-like submit flows.
+ */
+export interface MutationResult<TData = unknown> {
+  ok: boolean;
+  data?: TData;
+  error?: ApiError;
 }
 
 /**
