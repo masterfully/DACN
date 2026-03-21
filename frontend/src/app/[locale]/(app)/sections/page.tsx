@@ -1,9 +1,18 @@
+import { PageContainer } from "@/components/page-container";
+import { PageSectionHeader } from "@/components/page-section-header";
+import { SectionsTable } from "./sections-table";
+
 export default function SectionsPage() {
   return (
-    <div className="flex flex-1 flex-col gap-4">
-      <h1 className="text-2xl font-semibold tracking-tight">Học phần</h1>
-      <div className="min-h-[50vh] rounded-xl bg-muted/50" />
-    </div>
+    <PageContainer
+      header={
+        <PageSectionHeader
+          title="Học phần"
+          description="Quản lý lớp học phần và lịch học."
+        />
+      }
+    >
+      <SectionsTable />
+    </PageContainer>
   );
 }
-
