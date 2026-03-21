@@ -11,6 +11,7 @@ import {
   getLecturerListUrl,
   getProfileDetail,
   getMyProfile,
+  createProfile,
   updateProfile,
   updateMyProfile,
   getAttendanceSummary,
@@ -20,6 +21,7 @@ import type {
   Profile,
   ProfileListItem,
   GetProfileListParams,
+  CreateProfileInput,
   UpdateProfileInput,
   AttendanceSummary,
 } from "@/types/profile";
@@ -71,6 +73,10 @@ export function useUpdateProfile(profileId: number) {
     `/profiles/${profileId}`,
     (input) => updateProfile(profileId, input),
   );
+}
+
+export function useCreateProfile() {
+  return useMutation<Profile, CreateProfileInput>("/profiles", createProfile);
 }
 
 export function useUpdateMyProfile() {

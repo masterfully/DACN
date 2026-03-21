@@ -14,6 +14,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { toast } from "@/components/ui/sonner";
 import { useDeleteAccount } from "@/hooks/use-accounts";
 import type { Account } from "@/types/account";
 
@@ -35,7 +36,12 @@ export function AccountRowActions({
   async function handleDelete() {
     const result = await deleteAccount();
     if (result.ok) {
+      toast.success("Xóa tài khoản thành công.");
       await onDeleteSuccess?.();
+    } else {
+      toast.error(
+        result.error?.message ?? "Xóa tài khoản thất bại. Vui lòng thử lại.",
+      );
     }
   }
 
