@@ -7,6 +7,9 @@ export { SUBJECT_ERROR_MESSAGES } from "./subject/messages";
 export { SECTION_ERROR_CODES } from "./section/codes";
 export { SECTION_ERROR_MESSAGES } from "./section/messages";
 
+export { REGISTRATION_ERROR_CODES } from "./registration/codes";
+export { REGISTRATION_ERROR_MESSAGES } from "./registration/messages";
+
 export { ROOM_ERROR_CODES } from "./room/codes";
 export { ROOM_ERROR_MESSAGES } from "./room/messages";
 
