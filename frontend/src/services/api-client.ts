@@ -4,6 +4,7 @@ import axios, {
   type InternalAxiosRequestConfig,
 } from "axios";
 import { AUTH_STORAGE_KEYS } from "@/lib/auth-storage";
+import { useAuthStore } from "@/stores/auth-store";
 import type {
   ApiError,
   ApiErrorDetails,
@@ -11,6 +12,18 @@ import type {
   ApiResponse,
   PaginatedData,
 } from "@/types/api";
+import type { AuthTokens } from "@/types/auth";
+
+type RequestConfigWithRetry = InternalAxiosRequestConfig & { _retry?: boolean };
+
+const AUTH_PATHS_NO_REFRESH = [
+  "/auth/login",
+  "/auth/register",
+  "/auth/refresh-token",
+  "/auth/logout",
+] as const;
+
+let refreshSessionPromise: Promise<void> | null = null;
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
 
@@ -70,6 +83,79 @@ const buildApiError = (
   };
 };
 
+const requestPath = (config: InternalAxiosRequestConfig): string => {
+  const url = config.url ?? "";
+  if (url.startsWith("http://") || url.startsWith("https://")) {
+    try {
+      return new URL(url).pathname;
+    } catch {
+      return url;
+    }
+  }
+  return url.startsWith("/") ? url : `/${url}`;
+};
+
+const isAuthPathExcluded = (path: string): boolean =>
+  AUTH_PATHS_NO_REFRESH.some((p) => path === p || path.startsWith(`${p}?`));
+
+const redirectToLogin = (): void => {
+  if (typeof window === "undefined") return;
+
+  const pathWithQuery = window.location.pathname + window.location.search;
+  const segments = window.location.pathname.split("/").filter(Boolean);
+  const maybeLocale = segments[0];
+  const locales = ["en", "vi"];
+  const locale = locales.includes(maybeLocale) ? maybeLocale : "";
+  const next = encodeURIComponent(pathWithQuery);
+
+  if (locale) {
+    window.location.assign(`/${locale}/login?next=${next}`);
+    return;
+  }
+
+  window.location.assign(`/login?next=${next}`);
+};
+
+const clearAuthAndRedirectToLogin = (): void => {
+  useAuthStore.getState().clearAuth();
+  redirectToLogin();
+};
+
+const callRefreshTokenApi = async (): Promise<void> => {
+  const refreshToken = localStorage.getItem(AUTH_STORAGE_KEYS.refreshToken);
+  if (!refreshToken) {
+    throw new Error("No refresh token");
+  }
+
+  const res = await axios.post<ApiResponse<AuthTokens>>(
+    `${BASE_URL}/auth/refresh-token`,
+    { refreshToken },
+    {
+      headers: { "Content-Type": "application/json" },
+      timeout: 30000,
+    },
+  );
+
+  const body = res.data;
+  if (!body.success || !body.data) {
+    throw buildApiError(body.error, res.status, "Refresh failed");
+  }
+
+  useAuthStore.getState().setTokens({
+    accessToken: body.data.accessToken,
+    refreshToken: body.data.refreshToken,
+  });
+};
+
+const refreshSession = (): Promise<void> => {
+  if (!refreshSessionPromise) {
+    refreshSessionPromise = callRefreshTokenApi().finally(() => {
+      refreshSessionPromise = null;
+    });
+  }
+  return refreshSessionPromise;
+};
+
 /**
  * Request interceptor - attach auth token if available
  */
@@ -111,11 +197,15 @@ apiClient.interceptors.response.use(
     }
 
     // Backend returned success: false with an error payload
-    const error = buildApiError(body.error, response.status, "An error occurred");
+    const error = buildApiError(
+      body.error,
+      response.status,
+      "An error occurred",
+    );
 
     return Promise.reject(error);
   },
-  (error: AxiosError<ApiResponse<unknown>>) => {
+  async (error: AxiosError<ApiResponse<unknown>>) => {
     const body = error.response?.data;
 
     // Attempt to read the nested error object from backend contract
@@ -128,10 +218,34 @@ apiClient.interceptors.response.use(
       backendError ? undefined : "NETWORK_ERROR",
     );
 
-    if (apiError.statusCode === 401 && typeof window !== "undefined") {
-      localStorage.removeItem(AUTH_STORAGE_KEYS.accessToken);
-      localStorage.removeItem(AUTH_STORAGE_KEYS.refreshToken);
-      localStorage.removeItem(AUTH_STORAGE_KEYS.currentUser);
+    const originalRequest = error.config as RequestConfigWithRetry | undefined;
+    const status = error.response?.status;
+
+    if (
+      typeof window !== "undefined" &&
+      status === 401 &&
+      originalRequest &&
+      !originalRequest._retry
+    ) {
+      const path = requestPath(originalRequest);
+      if (!isAuthPathExcluded(path)) {
+        const storedRefresh = localStorage.getItem(
+          AUTH_STORAGE_KEYS.refreshToken,
+        );
+        if (storedRefresh) {
+          try {
+            await refreshSession();
+            originalRequest._retry = true;
+            return apiClient.request(originalRequest);
+          } catch {
+            clearAuthAndRedirectToLogin();
+            return Promise.reject(apiError);
+          }
+        } else {
+          clearAuthAndRedirectToLogin();
+          return Promise.reject(apiError);
+        }
+      }
     }
 
     return Promise.reject(apiError);
