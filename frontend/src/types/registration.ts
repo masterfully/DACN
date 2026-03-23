@@ -28,6 +28,10 @@ export interface GetRegistrationListParams {
 export interface GetMyRegistrationsParams {
   page?: number;
   limit?: number;
+  status?: number;
+  year?: string;
+  registeredFrom?: string;
+  registeredTo?: string;
 }
 
 export interface RegisterSectionInput {
