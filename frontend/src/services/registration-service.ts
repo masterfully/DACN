@@ -48,12 +48,9 @@ export async function getRegistrationsBySection(
 
 export async function registerSection(
   input: RegisterSectionInput,
-): Promise<{ sectionId: number; studentProfileId: number }> {
-  const res = await apiClient.post<{ sectionId: number; studentProfileId: number }>(
-    "/registrations",
-    input,
-  );
-  return res.data as { sectionId: number; studentProfileId: number };
+): Promise<null> {
+  const res = await apiClient.post<null>("/registrations", input);
+  return res.data as null;
 }
 
 export async function cancelRegistration(sectionId: number): Promise<null> {
