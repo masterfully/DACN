@@ -4,8 +4,13 @@ import * as React from "react";
 import { Button } from "@/components/ui/button";
 import type { MutationResult } from "@/types/api";
 import type { Profile } from "@/types/profile";
-import { useMyProfile, useUpdateMyProfile } from "@/hooks/use-profiles";
+import {
+  useCreateProfile,
+  useMyProfile,
+  useUpdateMyProfile,
+} from "@/hooks/use-profiles";
 import { toast } from "@/components/ui/sonner";
+import { useAuthStore } from "@/stores/auth-store";
 import {
   ProfileFormDialog,
   type ProfileFormValues,
@@ -35,9 +40,39 @@ function formatDate(date: string | null): string {
 export default function ProfilePage() {
   const [dialogOpen, setDialogOpen] = React.useState(false);
 
-  const { data: profile, isLoading: isLoadingProfile } = useMyProfile();
+  const currentUser = useAuthStore((state) => state.currentUser);
+
+  const {
+    data: profile,
+    isLoading: isLoadingProfile,
+    mutate: refreshProfile,
+  } = useMyProfile();
+
+  const { mutateWithResult: createProfileMut, isLoading: isCreatingProfile } =
+    useCreateProfile();
+
   const { mutateWithResult: updateMyProfileMut, isLoading: isUpdating } =
     useUpdateMyProfile();
+
+  const handleCreateProfile = async () => {
+    if (!currentUser) {
+      toast.error("Không tìm thấy thông tin người dùng.");
+      return;
+    }
+
+    const result = await createProfileMut({
+      accountId: currentUser.accountId,
+      fullName: currentUser.profile?.fullName ?? currentUser.username,
+    });
+
+    if (!result.ok) {
+      toast.error(result.error?.message ?? "Tạo profile thất bại.");
+      return;
+    }
+
+    toast.success("Tạo profile thành công.");
+    await refreshProfile();
+  };
 
   const handleProfileSubmit = async (
     values: ProfileFormValues,
@@ -76,9 +111,17 @@ export default function ProfilePage() {
           Thông tin tài khoản
         </h1>
         <div className="bg-muted/50 rounded-xl p-6 text-center">
-          <p className="text-muted-foreground">
-            Không thể tải thông tin tài khoản. Vui lòng thử lại.
+          <p className="text-muted-foreground mb-4">
+            Tài khoản của bạn chưa có profile.
           </p>
+          <Button
+            onClick={() => {
+              void handleCreateProfile();
+            }}
+            disabled={isCreatingProfile}
+          >
+            {isCreatingProfile ? "Đang tạo..." : "Tạo profile"}
+          </Button>
         </div>
       </div>
     );
