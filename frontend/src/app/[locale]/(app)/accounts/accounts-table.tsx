@@ -1,7 +1,7 @@
 "use client";
 
 import type { Row } from "@tanstack/react-table";
-import { PlusIcon, TrashIcon } from "lucide-react";
+import { PlusIcon } from "lucide-react";
 import * as React from "react";
 import type { ToolbarActionGroup } from "@/components/data-table";
 import { toast } from "@/components/ui/sonner";
@@ -111,8 +111,13 @@ export function AccountsTable() {
     setDetailAccount(row.original);
   }
 
+  async function handleCreateProfileSuccess(updatedAccount: Account) {
+    setDetailAccount(updatedAccount);
+    await refreshAccounts();
+  }
+
   function buildToolbarActions(
-    selectedRows: Row<Account>[],
+    _selectedRows: Row<Account>[],
   ): ToolbarActionGroup {
     return {
       primary: {
@@ -166,6 +171,7 @@ export function AccountsTable() {
       <AccountDetailSheet
         account={detailAccount}
         onClose={() => setDetailAccount(null)}
+        onCreateProfileSuccess={handleCreateProfileSuccess}
       />
     </>
   );
