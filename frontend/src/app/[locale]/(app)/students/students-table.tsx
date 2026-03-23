@@ -3,8 +3,15 @@
 import type { Row } from "@tanstack/react-table";
 import { PlusIcon, TrashIcon } from "lucide-react";
 import * as React from "react";
+import { toast } from "sonner";
 import type { ToolbarActionGroup } from "@/components/data-table";
 import { DataTable } from "@/components/data-table";
+import {
+  useAccountList,
+  useCreateAccount,
+  useUpdateAccount,
+} from "@/hooks/use-accounts";
+import { useCreateProfile } from "@/hooks/use-profiles";
 import { studentColumns } from "./columns";
 import { StudentDetailSheet } from "./student-detail-sheet";
 import {
@@ -16,29 +23,9 @@ import {
 import { StudentRowActions } from "./student-row-actions";
 import type { Student } from "./student.types";
 
-const MOCK_STUDENTS: Student[] = Array.from({ length: 90 }, (_, index) => {
-  const id = index + 1;
-  return {
-    profileId: id,
-    accountId: 1000 + id,
-    role: "STUDENT",
-    username: `student${String(id).padStart(3, "0")}`,
-    fullName: `Sinh viên ${id}`,
-    email: `student${id}@example.edu.vn`,
-    phoneNumber: `09${String(10000000 + id).slice(1)}`,
-    dateOfBirth: `200${id % 10}-0${(id % 9) + 1}-15`,
-    gender: ["male", "female"][index % 2],
-    avatar: `https://i.pravatar.cc/120?img=${(id % 70) + 1}`,
-    citizenId: `${String(100000000000 + id)}`,
-    hometown: ["Cần Thơ", "TP.HCM", "Hà Nội", "Đà Nẵng"][index % 4],
-    status: ["active", "inactive", "suspended"][index % 3],
-  };
-});
-
 export function StudentsTable() {
   const [page, setPage] = React.useState(1);
   const [pageSize, setPageSize] = React.useState(10);
-  const [students, setStudents] = React.useState<Student[]>(MOCK_STUDENTS);
 
   const [detailStudent, setDetailStudent] = React.useState<Student | null>(
     null,
@@ -47,20 +34,39 @@ export function StudentsTable() {
   const [editingStudent, setEditingStudent] = React.useState<Student | null>(
     null,
   );
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
 
-  const paginated = React.useMemo(() => {
-    const start = (page - 1) * pageSize;
-    const items = students.slice(start, start + pageSize);
-    return {
-      items,
-      meta: {
-        page,
-        limit: pageSize,
-        total: students.length,
-      },
-    };
-  }, [students, page, pageSize]);
+  const {
+    data,
+    isLoading,
+    error,
+    mutate: refreshStudents,
+  } = useAccountList({ page, limit: pageSize, role: "STUDENT" });
+
+  const students = React.useMemo<Student[]>(() => {
+    return (data?.items ?? []).map((account) => ({
+      profileId: account.profile?.profileId ?? 0,
+      accountId: account.accountId,
+      role: "STUDENT",
+      username: account.username,
+      fullName: account.profile?.fullName ?? account.username,
+      email: account.email ?? account.profile?.email ?? null,
+      phoneNumber: null,
+      dateOfBirth: null,
+      gender: null,
+      avatar: account.profile?.avatar ?? null,
+      citizenId: null,
+      hometown: null,
+      status: account.profile?.status ?? null,
+    }));
+  }, [data?.items]);
+
+  const { mutateWithResult: createAccount, isLoading: isCreating } =
+    useCreateAccount();
+  const { mutateWithResult: updateAccount, isLoading: isUpdating } =
+    useUpdateAccount(editingStudent?.accountId ?? 0);
+  const { mutateWithResult: createProfile, isLoading: isCreatingProfile } =
+    useCreateProfile();
+  const isSubmitting = isCreating || isUpdating || isCreatingProfile;
 
   function openAddDialog() {
     setEditingStudent(null);
@@ -76,80 +82,91 @@ export function StudentsTable() {
     values: StudentFormValues,
     mode: "create" | "edit",
   ): Promise<boolean> {
-    setIsSubmitting(true);
     try {
       if (mode === "edit" && editingStudent) {
         const payload = buildUpdateStudentPayload(values);
-        setStudents((current) =>
-          current.map((student) =>
-            student.profileId === editingStudent.profileId
-              ? {
-                  ...student,
-                  username: payload.username,
-                  fullName: payload.fullName,
-                  email: payload.email || null,
-                  phoneNumber: payload.phoneNumber ?? null,
-                  dateOfBirth: payload.dateOfBirth ?? null,
-                  gender: payload.gender ?? null,
-                  avatar: payload.avatar ?? null,
-                  citizenId: payload.citizenId ?? null,
-                  hometown: payload.hometown ?? null,
-                  status: payload.status ?? student.status,
-                }
-              : student,
-          ),
-        );
+        const result = await updateAccount({
+          username: payload.username,
+        });
+
+        if (!result.ok) {
+          toast.error(
+            result.error?.message ??
+              "Cập nhật sinh viên thất bại. Vui lòng thử lại.",
+          );
+          return false;
+        }
+
+        toast.success("Cập nhật sinh viên thành công.");
+        await refreshStudents();
         setDialogOpen(false);
+        setEditingStudent(null);
         return true;
       }
 
       const payload = buildCreateStudentPayload(values);
-      const nextProfileId =
-        students.length > 0
-          ? Math.max(...students.map((student) => student.profileId)) + 1
-          : 1;
-      const nextAccountId =
-        students.length > 0
-          ? Math.max(...students.map((student) => student.accountId)) + 1
-          : 1001;
-
-      const newStudent: Student = {
-        profileId: nextProfileId,
-        accountId: nextAccountId,
-        role: "STUDENT",
+      const createAccountResult = await createAccount({
         username: payload.username,
-        fullName: payload.fullName,
-        email: payload.email || null,
-        phoneNumber: payload.phoneNumber ?? null,
-        dateOfBirth: payload.dateOfBirth ?? null,
-        gender: payload.gender ?? null,
-        avatar: payload.avatar ?? null,
-        citizenId: payload.citizenId ?? null,
-        hometown: payload.hometown ?? null,
-        status: payload.status ?? "active",
-      };
+        email: payload.email,
+        password: payload.password,
+        role: "STUDENT",
+      });
 
-      setStudents((current) => [newStudent, ...current]);
+      if (!createAccountResult.ok || !createAccountResult.data) {
+        toast.error(
+          createAccountResult.error?.message ??
+            "Tạo sinh viên thất bại. Vui lòng thử lại.",
+        );
+        return false;
+      }
+
+      const createProfileResult = await createProfile({
+        accountId: createAccountResult.data.accountId,
+        fullName: payload.fullName,
+        phoneNumber: payload.phoneNumber,
+        dateOfBirth: payload.dateOfBirth,
+        gender: payload.gender,
+        avatar: payload.avatar,
+        citizenId: payload.citizenId,
+        hometown: payload.hometown,
+        status: payload.status,
+      });
+
+      if (!createProfileResult.ok) {
+        toast.error(
+          createProfileResult.error?.message ??
+            "Đã tạo account nhưng tạo profile thất bại. Vui lòng tạo profile thủ công.",
+        );
+        await refreshStudents();
+        setDialogOpen(false);
+        return false;
+      }
+
       setPage(1);
+      toast.success("Tạo sinh viên thành công.");
+      await refreshStudents();
       setDialogOpen(false);
       return true;
+    } catch {
+      toast.error(
+        mode === "edit"
+          ? "Cập nhật sinh viên thất bại. Vui lòng thử lại."
+          : "Tạo sinh viên thất bại. Vui lòng thử lại.",
+      );
+      return false;
     } finally {
-      setIsSubmitting(false);
     }
   }
 
-  async function handleDeleteStudent(student: Student) {
-    setStudents((current) =>
-      current.filter((item) => item.profileId !== student.profileId),
-    );
-
-    if (detailStudent?.profileId === student.profileId) {
+  async function handleDeleteSuccess() {
+    if (detailStudent) {
       setDetailStudent(null);
     }
-    if (editingStudent?.profileId === student.profileId) {
+    if (editingStudent) {
       setEditingStudent(null);
       setDialogOpen(false);
     }
+    await refreshStudents();
   }
 
   function handlePaginationChange(newPage: number, newPageSize: number) {
@@ -186,16 +203,16 @@ export function StudentsTable() {
     <>
       <DataTable<Student>
         columns={studentColumns}
-        data={paginated.items}
+        data={students}
         pagination={{
-          page: paginated.meta.page,
-          pageSize: paginated.meta.limit,
-          total: paginated.meta.total,
+          page: data?.meta.page ?? 1,
+          pageSize: data?.meta.limit ?? 10,
+          total: data?.meta.total ?? 0,
         }}
         onPaginationChange={handlePaginationChange}
-        isLoading={false}
-        error={null}
-        getRowId={(row) => String(row.profileId)}
+        isLoading={isLoading}
+        error={error?.message ?? null}
+        getRowId={(row) => String(row.accountId)}
         enableRowSelection
         enableColumnVisibility
         toolbarActions={buildToolbarActions}
@@ -204,7 +221,7 @@ export function StudentsTable() {
           <StudentRowActions
             student={row.original}
             onEdit={openEditDialog}
-            onDelete={handleDeleteStudent}
+            onDeleteSuccess={handleDeleteSuccess}
           />
         )}
       />

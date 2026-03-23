@@ -28,6 +28,7 @@ export interface StudentCertificate {
 export interface GetCertificateTypeListParams {
   page?: number;
   limit?: number;
+  search?: string;
 }
 
 export interface CreateCertificateTypeInput {
@@ -43,7 +44,10 @@ export interface UpdateCertificateTypeInput {
 export interface GetCertificateListParams {
   page?: number;
   limit?: number;
+  search?: string;
   certificateTypeId?: number;
+  isVerified?: boolean;
+  issueDateFrom?: string;
 }
 
 export interface CreateCertificateInput {

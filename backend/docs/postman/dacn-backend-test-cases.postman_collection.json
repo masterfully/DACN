@@ -1890,6 +1890,227 @@
       "name": "Sections",
       "item": [
         {
+          "name": "Get Section List - Success (ADMIN)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/sections?page=1&limit=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Section List - Filter By Params (ADMIN)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/sections?page=1&limit=10&search=OOP&subjectId={{existing_subject_id}}&lecturerProfileId={{existing_lecturer_profile_id}}&year={{section_year}}&status=1&visibility=1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "search",
+                  "value": "OOP"
+                },
+                {
+                  "key": "subjectId",
+                  "value": "{{existing_subject_id}}"
+                },
+                {
+                  "key": "lecturerProfileId",
+                  "value": "{{existing_lecturer_profile_id}}"
+                },
+                {
+                  "key": "year",
+                  "value": "{{section_year}}"
+                },
+                {
+                  "key": "status",
+                  "value": "1"
+                },
+                {
+                  "key": "visibility",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Section List - Missing Token",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/sections?page=1&limit=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Section List - Forbidden (STUDENT)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/sections?page=1&limit=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Section List - Invalid Page",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/sections?page=0&limit=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Section List - Invalid Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/sections?page=1&limit=10&status=5",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "status",
+                  "value": "5"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
           "name": "Create Section - Success (ADMIN)",
           "request": {
             "method": "POST",
@@ -3158,6 +3379,171 @@
                   "value": "0"
                 }
               ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Usage Histories",
+      "description": "Room usage history CRUD + section linking tests",
+      "item": [
+        {
+          "name": "Create test usage (setup ID)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data.UsageHistoryID) pm.collectionVariables.set('usage_id', json.data.UsageHistoryID);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{admin_token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"roomId\": {{existing_room_id}},\n  \"startTime\": \"2026-03-20T09:00:00Z\",\n  \"endTime\": \"2026-03-20T11:00:00Z\",\n  \"note\": \"Test\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/usage-Histories",
+              "host": ["{{base_url}}"],
+              "path": ["api", "usageHistories"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List usage histories",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{admin_token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/usageHistories?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "usageHistories"],
+              "query": [{"key": "page", "value": "1"}, {"key": "limit", "value": "10"}]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List filter roomId",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{admin_token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/usageHistories?roomId={{existing_room_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "usageHistories"],
+              "query": [{"key": "roomId", "value": "{{existing_room_id}}"}]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get detail {{usage_id}}",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{admin_token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/usageHistories/{{usage_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "usageHistories", "{{usage_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update note",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{admin_token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"note\": \"Updated\"}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/usageHistories/{{usage_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "usageHistories", "{{usage_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create - time overlap (409)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{admin_token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"roomId\": {{existing_room_id}},\n  \"startTime\": \"2026-03-20T10:00:00Z\",\n  \"endTime\": \"2026-03-20T10:30:00Z\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/usage-Histories",
+              "host": ["{{base_url}}"],
+              "path": ["api", "usageHistories"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create - invalid room (404)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{admin_token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"roomId\":999999,\"startTime\":\"2026-03-20T09:00:00Z\",\"endTime\":\"2026-03-20T11:00:00Z\"}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/usage-Histories",
+              "host": ["{{base_url}}"],
+              "path": ["api", "usageHistories"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Link section success",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Authorization", "value": "Bearer {{admin_token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/usageHistories/{{usage_id}}/sections/{{existing_section_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "usageHistories", "{{usage_id}}", "sections", "{{existing_section_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete success",
+          "request": {
+            "method": "DELETE",
+            "header": [{"key": "Authorization", "value": "Bearer {{admin_token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/usageHistories/{{usage_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "usageHistories", "{{usage_id}}"]
             }
           },
           "response": []

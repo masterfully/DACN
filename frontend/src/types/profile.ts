@@ -33,6 +33,18 @@ export interface GetProfileListParams {
   search?: string;
 }
 
+export interface CreateProfileInput {
+  accountId: number;
+  fullName: string;
+  phoneNumber?: string;
+  dateOfBirth?: string;
+  gender?: string;
+  avatar?: string;
+  citizenId?: string;
+  hometown?: string;
+  status?: string;
+}
+
 export interface UpdateProfileInput {
   fullName?: string;
   phoneNumber?: string;

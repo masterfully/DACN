@@ -1,15 +1,11 @@
 import {
-  BadgeCheck,
   Book,
   BookOpen,
   BookText,
   Building,
   Calendar,
-  CalendarClock,
-  ClipboardList,
   FileText,
   GraduationCap,
-  History,
   Key,
   ListChecks,
   NotebookPen,
@@ -50,6 +46,12 @@ export const navGroups: NavGroup[] = [
         icon: Key,
         roles: ["ADMIN"],
       },
+      {
+        href: "/parents",
+        label: "Phụ huynh",
+        icon: Users,
+        roles: ["ADMIN"],
+      },
     ],
   },
   {
@@ -81,23 +83,23 @@ export const navGroups: NavGroup[] = [
       },
     ],
   },
-  {
-    label: "Điểm danh",
-    items: [
-      {
-        href: "/attendances",
-        label: "Buổi điểm danh",
-        icon: ClipboardList,
-        roles: ["ADMIN", "LECTURER"],
-      },
-      {
-        href: "/attendance-summary",
-        label: "Tổng hợp điểm danh",
-        icon: ListChecks,
-        roles: ["ADMIN", "LECTURER", "STUDENT"],
-      },
-    ],
-  },
+  // {
+  //   label: "Điểm danh",
+  //   items: [
+  //     {
+  //       href: "/attendances",
+  //       label: "Buổi điểm danh",
+  //       icon: ClipboardList,
+  //       roles: ["ADMIN", "LECTURER"],
+  //     },
+  //     {
+  //       href: "/attendance-summary",
+  //       label: "Tổng hợp điểm danh",
+  //       icon: ListChecks,
+  //       roles: ["ADMIN", "LECTURER", "STUDENT"],
+  //     },
+  //   ],
+  // },
   {
     label: "Cơ sở vật chất",
     roles: ["ADMIN"],
@@ -108,29 +110,23 @@ export const navGroups: NavGroup[] = [
         icon: Building,
         roles: ["ADMIN"],
       },
-      {
-        href: "/usage-histories",
-        label: "Lịch sử sử dụng phòng",
-        icon: History,
-        roles: ["ADMIN"],
-      },
-      {
-        href: "/schedules/calendar",
-        label: "Lịch phòng học",
-        icon: CalendarClock,
-        roles: ["ADMIN"],
-      },
+      // {
+      //   href: "/usage-histories",
+      //   label: "Lịch sử sử dụng phòng",
+      //   icon: History,
+      //   roles: ["ADMIN"],
+      // },
+      // {
+      //   href: "/schedules/calendar",
+      //   label: "Lịch phòng học",
+      //   icon: CalendarClock,
+      //   roles: ["ADMIN"],
+      // },
     ],
   },
   {
     label: "Xét duyệt & Chứng chỉ",
     items: [
-      {
-        href: "/profile-applications",
-        label: "Hồ sơ xét duyệt",
-        icon: FileText,
-        roles: ["ADMIN", "STUDENT"],
-      },
       {
         href: "/certificate-types",
         label: "Loại chứng chỉ",
@@ -138,9 +134,15 @@ export const navGroups: NavGroup[] = [
         roles: ["ADMIN"],
       },
       {
-        href: "/certificates",
-        label: "Chứng chỉ",
-        icon: BadgeCheck,
+        href: "/approvals",
+        label: "Xét duyệt hồ sơ",
+        icon: ListChecks,
+        roles: ["ADMIN"],
+      },
+      {
+        href: "/profile-applications",
+        label: "Nộp hồ sơ",
+        icon: FileText,
         roles: ["ADMIN", "STUDENT"],
       },
     ],

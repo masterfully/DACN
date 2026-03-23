@@ -1,9 +1,18 @@
+import { PageContainer } from "@/components/page-container";
+import { PageSectionHeader } from "@/components/page-section-header";
+import { ApprovalsTable } from "./approvals-table";
+
 export default function ApprovalsPage() {
   return (
-    <div className="flex flex-1 flex-col gap-4">
-      <h1 className="text-2xl font-semibold tracking-tight">Xét duyệt hồ sơ</h1>
-      <div className="min-h-[50vh] rounded-xl bg-muted/50" />
-    </div>
+    <PageContainer
+      header={
+        <PageSectionHeader
+          title="Xét duyệt hồ sơ"
+          description="Danh sách hồ sơ chứng chỉ chờ xử lý. Duyệt hoặc từ chối theo quy định."
+        />
+      }
+    >
+      <ApprovalsTable />
+    </PageContainer>
   );
 }
-

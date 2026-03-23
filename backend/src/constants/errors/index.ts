@@ -12,6 +12,8 @@ export { ROOM_ERROR_MESSAGES } from "./room/messages";
 
 export { ACCOUNT_ERROR_CODES } from "./account/codes";
 export { ACCOUNT_ERROR_MESSAGES } from "./account/messages";
+export { USAGE_ERROR_CODES } from "./usageHistory/codes";
+export { USAGE_ERROR_MESSAGES } from "./usageHistory/messages";
 
 export { PROFILE_ERROR_CODES } from "./profile/codes";
 export { PROFILE_ERROR_MESSAGES } from "./profile/messages";
