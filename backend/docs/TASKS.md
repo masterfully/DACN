@@ -132,8 +132,8 @@ Base path: `/api/subjects`
 
 Base path: `/api/sections`
 
-- [ ] `GET /api/sections` — paginated, filter by `subjectId`, `year`, `status`. **Role: ADMIN**
-- [ ] `POST /api/sections` — create section. **Role: ADMIN**
+- [x] `GET /api/sections` — paginated, filter by `subjectId`, `year`, `status`. **Role: ADMIN**
+- [x] `POST /api/sections` — create section. **Role: ADMIN**
 - [ ] `GET /api/sections/my-sections` — lecturer's own sections. **Role: LECTURER** _(register before `/:id`)_
 - [ ] `GET /api/sections/:sectionId` — section detail. **Any auth**
 - [ ] `PUT /api/sections/:sectionId` — update section. **Role: ADMIN**
@@ -151,11 +151,11 @@ Base path: `/api/sections`
 
 Base path: `/api/registrations` and `/api/sections/:sectionId/registrations`
 
-- [ ] `GET /api/registrations` — all registrations, filter by `sectionId`. **Role: ADMIN**
-- [ ] `POST /api/registrations` — student registers for a section. **Role: STUDENT** _(guard: section full, section not open, already registered — atomically increment `EnrollmentCount`)_
-- [ ] `GET /api/registrations/my-registrations` — own registrations. **Role: STUDENT** _(register before `/:id`)_
-- [ ] `DELETE /api/registrations/:sectionId` — cancel registration. **Role: STUDENT** _(atomically decrement `EnrollmentCount`)_
-- [ ] `GET /api/sections/:sectionId/registrations` — registrations for a section. **Role: ADMIN, LECTURER**
+- [x] `GET /api/registrations` — all registrations, filter by `sectionId`. **Role: ADMIN**
+- [x] `POST /api/registrations` — student registers for a section. **Role: STUDENT** _(guard: section full, section not open, already registered — atomically increment `EnrollmentCount`)_
+- [x] `GET /api/registrations/my-registrations` — own registrations. **Role: STUDENT** _(register before `/:id`)_
+- [x] `DELETE /api/registrations/:sectionId` — cancel registration. **Role: STUDENT** _(atomically decrement `EnrollmentCount`)_
+- [x] `GET /api/sections/:sectionId/registrations` — registrations for a section. **Role: ADMIN, LECTURER**
 
 ---
 
