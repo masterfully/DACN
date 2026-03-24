@@ -1,8 +1,14 @@
 import { Request, Response, NextFunction } from "express";
 import { z } from "zod";
-import { createSubject, getSubjects } from "../services/subjectService";
+import {
+  createSubject,
+  deleteSubject,
+  getSubjectById,
+  getSubjects,
+  updateSubject,
+} from "../services/subjectService";
 import { sendSuccess } from "../utils/response";
-import { parseOrThrow } from "../utils/validation";
+import { parseOrThrow, parsePositiveIntParamOrThrow } from "../utils/validation";
 import { SUBJECT_ERROR_CODES } from "../constants/errors/subject/codes";
 import {
   SUBJECT_ERROR_MESSAGES,
@@ -50,6 +56,28 @@ const getSubjectsQuerySchema = z.object({
   search: z.string().optional(),
 });
 
+// Validation schema for updating subject
+const updateSubjectSchema = z
+  .object({
+    subjectName: z
+      .string({
+        error: SUBJECT_FIELD_ERROR_MESSAGES.SUBJECT_NAME_INVALID_TYPE,
+      })
+      .trim()
+      .min(1, SUBJECT_FIELD_ERROR_MESSAGES.SUBJECT_NAME_REQUIRED)
+      .optional(),
+    periods: z
+      .number({
+        error: SUBJECT_FIELD_ERROR_MESSAGES.PERIODS_INVALID_TYPE,
+      })
+      .int(SUBJECT_FIELD_ERROR_MESSAGES.PERIODS_INVALID_INTEGER)
+      .positive(SUBJECT_FIELD_ERROR_MESSAGES.PERIODS_INVALID_POSITIVE)
+      .optional(),
+  })
+  .refine((data) => Object.values(data).some((value) => value !== undefined), {
+    message: SUBJECT_FIELD_ERROR_MESSAGES.UPDATE_AT_LEAST_ONE_FIELD,
+  });
+
 export async function getSubjectsHandler(
   req: Request,
   res: Response,
@@ -88,6 +116,71 @@ export async function createSubjectHandler(
     const subject = await createSubject(subjectName, periods);
 
     sendSuccess(res, subject, 201);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function getSubjectDetailHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const subjectId = parsePositiveIntParamOrThrow(req.params.subjectId, {
+      code: SUBJECT_ERROR_CODES.SUBJECT_PARAM_INVALID_ID,
+      message: SUBJECT_ERROR_MESSAGES.SUBJECT_PARAM_INVALID_ID,
+      fieldName: "subjectId",
+      fieldMessage: SUBJECT_FIELD_ERROR_MESSAGES.SUBJECT_ID_INVALID,
+    });
+
+    const subject = await getSubjectById(subjectId);
+    sendSuccess(res, subject, 200);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function updateSubjectHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const subjectId = parsePositiveIntParamOrThrow(req.params.subjectId, {
+      code: SUBJECT_ERROR_CODES.SUBJECT_PARAM_INVALID_ID,
+      message: SUBJECT_ERROR_MESSAGES.SUBJECT_PARAM_INVALID_ID,
+      fieldName: "subjectId",
+      fieldMessage: SUBJECT_FIELD_ERROR_MESSAGES.SUBJECT_ID_INVALID,
+    });
+
+    const payload = parseOrThrow(updateSubjectSchema, req.body, {
+      code: SUBJECT_ERROR_CODES.SUBJECT_UPDATE_INVALID_INPUT,
+      message: SUBJECT_ERROR_MESSAGES.SUBJECT_UPDATE_INVALID_INPUT,
+    });
+
+    const updatedSubject = await updateSubject(subjectId, payload);
+    sendSuccess(res, updatedSubject, 200);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function deleteSubjectHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const subjectId = parsePositiveIntParamOrThrow(req.params.subjectId, {
+      code: SUBJECT_ERROR_CODES.SUBJECT_PARAM_INVALID_ID,
+      message: SUBJECT_ERROR_MESSAGES.SUBJECT_PARAM_INVALID_ID,
+      fieldName: "subjectId",
+      fieldMessage: SUBJECT_FIELD_ERROR_MESSAGES.SUBJECT_ID_INVALID,
+    });
+
+    await deleteSubject(subjectId);
+    sendSuccess(res, null, 200);
   } catch (error) {
     next(error);
   }

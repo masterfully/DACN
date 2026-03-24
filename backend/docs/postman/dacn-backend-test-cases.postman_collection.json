@@ -1883,6 +1883,526 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "Setup Subject - Create Deletable Subject ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const subjectId = json?.data?.SubjectID ?? json?.data?.subjectId;",
+                  "if (subjectId) {",
+                  "  pm.collectionVariables.set('subject_deletable_id', String(subjectId));",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"subjectName\": \"deletable_subject_{{$timestamp}}\",\n  \"periods\": 30\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/subjects",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "subjects"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Subject Detail - Success (ADMIN)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/subjects/{{existing_subject_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "subjects",
+                "{{existing_subject_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Subject Detail - Success (STUDENT)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/subjects/{{existing_subject_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "subjects",
+                "{{existing_subject_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Subject Detail - Missing token",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/subjects/{{existing_subject_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "subjects",
+                "{{existing_subject_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Subject Detail - Invalid subjectId",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/subjects/abc",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "subjects",
+                "abc"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Subject Detail - Not found",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/subjects/{{not_found_subject_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "subjects",
+                "{{not_found_subject_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Subject - Success (ADMIN)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"subjectName\": \"{{new_subject_name}} updated {{$timestamp}}\",\n  \"periods\": 60\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/subjects/{{existing_subject_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "subjects",
+                "{{existing_subject_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Subject - Forbidden (STUDENT)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"subjectName\": \"Blocked Update\",\n  \"periods\": 55\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/subjects/{{existing_subject_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "subjects",
+                "{{existing_subject_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Subject - Missing token",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"subjectName\": \"No Token Update\",\n  \"periods\": 50\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/subjects/{{existing_subject_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "subjects",
+                "{{existing_subject_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Subject - Invalid subjectId",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"subjectName\": \"Invalid Id Update\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/subjects/abc",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "subjects",
+                "abc"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Subject - Empty payload",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/subjects/{{existing_subject_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "subjects",
+                "{{existing_subject_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Subject - Duplicate name",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"subjectName\": \"{{existing_subject_name}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/subjects/{{subject_deletable_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "subjects",
+                "{{subject_deletable_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Subject - Not found",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"subjectName\": \"Not Found Subject\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/subjects/{{not_found_subject_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "subjects",
+                "{{not_found_subject_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Subject - Success (ADMIN)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/subjects/{{subject_deletable_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "subjects",
+                "{{subject_deletable_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Subject - Forbidden (STUDENT)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/subjects/{{existing_subject_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "subjects",
+                "{{existing_subject_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Subject - Missing token",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/subjects/{{existing_subject_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "subjects",
+                "{{existing_subject_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Subject - Invalid subjectId",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/subjects/abc",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "subjects",
+                "abc"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Subject - Not found",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/subjects/{{not_found_subject_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "subjects",
+                "{{not_found_subject_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Subject - In use",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/subjects/{{existing_subject_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "subjects",
+                "{{existing_subject_id}}"
+              ]
+            }
+          },
+          "response": []
         }
       ]
     },
@@ -5130,6 +5650,10 @@
     {
       "key": "existing_subject_id",
       "value": "1"
+    },
+    {
+      "key": "subject_deletable_id",
+      "value": ""
     },
     {
       "key": "existing_lecturer_profile_id",
