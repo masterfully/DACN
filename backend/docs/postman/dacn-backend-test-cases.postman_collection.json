@@ -2997,6 +2997,1332 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "Setup Section - Create Deletable Section ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const sectionId = json?.data?.sectionId ?? json?.data?.SectionID;",
+                  "if (sectionId) {",
+                  "  pm.collectionVariables.set('section_deletable_id', String(sectionId));",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"subjectId\": \"{{existing_subject_id}}\",\n  \"lecturerProfileId\": \"{{existing_lecturer_profile_id}}\",\n  \"year\": \"2099-2100\",\n  \"maxCapacity\": 50,\n  \"status\": 0,\n  \"visibility\": 1,\n  \"schedule\": [\n    {\n      \"roomId\": \"{{existing_room_id}}\",\n      \"dayOfWeek\": \"MONDAY\",\n      \"startPeriod\": 99,\n      \"endPeriod\": 100,\n      \"startDate\": \"2099-01-05\",\n      \"endDate\": \"2099-04-30\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sections",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Sections - Success (LECTURER)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{lecturer_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/sections/my-sections?page=1&limit=10&year={{section_year}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections",
+                "my-sections"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "year",
+                  "value": "{{section_year}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Sections - Forbidden (ADMIN)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/sections/my-sections?page=1&limit=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections",
+                "my-sections"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Sections - Missing Token",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/sections/my-sections?page=1&limit=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections",
+                "my-sections"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Sections - Invalid Year",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{lecturer_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/sections/my-sections?page=1&limit=10&year=2026",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections",
+                "my-sections"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "year",
+                  "value": "2026"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Section Detail - Success (ADMIN)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/sections/{{existing_section_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections",
+                "{{existing_section_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Section Detail - Missing Token",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/sections/{{existing_section_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections",
+                "{{existing_section_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Section Detail - Invalid sectionId",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/sections/abc",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections",
+                "abc"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Section Detail - Not Found",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/sections/{{registration_not_found_section_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections",
+                "{{registration_not_found_section_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Section - Success (ADMIN)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"maxCapacity\": 60,\n  \"status\": 1,\n  \"visibility\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sections/{{section_deletable_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections",
+                "{{section_deletable_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Section - Forbidden (STUDENT)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"maxCapacity\": 60\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sections/{{existing_section_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections",
+                "{{existing_section_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Section - Missing Token",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"maxCapacity\": 60\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sections/{{existing_section_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections",
+                "{{existing_section_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Section - Invalid sectionId",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"maxCapacity\": 60\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sections/abc",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections",
+                "abc"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Section - Empty Payload",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sections/{{existing_section_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections",
+                "{{existing_section_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Section - Lecturer Not Found",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"lecturerProfileId\": \"{{not_found_lecturer_profile_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sections/{{existing_section_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections",
+                "{{existing_section_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Section - Lecturer Invalid Role",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"lecturerProfileId\": \"{{non_lecturer_profile_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sections/{{existing_section_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections",
+                "{{existing_section_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Section - Not Found",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"maxCapacity\": 60\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sections/{{registration_not_found_section_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections",
+                "{{registration_not_found_section_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Section - Success (ADMIN)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/sections/{{section_deletable_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections",
+                "{{section_deletable_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Section - Forbidden (STUDENT)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/sections/{{existing_section_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections",
+                "{{existing_section_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Section - Missing Token",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/sections/{{existing_section_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections",
+                "{{existing_section_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Section - Invalid sectionId",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/sections/abc",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections",
+                "abc"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Section - Not Found",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/sections/{{registration_not_found_section_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections",
+                "{{registration_not_found_section_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Section - Has Students",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/sections/{{section_with_students_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections",
+                "{{section_with_students_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Section Students - Success (ADMIN)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/sections/{{existing_section_id}}/students?page=1&limit=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections",
+                "{{existing_section_id}}",
+                "students"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Section Students - Success (LECTURER)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{lecturer_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/sections/{{existing_section_id}}/students?page=1&limit=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections",
+                "{{existing_section_id}}",
+                "students"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Section Students - Forbidden (STUDENT)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/sections/{{existing_section_id}}/students?page=1&limit=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections",
+                "{{existing_section_id}}",
+                "students"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Section Students - Missing Token",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/sections/{{existing_section_id}}/students?page=1&limit=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections",
+                "{{existing_section_id}}",
+                "students"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Section Students - Invalid sectionId",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/sections/abc/students?page=1&limit=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections",
+                "abc",
+                "students"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Section Students - Not Found",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/sections/{{registration_not_found_section_id}}/students?page=1&limit=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections",
+                "{{registration_not_found_section_id}}",
+                "students"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Section Status - Success (ADMIN)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sections/{{existing_section_id}}/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections",
+                "{{existing_section_id}}",
+                "status"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Section Status - Success (LECTURER)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{lecturer_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": 2\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sections/{{existing_section_id}}/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections",
+                "{{existing_section_id}}",
+                "status"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Section Status - Forbidden (STUDENT)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sections/{{existing_section_id}}/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections",
+                "{{existing_section_id}}",
+                "status"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Section Status - Missing Token",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sections/{{existing_section_id}}/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections",
+                "{{existing_section_id}}",
+                "status"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Section Status - Invalid Body",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": 5\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sections/{{existing_section_id}}/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections",
+                "{{existing_section_id}}",
+                "status"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Section Status - Invalid sectionId",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sections/abc/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections",
+                "abc",
+                "status"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Section Status - Not Found",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sections/{{registration_not_found_section_id}}/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections",
+                "{{registration_not_found_section_id}}",
+                "status"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Section Visibility - Success (ADMIN)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"visibility\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sections/{{existing_section_id}}/visibility",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections",
+                "{{existing_section_id}}",
+                "visibility"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Section Visibility - Success (LECTURER)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{lecturer_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"visibility\": 0\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sections/{{existing_section_id}}/visibility",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections",
+                "{{existing_section_id}}",
+                "visibility"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Section Visibility - Forbidden (STUDENT)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"visibility\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sections/{{existing_section_id}}/visibility",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections",
+                "{{existing_section_id}}",
+                "visibility"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Section Visibility - Missing Token",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"visibility\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sections/{{existing_section_id}}/visibility",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections",
+                "{{existing_section_id}}",
+                "visibility"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Section Visibility - Invalid Body",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"visibility\": 2\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sections/{{existing_section_id}}/visibility",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections",
+                "{{existing_section_id}}",
+                "visibility"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Section Visibility - Invalid sectionId",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"visibility\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sections/abc/visibility",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections",
+                "abc",
+                "visibility"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Section Visibility - Not Found",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"visibility\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sections/{{registration_not_found_section_id}}/visibility",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections",
+                "{{registration_not_found_section_id}}",
+                "visibility"
+              ]
+            }
+          },
+          "response": []
         }
       ]
     },
@@ -5682,6 +7008,18 @@
     {
       "key": "section_end_date",
       "value": "2026-12-28"
+    },
+    {
+      "key": "existing_section_id",
+      "value": "1"
+    },
+    {
+      "key": "section_deletable_id",
+      "value": ""
+    },
+    {
+      "key": "section_with_students_id",
+      "value": "4"
     },
     {
       "key": "registration_open_section_id",
