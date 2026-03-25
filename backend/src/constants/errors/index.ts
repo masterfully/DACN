@@ -19,6 +19,9 @@ export { SCHEDULE_ERROR_MESSAGES } from "./schedule/messages";
 export { ATTENDANCE_ERROR_CODES } from "./attendance/codes";
 export { ATTENDANCE_ERROR_MESSAGES } from "./attendance/messages";
 
+export { ATTENDANCE_DETAIL_ERROR_CODES } from "./attendanceDetail/codes";
+export { ATTENDANCE_DETAIL_ERROR_MESSAGES } from "./attendanceDetail/messages";
+
 export { ACCOUNT_ERROR_CODES } from "./account/codes";
 export { ACCOUNT_ERROR_MESSAGES } from "./account/messages";
 export { USAGE_ERROR_CODES } from "./usageHistory/codes";

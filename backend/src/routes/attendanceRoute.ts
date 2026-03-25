@@ -1,5 +1,10 @@
 import { Router } from "express";
 import {
+  createAttendanceDetailsHandler,
+  getAttendanceDetailsHandler,
+  updateAttendanceDetailHandler,
+} from "../controllers/attendanceDetailController";
+import {
   createAttendanceHandler,
   deleteAttendanceHandler,
   getAttendanceDetailHandler,
@@ -15,6 +20,30 @@ router.get("/", requireAuth, requireRole("ADMIN"), getAttendancesHandler);
 
 // POST /api/attendances - Create attendance session (LECTURER only)
 router.post("/", requireAuth, requireRole("LECTURER"), createAttendanceHandler);
+
+// GET /api/attendances/:attendanceId/details - Attendance details (ADMIN, LECTURER)
+router.get(
+  "/:attendanceId/details",
+  requireAuth,
+  requireRole("ADMIN", "LECTURER"),
+  getAttendanceDetailsHandler,
+);
+
+// POST /api/attendances/:attendanceId/details - Create attendance details (LECTURER only)
+router.post(
+  "/:attendanceId/details",
+  requireAuth,
+  requireRole("LECTURER"),
+  createAttendanceDetailsHandler,
+);
+
+// PUT /api/attendances/:attendanceId/details/:detailId - Update one attendance detail (LECTURER only)
+router.put(
+  "/:attendanceId/details/:detailId",
+  requireAuth,
+  requireRole("LECTURER"),
+  updateAttendanceDetailHandler,
+);
 
 // GET /api/attendances/:attendanceId - Attendance detail (ADMIN, LECTURER)
 router.get(
