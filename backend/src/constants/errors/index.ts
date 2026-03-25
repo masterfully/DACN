@@ -13,6 +13,9 @@ export { REGISTRATION_ERROR_MESSAGES } from "./registration/messages";
 export { ROOM_ERROR_CODES } from "./room/codes";
 export { ROOM_ERROR_MESSAGES } from "./room/messages";
 
+export { SCHEDULE_ERROR_CODES } from "./schedule/codes";
+export { SCHEDULE_ERROR_MESSAGES } from "./schedule/messages";
+
 export { ACCOUNT_ERROR_CODES } from "./account/codes";
 export { ACCOUNT_ERROR_MESSAGES } from "./account/messages";
 export { USAGE_ERROR_CODES } from "./usageHistory/codes";

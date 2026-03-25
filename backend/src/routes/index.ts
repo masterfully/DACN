@@ -5,6 +5,7 @@ import authRouter from "./authRoute";
 import profileRoute from "./profileRoute";
 import registrationRoute from "./registrationRoute";
 import roomRoute from "./roomRoute";
+import scheduleRoute from "./scheduleRoute";
 import usageHistoryRoute from "./usageHistoryRoute";
 import sectionRoute from "./sectionRoute";
 import subjectRoute from "./subjectRoute";
@@ -38,6 +39,9 @@ router.use("/sections", sectionRoute);
 
 // Mount registration routes
 router.use("/registrations", registrationRoute);
+
+// Mount schedule routes
+router.use("/schedules", scheduleRoute);
 
 // Mount room routes
 router.use("/rooms", roomRoute);
