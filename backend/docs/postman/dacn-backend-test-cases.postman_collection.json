@@ -4447,6 +4447,305 @@
             }
           },
           "response": []
+    }
+  ]
+},
+{
+  "name": "Profile Applications",
+      "description": "Profile application CRUD and review tests",
+      "item": [
+        {
+          "name": "Submit Application - Success (STUDENT)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sectionId\": \"1\",\n  \"reason\": \"Test application\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/profile-applications",
+              "host": ["{{base_url}}"],
+              "path": ["api", "profile-applications"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+                  "const json = pm.response.json();",
+                  "if (json.data && json.data.id) {",
+                  "  pm.collectionVariables.set(\"existing_app_id\", json.data.id);",
+                  "  pm.collectionVariables.set(\"pending_app_id\", json.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Submit Application - Duplicate",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"sectionId\": \"1\"}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/profile-applications",
+              "host": ["{{base_url}}"],
+              "path": ["api", "profile-applications"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"409 Already Pending\", () => {",
+                  "  pm.expect(pm.response.code).to.eql(409);",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.error.code).to.eql('PROFILE_APPLICATION_SUBMIT_ALREADY_PENDING');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List Applications - ADMIN",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/profile-applications?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "profile-applications"],
+              "query": [
+                {"key": "page", "value": "1"},
+                {"key": "limit", "value": "10"}
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List Applications - Filter PENDING",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/profile-applications?applicationStatus=PENDING",
+              "host": ["{{base_url}}"],
+              "path": ["api", "profile-applications"],
+              "query": [{"key": "applicationStatus", "value": "PENDING"}]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Applications - STUDENT",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/profile-applications/my-applications",
+              "host": ["{{base_url}}"],
+              "path": ["api", "profile-applications", "my-applications"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Application Detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/profile-applications/{{existing_app_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "profile-applications", "{{existing_app_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Application - Pending (STUDENT)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"reason\": \"Updated reason\"}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/profile-applications/{{pending_app_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "profile-applications", "{{pending_app_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Review - APPROVE (ADMIN)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"applicationStatus\": \"APPROVED\"}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/profile-applications/{{pending_app_id}}/review",
+              "host": ["{{base_url}}"],
+              "path": ["api", "profile-applications", "{{pending_app_id}}", "review"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('reviewed_app_id', pm.collectionVariables.get('pending_app_id'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Review - REJECT (ADMIN)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"applicationStatus\": \"REJECTED\", \"reviewNotes\": \"Not qualified\"}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/profile-applications/{{pending_app_id}}/review",
+              "host": ["{{base_url}}"],
+              "path": ["api", "profile-applications", "{{pending_app_id}}", "review"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Review - Already Reviewed",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"applicationStatus\": \"APPROVED\"}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/profile-applications/{{reviewed_app_id}}/review",
+              "host": ["{{base_url}}"],
+              "path": ["api", "profile-applications", "{{reviewed_app_id}}", "review"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Certificates",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/profile-applications/{{existing_app_id}}/certificates",
+              "host": ["{{base_url}}"],
+              "path": ["api", "profile-applications", "{{existing_app_id}}", "certificates"]
+            }
+          },
+          "response": []
         }
       ]
     }
@@ -4614,6 +4913,18 @@
     },
     {
       "key": "profile_new_account_id",
+      "value": ""
+    },
+    {
+      "key": "existing_app_id",
+      "value": ""
+    },
+    {
+      "key": "pending_app_id",
+      "value": ""
+    },
+    {
+      "key": "reviewed_app_id",
       "value": ""
     }
   ]
