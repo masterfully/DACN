@@ -67,3 +67,138 @@ export const createSubject = async (subjectName: string, periods: number) => {
 
   return subject;
 };
+
+export const getSubjectById = async (subjectId: number) => {
+  const subject = await prisma.subject.findUnique({
+    where: {
+      SubjectID: subjectId,
+    },
+  });
+
+  if (!subject) {
+    throw new AppError(SUBJECT_ERROR_MESSAGES.SUBJECT_GET_NOT_FOUND, {
+      statusCode: 404,
+      code: SUBJECT_ERROR_CODES.SUBJECT_GET_NOT_FOUND,
+      details: {
+        formErrors: [SUBJECT_ERROR_MESSAGES.SUBJECT_GET_NOT_FOUND],
+        fieldErrors: {},
+      },
+    });
+  }
+
+  return subject;
+};
+
+export const updateSubject = async (
+  subjectId: number,
+  payload: {
+    subjectName?: string;
+    periods?: number;
+  },
+) => {
+  const subject = await prisma.subject.findUnique({
+    where: {
+      SubjectID: subjectId,
+    },
+  });
+
+  if (!subject) {
+    throw new AppError(SUBJECT_ERROR_MESSAGES.SUBJECT_UPDATE_NOT_FOUND, {
+      statusCode: 404,
+      code: SUBJECT_ERROR_CODES.SUBJECT_UPDATE_NOT_FOUND,
+      details: {
+        formErrors: [SUBJECT_ERROR_MESSAGES.SUBJECT_UPDATE_NOT_FOUND],
+        fieldErrors: {},
+      },
+    });
+  }
+
+  if (payload.subjectName !== undefined && payload.subjectName !== subject.SubjectName) {
+    const existingSubject = await prisma.subject.findFirst({
+      where: {
+        SubjectName: payload.subjectName,
+        NOT: {
+          SubjectID: subjectId,
+        },
+      },
+    });
+
+    if (existingSubject) {
+      throw new AppError(SUBJECT_ERROR_MESSAGES.SUBJECT_UPDATE_NAME_EXISTS, {
+        statusCode: 409,
+        code: SUBJECT_ERROR_CODES.SUBJECT_UPDATE_NAME_EXISTS,
+        details: {
+          formErrors: [],
+          fieldErrors: {
+            subjectName: [SUBJECT_ERROR_MESSAGES.SUBJECT_UPDATE_NAME_EXISTS],
+          },
+        },
+      });
+    }
+  }
+
+  const data: {
+    SubjectName?: string;
+    Periods?: number;
+  } = {};
+
+  if (payload.subjectName !== undefined) {
+    data.SubjectName = payload.subjectName;
+  }
+
+  if (payload.periods !== undefined) {
+    data.Periods = payload.periods;
+  }
+
+  return prisma.subject.update({
+    where: {
+      SubjectID: subjectId,
+    },
+    data,
+  });
+};
+
+export const deleteSubject = async (subjectId: number): Promise<void> => {
+  const subject = await prisma.subject.findUnique({
+    where: {
+      SubjectID: subjectId,
+    },
+    select: {
+      SubjectID: true,
+    },
+  });
+
+  if (!subject) {
+    throw new AppError(SUBJECT_ERROR_MESSAGES.SUBJECT_DELETE_NOT_FOUND, {
+      statusCode: 404,
+      code: SUBJECT_ERROR_CODES.SUBJECT_DELETE_NOT_FOUND,
+      details: {
+        formErrors: [SUBJECT_ERROR_MESSAGES.SUBJECT_DELETE_NOT_FOUND],
+        fieldErrors: {},
+      },
+    });
+  }
+
+  const linkedSectionCount = await prisma.section.count({
+    where: {
+      SubjectID: subjectId,
+    },
+  });
+
+  if (linkedSectionCount > 0) {
+    throw new AppError(SUBJECT_ERROR_MESSAGES.SUBJECT_DELETE_IN_USE, {
+      statusCode: 409,
+      code: SUBJECT_ERROR_CODES.SUBJECT_DELETE_IN_USE,
+      details: {
+        formErrors: [SUBJECT_ERROR_MESSAGES.SUBJECT_DELETE_IN_USE],
+        fieldErrors: {},
+      },
+    });
+  }
+
+  await prisma.subject.delete({
+    where: {
+      SubjectID: subjectId,
+    },
+  });
+};
