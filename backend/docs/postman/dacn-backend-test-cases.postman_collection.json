@@ -5138,6 +5138,845 @@
       ]
     },
     {
+      "name": "Attendances",
+      "item": [
+        {
+          "name": "Get Attendance List - Success (ADMIN)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/attendances?page=1&limit=10&sectionId={{existing_section_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "attendances"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "sectionId",
+                  "value": "{{existing_section_id}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Attendance List - Forbidden (STUDENT)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/attendances?page=1&limit=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "attendances"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Attendance List - Missing Token",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/attendances?page=1&limit=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "attendances"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Attendance List - Invalid Query",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/attendances?page=1&limit=10&slot=abc",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "attendances"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "slot",
+                  "value": "abc"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Setup Attendance - Capture Existing Attendance ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/attendances?page=1&limit=1&sectionId={{existing_section_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "attendances"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "1"
+                },
+                {
+                  "key": "sectionId",
+                  "value": "{{existing_section_id}}"
+                }
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const attendanceId = json?.data?.[0]?.attendanceId;",
+                  "if (attendanceId) {",
+                  "  pm.collectionVariables.set('attendance_editable_id', String(attendanceId));",
+                  "  pm.collectionVariables.set('existing_attendance_id', String(attendanceId));",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Attendance - Success (LECTURER)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{lecturer_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sectionId\": \"{{existing_section_id}}\",\n  \"attendanceDate\": \"2099-12-30\",\n  \"slot\": 99,\n  \"note\": \"Buoi hoc bo sung\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/attendances",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "attendances"
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const attendanceId = json?.data?.attendanceId ?? json?.data?.AttendanceID;",
+                  "if (attendanceId) {",
+                  "  pm.collectionVariables.set('attendance_editable_id', String(attendanceId));",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Attendance - Forbidden (STUDENT)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sectionId\": \"{{existing_section_id}}\",\n  \"attendanceDate\": \"2099-12-29\",\n  \"slot\": 98,\n  \"note\": \"Khong co quyen\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/attendances",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "attendances"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Attendance - Missing Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sectionId\": \"{{existing_section_id}}\",\n  \"attendanceDate\": \"2099-12-29\",\n  \"slot\": 98,\n  \"note\": \"Thieu token\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/attendances",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "attendances"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Attendance - Duplicate Session",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{lecturer_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sectionId\": \"{{existing_section_id}}\",\n  \"attendanceDate\": \"2099-12-30\",\n  \"slot\": 99,\n  \"note\": \"Trung buoi\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/attendances",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "attendances"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Attendance - Section Not Found",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{lecturer_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sectionId\": \"{{registration_not_found_section_id}}\",\n  \"attendanceDate\": \"2099-12-30\",\n  \"slot\": 99,\n  \"note\": \"Section khong ton tai\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/attendances",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "attendances"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Attendance Detail - Success (ADMIN)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/attendances/{{existing_attendance_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "attendances",
+                "{{existing_attendance_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Attendance Detail - Missing Token",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/attendances/{{existing_attendance_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "attendances",
+                "{{existing_attendance_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Attendance Detail - Invalid attendanceId",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/attendances/abc",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "attendances",
+                "abc"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Attendance Detail - Not Found",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/attendances/{{attendance_not_found_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "attendances",
+                "{{attendance_not_found_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Attendance - Success (LECTURER)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{lecturer_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note\": \"Cap nhat ghi chu buoi hoc\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/attendances/{{attendance_editable_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "attendances",
+                "{{attendance_editable_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Attendance - Forbidden (STUDENT)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note\": \"Khong duoc cap nhat\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/attendances/{{attendance_editable_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "attendances",
+                "{{attendance_editable_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Attendance - Invalid Payload",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{lecturer_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/attendances/{{attendance_editable_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "attendances",
+                "{{attendance_editable_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Attendance - Not Found",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{lecturer_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note\": \"Khong tim thay\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/attendances/{{attendance_not_found_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "attendances",
+                "{{attendance_not_found_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Attendance - Success (ADMIN)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/attendances/{{attendance_editable_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "attendances",
+                "{{attendance_editable_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Attendance - Forbidden (STUDENT)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/attendances/{{existing_attendance_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "attendances",
+                "{{existing_attendance_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Attendance - Missing Token",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/attendances/{{existing_attendance_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "attendances",
+                "{{existing_attendance_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Attendance - Not Found",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/attendances/{{attendance_not_found_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "attendances",
+                "{{attendance_not_found_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Attendances By Section - Success (ADMIN)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/sections/{{existing_section_id}}/attendances?page=1&limit=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections",
+                "{{existing_section_id}}",
+                "attendances"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Attendances By Section - Forbidden (STUDENT)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/sections/{{existing_section_id}}/attendances?page=1&limit=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections",
+                "{{existing_section_id}}",
+                "attendances"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Attendances By Section - Missing Token",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/sections/{{existing_section_id}}/attendances?page=1&limit=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections",
+                "{{existing_section_id}}",
+                "attendances"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Attendances By Section - Invalid sectionId",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/sections/abc/attendances?page=1&limit=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections",
+                "abc",
+                "attendances"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Attendances By Section - Not Found",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/sections/{{registration_not_found_section_id}}/attendances?page=1&limit=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "sections",
+                "{{registration_not_found_section_id}}",
+                "attendances"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
       "name": "Registrations",
       "item": [
         {
@@ -6922,8 +7761,14 @@
           "request": {
             "method": "POST",
             "header": [
-              {"key": "Authorization", "value": "Bearer {{admin_token}}"},
-              {"key": "Content-Type", "value": "application/json"}
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -6931,8 +7776,13 @@
             },
             "url": {
               "raw": "{{base_url}}/api/usage-Histories",
-              "host": ["{{base_url}}"],
-              "path": ["api", "usageHistories"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "usageHistories"
+              ]
             }
           },
           "response": []
@@ -6941,12 +7791,31 @@
           "name": "List usage histories",
           "request": {
             "method": "GET",
-            "header": [{"key": "Authorization", "value": "Bearer {{admin_token}}"}],
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
             "url": {
               "raw": "{{base_url}}/api/usageHistories?page=1&limit=10",
-              "host": ["{{base_url}}"],
-              "path": ["api", "usageHistories"],
-              "query": [{"key": "page", "value": "1"}, {"key": "limit", "value": "10"}]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "usageHistories"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
             }
           },
           "response": []
@@ -6955,12 +7824,27 @@
           "name": "List filter roomId",
           "request": {
             "method": "GET",
-            "header": [{"key": "Authorization", "value": "Bearer {{admin_token}}"}],
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
             "url": {
               "raw": "{{base_url}}/api/usageHistories?roomId={{existing_room_id}}",
-              "host": ["{{base_url}}"],
-              "path": ["api", "usageHistories"],
-              "query": [{"key": "roomId", "value": "{{existing_room_id}}"}]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "usageHistories"
+              ],
+              "query": [
+                {
+                  "key": "roomId",
+                  "value": "{{existing_room_id}}"
+                }
+              ]
             }
           },
           "response": []
@@ -6969,11 +7853,22 @@
           "name": "Get detail {{usage_id}}",
           "request": {
             "method": "GET",
-            "header": [{"key": "Authorization", "value": "Bearer {{admin_token}}"}],
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
             "url": {
               "raw": "{{base_url}}/api/usageHistories/{{usage_id}}",
-              "host": ["{{base_url}}"],
-              "path": ["api", "usageHistories", "{{usage_id}}"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "usageHistories",
+                "{{usage_id}}"
+              ]
             }
           },
           "response": []
@@ -6983,8 +7878,14 @@
           "request": {
             "method": "PUT",
             "header": [
-              {"key": "Authorization", "value": "Bearer {{admin_token}}"},
-              {"key": "Content-Type", "value": "application/json"}
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -6992,8 +7893,14 @@
             },
             "url": {
               "raw": "{{base_url}}/api/usageHistories/{{usage_id}}",
-              "host": ["{{base_url}}"],
-              "path": ["api", "usageHistories", "{{usage_id}}"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "usageHistories",
+                "{{usage_id}}"
+              ]
             }
           },
           "response": []
@@ -7003,8 +7910,14 @@
           "request": {
             "method": "POST",
             "header": [
-              {"key": "Authorization", "value": "Bearer {{admin_token}}"},
-              {"key": "Content-Type", "value": "application/json"}
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -7012,8 +7925,13 @@
             },
             "url": {
               "raw": "{{base_url}}/api/usage-Histories",
-              "host": ["{{base_url}}"],
-              "path": ["api", "usageHistories"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "usageHistories"
+              ]
             }
           },
           "response": []
@@ -7023,8 +7941,14 @@
           "request": {
             "method": "POST",
             "header": [
-              {"key": "Authorization", "value": "Bearer {{admin_token}}"},
-              {"key": "Content-Type", "value": "application/json"}
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -7032,8 +7956,13 @@
             },
             "url": {
               "raw": "{{base_url}}/api/usage-Histories",
-              "host": ["{{base_url}}"],
-              "path": ["api", "usageHistories"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "usageHistories"
+              ]
             }
           },
           "response": []
@@ -7042,11 +7971,24 @@
           "name": "Link section success",
           "request": {
             "method": "POST",
-            "header": [{"key": "Authorization", "value": "Bearer {{admin_token}}"}],
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
             "url": {
               "raw": "{{base_url}}/api/usageHistories/{{usage_id}}/sections/{{existing_section_id}}",
-              "host": ["{{base_url}}"],
-              "path": ["api", "usageHistories", "{{usage_id}}", "sections", "{{existing_section_id}}"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "usageHistories",
+                "{{usage_id}}",
+                "sections",
+                "{{existing_section_id}}"
+              ]
             }
           },
           "response": []
@@ -7055,11 +7997,22 @@
           "name": "Delete success",
           "request": {
             "method": "DELETE",
-            "header": [{"key": "Authorization", "value": "Bearer {{admin_token}}"}],
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
             "url": {
               "raw": "{{base_url}}/api/usageHistories/{{usage_id}}",
-              "host": ["{{base_url}}"],
-              "path": ["api", "usageHistories", "{{usage_id}}"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "usageHistories",
+                "{{usage_id}}"
+              ]
             }
           },
           "response": []
@@ -7887,6 +8840,21 @@
     {
       "key": "profile_new_account_id",
       "value": ""
+    },
+    {
+      "key": "existing_attendance_id",
+      "value": "1",
+      "type": "default"
+    },
+    {
+      "key": "attendance_editable_id",
+      "value": "1",
+      "type": "default"
+    },
+    {
+      "key": "attendance_not_found_id",
+      "value": "999999",
+      "type": "default"
     }
   ]
 }
