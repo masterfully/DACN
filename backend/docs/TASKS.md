@@ -312,4 +312,3 @@ src/
 ### Route ordering rule
 Static routes (e.g. `/me`, `/my-sections`, `/available`) **must be registered before** dynamic routes (e.g. `/:id`) to avoid Express matching them as IDs.
 
-
