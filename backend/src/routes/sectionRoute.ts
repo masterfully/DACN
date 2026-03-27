@@ -10,7 +10,9 @@ import {
   updateSectionStatusHandler,
   updateSectionVisibilityHandler,
 } from "../controllers/sectionController";
+import { getAttendancesBySectionHandler } from "../controllers/attendanceController";
 import { getRegistrationsBySectionHandler } from "../controllers/registrationController";
+import { getSchedulesBySectionHandler } from "../controllers/scheduleController";
 import { requireAuth, requireRole } from "../middleware/auth";
 
 const router = Router();
@@ -59,6 +61,17 @@ router.get(
   requireAuth,
   requireRole("ADMIN", "LECTURER"),
   getRegistrationsBySectionHandler,
+);
+
+// GET /api/sections/:sectionId/schedules - Schedules in section (Any auth)
+router.get("/:sectionId/schedules", requireAuth, getSchedulesBySectionHandler);
+
+// GET /api/sections/:sectionId/attendances - Attendance sessions in section (ADMIN, LECTURER)
+router.get(
+  "/:sectionId/attendances",
+  requireAuth,
+  requireRole("ADMIN", "LECTURER"),
+  getAttendancesBySectionHandler,
 );
 
 // GET /api/sections/:sectionId - Section detail (Any auth)

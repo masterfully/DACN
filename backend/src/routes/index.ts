@@ -1,10 +1,12 @@
 import { Router } from "express";
 import { sendSuccess } from "../utils/response";
 import accountRouter from "./accountRoute";
+import attendanceRoute from "./attendanceRoute";
 import authRouter from "./authRoute";
 import profileRoute from "./profileRoute";
 import registrationRoute from "./registrationRoute";
 import roomRoute from "./roomRoute";
+import scheduleRoute from "./scheduleRoute";
 import usageHistoryRoute from "./usageHistoryRoute";
 import sectionRoute from "./sectionRoute";
 import subjectRoute from "./subjectRoute";
@@ -38,6 +40,12 @@ router.use("/sections", sectionRoute);
 
 // Mount registration routes
 router.use("/registrations", registrationRoute);
+
+// Mount schedule routes
+router.use("/schedules", scheduleRoute);
+
+// Mount attendance routes
+router.use("/attendances", attendanceRoute);
 
 // Mount room routes
 router.use("/rooms", roomRoute);
