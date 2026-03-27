@@ -5977,6 +5977,796 @@
       ]
     },
     {
+      "name": "Attendance Details",
+      "item": [
+        {
+          "name": "Setup Attendance Detail - Capture Student Profile ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/profiles/students?page=1&limit=1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "profiles",
+                "students"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const profileId = json?.data?.[0]?.profileId;",
+                  "if (profileId) {",
+                  "  pm.collectionVariables.set('attendance_detail_student_profile_id', String(profileId));",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Setup Attendance Detail - Create Attendance Session",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{lecturer_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/attendances",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "attendances"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sectionId\": \"{{existing_section_id}}\",\n  \"attendanceDate\": \"2099-12-31\",\n  \"slot\": {{attendance_detail_slot}},\n  \"note\": \"Buoi diem danh cho attendance detail\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const slot = (Math.floor(Date.now() / 1000) % 900000) + 1000;",
+                  "pm.collectionVariables.set('attendance_detail_slot', String(slot));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Setup Attendance Detail - Capture Attendance ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/attendances?page=1&limit=1&sectionId={{existing_section_id}}&attendanceDate=2099-12-31&slot={{attendance_detail_slot}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "attendances"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "1"
+                },
+                {
+                  "key": "sectionId",
+                  "value": "{{existing_section_id}}"
+                },
+                {
+                  "key": "attendanceDate",
+                  "value": "2099-12-31"
+                },
+                {
+                  "key": "slot",
+                  "value": "{{attendance_detail_slot}}"
+                }
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const attendanceId = json?.data?.[0]?.attendanceId;",
+                  "if (attendanceId) {",
+                  "  pm.collectionVariables.set('attendance_detail_target_attendance_id', String(attendanceId));",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Attendance Details - Success (ADMIN)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/attendances/{{attendance_detail_target_attendance_id}}/details?page=1&limit=50",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "attendances",
+                "{{attendance_detail_target_attendance_id}}",
+                "details"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "50"
+                }
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const detailId = json?.data?.[0]?.attendanceDetailId;",
+                  "if (detailId) {",
+                  "  pm.collectionVariables.set('existing_attendance_detail_id', String(detailId));",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Attendance Details - Missing Token",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/attendances/{{attendance_detail_target_attendance_id}}/details?page=1&limit=50",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "attendances",
+                "{{attendance_detail_target_attendance_id}}",
+                "details"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "50"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Attendance Details - Invalid attendanceId",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/attendances/abc/details?page=1&limit=50",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "attendances",
+                "abc",
+                "details"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "50"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Attendance Details - Invalid Query",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/attendances/{{attendance_detail_target_attendance_id}}/details?page=1&limit=50&status=BAD_STATUS",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "attendances",
+                "{{attendance_detail_target_attendance_id}}",
+                "details"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "50"
+                },
+                {
+                  "key": "status",
+                  "value": "BAD_STATUS"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Attendance Details - Attendance Not Found",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/attendances/{{attendance_not_found_id}}/details?page=1&limit=50",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "attendances",
+                "{{attendance_not_found_id}}",
+                "details"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "50"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Attendance Details - Success (LECTURER)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{lecturer_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/attendances/{{attendance_detail_target_attendance_id}}/details",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "attendances",
+                "{{attendance_detail_target_attendance_id}}",
+                "details"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"details\": [\n    {\n      \"studentProfileId\": \"{{attendance_detail_student_profile_id}}\",\n      \"status\": \"PRESENT\",\n      \"note\": \"Co mat\"\n    }\n  ]\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Attendance Details - Forbidden (ADMIN)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/attendances/{{attendance_detail_target_attendance_id}}/details",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "attendances",
+                "{{attendance_detail_target_attendance_id}}",
+                "details"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"details\": [\n    {\n      \"studentProfileId\": \"{{attendance_detail_student_profile_id}}\",\n      \"status\": \"ABSENT\",\n      \"note\": \"Vang mat\"\n    }\n  ]\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Attendance Details - Missing Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/attendances/{{attendance_detail_target_attendance_id}}/details",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "attendances",
+                "{{attendance_detail_target_attendance_id}}",
+                "details"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"details\": [\n    {\n      \"studentProfileId\": \"{{attendance_detail_student_profile_id}}\",\n      \"status\": \"ABSENT\",\n      \"note\": \"Thieu token\"\n    }\n  ]\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Attendance Details - Invalid Payload",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{lecturer_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/attendances/{{attendance_detail_target_attendance_id}}/details",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "attendances",
+                "{{attendance_detail_target_attendance_id}}",
+                "details"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"details\": []\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Attendance Details - Attendance Not Found",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{lecturer_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/attendances/{{attendance_not_found_id}}/details",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "attendances",
+                "{{attendance_not_found_id}}",
+                "details"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"details\": [\n    {\n      \"studentProfileId\": \"{{attendance_detail_student_profile_id}}\",\n      \"status\": \"PRESENT\",\n      \"note\": \"Khong tim thay attendance\"\n    }\n  ]\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Attendance Details - Already Created",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{lecturer_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/attendances/{{attendance_detail_target_attendance_id}}/details",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "attendances",
+                "{{attendance_detail_target_attendance_id}}",
+                "details"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"details\": [\n    {\n      \"studentProfileId\": \"{{attendance_detail_student_profile_id}}\",\n      \"status\": \"LATE\",\n      \"note\": \"Bi trung do da tao\"\n    }\n  ]\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Setup Attendance Detail - Capture Detail ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/attendances/{{attendance_detail_target_attendance_id}}/details?page=1&limit=1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "attendances",
+                "{{attendance_detail_target_attendance_id}}",
+                "details"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const detailId = json?.data?.[0]?.attendanceDetailId;",
+                  "if (detailId) {",
+                  "  pm.collectionVariables.set('existing_attendance_detail_id', String(detailId));",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Attendance Detail - Success (LECTURER)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{lecturer_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/attendances/{{attendance_detail_target_attendance_id}}/details/{{existing_attendance_detail_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "attendances",
+                "{{attendance_detail_target_attendance_id}}",
+                "details",
+                "{{existing_attendance_detail_id}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"LATE\",\n  \"note\": \"Den muon 10 phut\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Attendance Detail - Forbidden (STUDENT)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/attendances/{{attendance_detail_target_attendance_id}}/details/{{existing_attendance_detail_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "attendances",
+                "{{attendance_detail_target_attendance_id}}",
+                "details",
+                "{{existing_attendance_detail_id}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"ABSENT\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Attendance Detail - Missing Token",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/attendances/{{attendance_detail_target_attendance_id}}/details/{{existing_attendance_detail_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "attendances",
+                "{{attendance_detail_target_attendance_id}}",
+                "details",
+                "{{existing_attendance_detail_id}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"ABSENT\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Attendance Detail - Invalid Params",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{lecturer_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/attendances/abc/details/xyz",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "attendances",
+                "abc",
+                "details",
+                "xyz"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"ABSENT\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Attendance Detail - Invalid Payload",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{lecturer_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/attendances/{{attendance_detail_target_attendance_id}}/details/{{existing_attendance_detail_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "attendances",
+                "{{attendance_detail_target_attendance_id}}",
+                "details",
+                "{{existing_attendance_detail_id}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Attendance Detail - Not Found",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{lecturer_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/attendances/{{attendance_detail_target_attendance_id}}/details/{{attendance_detail_not_found_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "attendances",
+                "{{attendance_detail_target_attendance_id}}",
+                "details",
+                "{{attendance_detail_not_found_id}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"ABSENT\",\n  \"note\": \"Khong tim thay detail\"\n}"
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
       "name": "Registrations",
       "item": [
         {
@@ -8854,6 +9644,31 @@
     {
       "key": "attendance_not_found_id",
       "value": "999999",
+      "type": "default"
+    },
+    {
+      "key": "attendance_detail_target_attendance_id",
+      "value": "1",
+      "type": "default"
+    },
+    {
+      "key": "existing_attendance_detail_id",
+      "value": "1",
+      "type": "default"
+    },
+    {
+      "key": "attendance_detail_not_found_id",
+      "value": "999999",
+      "type": "default"
+    },
+    {
+      "key": "attendance_detail_student_profile_id",
+      "value": "1",
+      "type": "default"
+    },
+    {
+      "key": "attendance_detail_slot",
+      "value": "1001",
       "type": "default"
     }
   ]
