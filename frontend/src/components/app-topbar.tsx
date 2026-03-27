@@ -87,120 +87,122 @@ export function AppTopbar({
       <div className="flex flex-1 items-center justify-between gap-2">
         <div className="text-sm font-medium">Academic Portal</div>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Avatar size="lg" className="cursor-pointer">
-              <AvatarFallback>
-                <User />
-              </AvatarFallback>
-            </Avatar>
-          </DropdownMenuTrigger>
+        <div className="flex items-center gap-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Avatar size="lg" className="cursor-pointer">
+                <AvatarFallback>
+                  <User />
+                </AvatarFallback>
+              </Avatar>
+            </DropdownMenuTrigger>
 
-          <DropdownMenuContent align="end" className="w-64">
-            <DropdownMenuLabel className="font-medium">
-              {resolvedAccountName}
-            </DropdownMenuLabel>
+            <DropdownMenuContent align="end" className="w-64">
+              <DropdownMenuLabel className="font-medium">
+                {resolvedAccountName}
+              </DropdownMenuLabel>
 
-            <DropdownMenuSeparator />
+              <DropdownMenuSeparator />
 
-            <DropdownMenuItem asChild>
-              <Link href="/profile">
-                <User />
-                <span>Thông tin tài khoản</span>
-              </Link>
-            </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/profile">
+                  <User />
+                  <span>Thông tin tài khoản</span>
+                </Link>
+              </DropdownMenuItem>
 
-            <DropdownMenuSub>
-              <DropdownMenuSubTrigger>
-                <Monitor />
-                <span>Hiển thị</span>
-              </DropdownMenuSubTrigger>
-              <DropdownMenuSubContent className="w-52">
-                <DropdownMenuItem
-                  className={cn(theme === "light" && "bg-muted")}
-                  onClick={() => setTheme("light")}
-                >
-                  <Sun />
-                  <span>{tTheme("light")}</span>
-                  {theme === "light" && (
-                    <DropdownMenuShortcut>
-                      <Check className="size-4" />
-                    </DropdownMenuShortcut>
-                  )}
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className={cn(theme === "dark" && "bg-muted")}
-                  onClick={() => {
-                    setTheme("dark");
-                  }}
-                >
-                  <Moon />
-                  <span>{tTheme("dark")}</span>
-                  {theme === "dark" && (
-                    <DropdownMenuShortcut>
-                      <Check className="size-4" />
-                    </DropdownMenuShortcut>
-                  )}
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className={cn(theme === "system" && "bg-muted")}
-                  onClick={() => {
-                    setTheme("system");
-                  }}
-                >
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>
                   <Monitor />
-                  <span>{tTheme("system")}</span>
-                  {theme === "system" && (
-                    <DropdownMenuShortcut>
-                      <Check className="size-4" />
-                    </DropdownMenuShortcut>
-                  )}
-                </DropdownMenuItem>
-              </DropdownMenuSubContent>
-            </DropdownMenuSub>
-
-            <DropdownMenuSub>
-              <DropdownMenuSubTrigger>
-                <Globe />
-                <span>Ngôn ngữ</span>
-              </DropdownMenuSubTrigger>
-              <DropdownMenuSubContent className="w-52">
-                {languages.map((language) => (
+                  <span>Hiển thị</span>
+                </DropdownMenuSubTrigger>
+                <DropdownMenuSubContent className="w-52">
                   <DropdownMenuItem
-                    key={language.locale}
-                    className={cn(locale === language.locale && "bg-muted")}
-                    onClick={() => {
-                      changeLocale(language.locale);
-                    }}
+                    className={cn(theme === "light" && "bg-muted")}
+                    onClick={() => setTheme("light")}
                   >
-                    <div className="flex size-4 items-center justify-center text-xs font-medium">
-                      {language.locale.toUpperCase()}
-                    </div>
-                    <span>{language.label}</span>
-                    {locale === language.locale && (
+                    <Sun />
+                    <span>{tTheme("light")}</span>
+                    {theme === "light" && (
                       <DropdownMenuShortcut>
                         <Check className="size-4" />
                       </DropdownMenuShortcut>
                     )}
                   </DropdownMenuItem>
-                ))}
-              </DropdownMenuSubContent>
-            </DropdownMenuSub>
+                  <DropdownMenuItem
+                    className={cn(theme === "dark" && "bg-muted")}
+                    onClick={() => {
+                      setTheme("dark");
+                    }}
+                  >
+                    <Moon />
+                    <span>{tTheme("dark")}</span>
+                    {theme === "dark" && (
+                      <DropdownMenuShortcut>
+                        <Check className="size-4" />
+                      </DropdownMenuShortcut>
+                    )}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className={cn(theme === "system" && "bg-muted")}
+                    onClick={() => {
+                      setTheme("system");
+                    }}
+                  >
+                    <Monitor />
+                    <span>{tTheme("system")}</span>
+                    {theme === "system" && (
+                      <DropdownMenuShortcut>
+                        <Check className="size-4" />
+                      </DropdownMenuShortcut>
+                    )}
+                  </DropdownMenuItem>
+                </DropdownMenuSubContent>
+              </DropdownMenuSub>
 
-            <DropdownMenuSeparator />
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>
+                  <Globe />
+                  <span>Ngôn ngữ</span>
+                </DropdownMenuSubTrigger>
+                <DropdownMenuSubContent className="w-52">
+                  {languages.map((language) => (
+                    <DropdownMenuItem
+                      key={language.locale}
+                      className={cn(locale === language.locale && "bg-muted")}
+                      onClick={() => {
+                        changeLocale(language.locale);
+                      }}
+                    >
+                      <div className="flex size-4 items-center justify-center text-xs font-medium">
+                        {language.locale.toUpperCase()}
+                      </div>
+                      <span>{language.label}</span>
+                      {locale === language.locale && (
+                        <DropdownMenuShortcut>
+                          <Check className="size-4" />
+                        </DropdownMenuShortcut>
+                      )}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuSubContent>
+              </DropdownMenuSub>
 
-            <DropdownMenuItem
-              variant="destructive"
-              disabled={isLoggingOut}
-              onClick={() => {
-                void handleLogout();
-              }}
-            >
-              <LogOut />
-              <span>{isLoggingOut ? "Đang đăng xuất..." : "Đăng xuất"}</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+              <DropdownMenuSeparator />
+
+              <DropdownMenuItem
+                variant="destructive"
+                disabled={isLoggingOut}
+                onClick={() => {
+                  void handleLogout();
+                }}
+              >
+                <LogOut />
+                <span>{isLoggingOut ? "Đang đăng xuất..." : "Đăng xuất"}</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
     </header>
   );
