@@ -10,6 +10,7 @@ import scheduleRoute from "./scheduleRoute";
 import usageHistoryRoute from "./usageHistoryRoute";
 import sectionRoute from "./sectionRoute";
 import subjectRoute from "./subjectRoute";
+import profileApplicationRoute from "./profileApplicationRoute";
 
 const router = Router();
 
@@ -50,5 +51,6 @@ router.use("/attendances", attendanceRoute);
 // Mount room routes
 router.use("/rooms", roomRoute);
 router.use("/usage-histories", usageHistoryRoute);
+router.use("/profile-applications", profileApplicationRoute);
 
 export default router;
