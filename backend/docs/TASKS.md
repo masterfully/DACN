@@ -177,12 +177,12 @@ Base path: `/api/schedules` and `/api/sections/:sectionId/schedules`
 
 Base path: `/api/attendances` and `/api/sections/:sectionId/attendances`
 
-- [ ] `GET /api/attendances` — paginated, filter by `sectionId`. **Role: ADMIN**
-- [ ] `POST /api/attendances` — create attendance session. **Role: LECTURER** _(guard: duplicate date+slot per section)_
-- [ ] `GET /api/attendances/:attendanceId` — detail. **Role: ADMIN, LECTURER**
-- [ ] `PUT /api/attendances/:attendanceId` — update. **Role: LECTURER**
-- [ ] `DELETE /api/attendances/:attendanceId` — delete. **Role: ADMIN, LECTURER**
-- [ ] `GET /api/sections/:sectionId/attendances` — attendance sessions for a section. **Role: ADMIN, LECTURER**
+- [x] `GET /api/attendances` — paginated, filter by `sectionId`. **Role: ADMIN**
+- [x] `POST /api/attendances` — create attendance session. **Role: LECTURER** _(guard: duplicate date+slot per section)_
+- [x] `GET /api/attendances/:attendanceId` — detail. **Role: ADMIN, LECTURER**
+- [x] `PUT /api/attendances/:attendanceId` — update. **Role: LECTURER**
+- [x] `DELETE /api/attendances/:attendanceId` — delete. **Role: ADMIN, LECTURER**
+- [x] `GET /api/sections/:sectionId/attendances` — attendance sessions for a section. **Role: ADMIN, LECTURER**
 
 ---
 
@@ -190,9 +190,9 @@ Base path: `/api/attendances` and `/api/sections/:sectionId/attendances`
 
 Base path: `/api/attendances/:attendanceId/details`
 
-- [ ] `GET /api/attendances/:attendanceId/details` — all student statuses for a session. **Role: ADMIN, LECTURER**
-- [ ] `POST /api/attendances/:attendanceId/details` — bulk create details. **Role: LECTURER** _(guard: already created for this session)_
-- [ ] `PUT /api/attendances/:attendanceId/details/:detailId` — update one student's status. **Role: LECTURER**
+- [x] `GET /api/attendances/:attendanceId/details` — all student statuses for a session. **Role: ADMIN, LECTURER**
+- [x] `POST /api/attendances/:attendanceId/details` — bulk create details. **Role: LECTURER** _(guard: already created for this session)_
+- [x] `PUT /api/attendances/:attendanceId/details/:detailId` — update one student's status. **Role: LECTURER**
 
 **Status values**: `present`, `absent`, `late`
 
@@ -311,3 +311,4 @@ src/
 
 ### Route ordering rule
 Static routes (e.g. `/me`, `/my-sections`, `/available`) **must be registered before** dynamic routes (e.g. `/:id`) to avoid Express matching them as IDs.
+
