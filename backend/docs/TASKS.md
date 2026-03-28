@@ -95,7 +95,7 @@ Base path: `/api/profiles`
 - [x] `GET /api/profiles` — paginated, search by name/email. **Role: ADMIN**
 - [x] `POST /api/profiles` — create profile. **Role: ADMIN**
 - [x] `GET /api/profiles/me` — own profile. **Any auth** _(register before `/:id`)_
-- [ ] `PUT /api/profiles/me` — update own profile. **Any auth**
+- [x] `PUT /api/profiles/me` — update own profile. **Any auth**
 - [x] `GET /api/profiles/students` — student profiles. **Role: ADMIN, LECTURER** _(register before `/:id`)_
 - [x] `GET /api/profiles/lecturers` — lecturer profiles. **Role: ADMIN** _(register before `/:id`)_
 - [ ] `GET /api/profiles/:profileId` — profile detail. **Role: ADMIN or owner**
@@ -122,9 +122,9 @@ Base path: `/api/subjects`
 - [x] `GET /api/subjects` — paginated, search by name. **Any auth**
 - [x] `POST /api/subjects` — create subject. **Role: ADMIN**
 - [x] Postman test cases for Subject list/create flows verified
-- [ ] `GET /api/subjects/:subjectId` — subject detail. **Any auth**
-- [ ] `PUT /api/subjects/:subjectId` — update. **Role: ADMIN**
-- [ ] `DELETE /api/subjects/:subjectId` — delete. **Role: ADMIN** _(guard: not linked to any section)_
+- [x] `GET /api/subjects/:subjectId` — subject detail. **Any auth**
+- [x] `PUT /api/subjects/:subjectId` — update. **Role: ADMIN**
+- [x] `DELETE /api/subjects/:subjectId` — delete. **Role: ADMIN** _(guard: not linked to any section)_
 
 ---
 
@@ -146,15 +146,15 @@ Base path: `/api/sections`
 **Visibility values**: `0` = hidden, `1` = visible
 
 ---
-
-### Registration module
-
-Base path: `/api/registrations` and `/api/sections/:sectionId/registrations`
-
-- [x] `GET /api/registrations` — all registrations, filter by `sectionId`. **Role: ADMIN**
-- [x] `POST /api/registrations` — student registers for a section. **Role: STUDENT** _(guard: section full, section not open, already registered — atomically increment `EnrollmentCount`)_
-- [x] `GET /api/registrations/my-registrations` — own registrations. **Role: STUDENT** _(register before `/:id`)_
-- [x] `DELETE /api/registrations/:sectionId` — cancel registration. **Role: STUDENT** _(atomically decrement `EnrollmentCount`)_
+- [x] `GET /api/sections` — paginated, filter by `subjectId`, `year`, `status`. **Role: ADMIN**
+- [x] `POST /api/sections` — create section. **Role: ADMIN**
+- [x] `GET /api/sections/my-sections` — lecturer's own sections. **Role: LECTURER** _(register before `/:id`)_
+- [x] `GET /api/sections/:sectionId` — section detail. **Any auth**
+- [x] `PUT /api/sections/:sectionId` — update section. **Role: ADMIN**
+- [x] `DELETE /api/sections/:sectionId` — delete. **Role: ADMIN** _(guard: has registered students)_
+- [x] `GET /api/sections/:sectionId/students` — students in section. **Role: ADMIN, LECTURER**
+- [x] `PATCH /api/sections/:sectionId/status` — update status. **Role: ADMIN, LECTURER**
+- [x] `PATCH /api/sections/:sectionId/visibility` — update visibility. **Role: ADMIN, LECTURER**
 - [x] `GET /api/sections/:sectionId/registrations` — registrations for a section. **Role: ADMIN, LECTURER**
 
 ---
@@ -163,13 +163,13 @@ Base path: `/api/registrations` and `/api/sections/:sectionId/registrations`
 
 Base path: `/api/schedules` and `/api/sections/:sectionId/schedules`
 
-- [ ] `GET /api/schedules` — paginated, filter by `roomId`, `sectionId`. **Role: ADMIN**
-- [ ] `POST /api/schedules` — create schedule. **Role: ADMIN** _(guard: room conflict check)_
-- [ ] `GET /api/schedules/my-schedule` — personal schedule. **Any auth** _(register before `/:id`)_
-- [ ] `GET /api/schedules/:scheduleId` — schedule detail. **Any auth**
-- [ ] `PUT /api/schedules/:scheduleId` — update. **Role: ADMIN** _(guard: room conflict check)_
-- [ ] `DELETE /api/schedules/:scheduleId` — delete. **Role: ADMIN**
-- [ ] `GET /api/sections/:sectionId/schedules` — schedules for a section. **Any auth**
+- [x] `GET /api/schedules` — paginated, filter by `roomId`, `sectionId`. **Role: ADMIN**
+- [x] `POST /api/schedules` — create schedule. **Role: ADMIN** _(guard: room conflict check)_
+- [x] `GET /api/schedules/my-schedule` — personal schedule. **Any auth** _(register before `/:id`)_
+- [x] `GET /api/schedules/:scheduleId` — schedule detail. **Any auth**
+- [x] `PUT /api/schedules/:scheduleId` — update. **Role: ADMIN** _(guard: room conflict check)_
+- [x] `DELETE /api/schedules/:scheduleId` — delete. **Role: ADMIN**
+- [x] `GET /api/sections/:sectionId/schedules` — schedules for a section. **Any auth**
 
 ---
 
@@ -223,13 +223,13 @@ Base path: `/api/rooms`
 
 Base path: `/api/usage-histories`
 
-- [ ] `GET /api/usage-histories` — paginated, filter by `roomId`. **Role: ADMIN**
-- [ ] `POST /api/usage-histories` — create usage record. **Role: ADMIN**
-- [ ] `GET /api/usage-histories/:usageHistoryId` — detail (includes linked sections). **Role: ADMIN**
-- [ ] `PUT /api/usage-histories/:usageHistoryId` — update. **Role: ADMIN**
-- [ ] `DELETE /api/usage-histories/:usageHistoryId` — delete. **Role: ADMIN**
-- [ ] `POST /api/usage-histories/:usageHistoryId/sections` — link a section. **Role: ADMIN** _(guard: already linked)_
-- [ ] `DELETE /api/usage-histories/:usageHistoryId/sections/:sectionId` — unlink a section. **Role: ADMIN**
+- [x] `GET /api/usage-histories` — paginated, filter by `roomId`. **Role: ADMIN**
+- [x] `POST /api/usage-histories` — create usage record. **Role: ADMIN**
+- [x] `GET /api/usage-histories/:usageHistoryId` — detail (includes linked sections). **Role: ADMIN**
+- [x] `PUT /api/usage-histories/:usageHistoryId` — update. **Role: ADMIN**
+- [x] `DELETE /api/usage-histories/:usageHistoryId` — delete. **Role: ADMIN**
+- [x] `POST /api/usage-histories/:usageHistoryId/sections` — link a section. **Role: ADMIN** _(guard: already linked)_
+- [x] `DELETE /api/usage-histories/:usageHistoryId/sections/:sectionId` — unlink a section. **Role: ADMIN**
 
 ---
 
@@ -237,13 +237,13 @@ Base path: `/api/usage-histories`
 
 Base path: `/api/profile-applications`
 
-- [ ] `GET /api/profile-applications` — paginated, filter by `applicationStatus`. **Role: ADMIN**
-- [ ] `POST /api/profile-applications` — student submits an application. **Role: STUDENT** _(guard: pending application already exists)_
-- [ ] `GET /api/profile-applications/my-applications` — own applications. **Role: STUDENT** _(register before `/:id`)_
-- [ ] `GET /api/profile-applications/:applicationId` — detail. **Role: ADMIN or owner**
-- [ ] `PUT /api/profile-applications/:applicationId` — student updates. **Role: STUDENT (owner)** _(guard: already reviewed)_
-- [ ] `PATCH /api/profile-applications/:applicationId/review` — admin approves/rejects. **Role: ADMIN**
-- [ ] `GET /api/profile-applications/:applicationId/certificates` — certificates in an application. **Role: ADMIN or owner**
+- [x] `GET /api/profile-applications` — paginated, filter by `applicationStatus`. **Role: ADMIN**
+- [x] `POST /api/profile-applications` — student submits an application. **Role: STUDENT** _(guard: pending application already exists)_
+- [x] `GET /api/profile-applications/my-applications` — own applications. **Role: STUDENT** _(register before `/:id`)_
+- [x] `GET /api/profile-applications/:applicationId` — detail. **Role: ADMIN or owner**
+- [x] `PUT /api/profile-applications/:applicationId` — student updates. **Role: STUDENT (owner)** _(guard: already reviewed)_
+- [x] `PATCH /api/profile-applications/:applicationId/review` — admin approves/rejects. **Role: ADMIN**
+- [x] `GET /api/profile-applications/:applicationId/certificates` — certificates in an application. **Role: ADMIN or owner**
 
 **Status values**: `pending`, `approved`, `rejected`
 

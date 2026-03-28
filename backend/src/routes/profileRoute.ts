@@ -19,6 +19,10 @@ router.post("/", requireAuth, requireRole("ADMIN"), createProfileHandler);
 // GET /api/profiles/me - Get current user profile (Any auth)
 router.get("/me", requireAuth, getMyProfileHandler);
 
+// PUT /api/profiles/me - Update current user profile (Any auth)
+import { updateMyProfileHandler } from "../controllers/profileController";
+router.put("/me", requireAuth, updateMyProfileHandler);
+
 // GET /api/profiles/students - Get student profile list (ADMIN, LECTURER)
 router.get(
   "/students",
