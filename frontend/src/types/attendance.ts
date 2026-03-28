@@ -16,7 +16,7 @@ export interface AttendanceDetail {
   note: string | null;
 }
 
-export type AttendanceStatus = "present" | "absent" | "late";
+export type AttendanceStatus = "PRESENT" | "ABSENT" | "LATE" | "EXCUSED_ABSENCE";
 
 export interface BulkAttendanceDetailItem {
   studentProfileId: number;
