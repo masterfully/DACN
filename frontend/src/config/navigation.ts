@@ -81,6 +81,12 @@ export const navGroups: NavGroup[] = [
         icon: Calendar,
         roles: ["ADMIN", "LECTURER", "STUDENT"],
       },
+      {
+        href: "/my-classes",
+        label: "Lớp học",
+        icon: Users,
+        roles: ["LECTURER"],
+      },
     ],
   },
   // {
