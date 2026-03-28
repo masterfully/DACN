@@ -45,6 +45,88 @@ const optionalShortString = (invalidTypeMessage: string, maxLengthMessage: strin
 
 const dateOnlyRegex = /^\d{4}-\d{2}-\d{2}$/;
 
+// Schema for updating own profile (PUT /api/profiles/me)
+const vietnamPhoneRegex = /^(0[3|5|7|8|9])+([0-9]{8})$/;
+const updateMyProfileSchema = z.object({
+  fullName: requiredString(
+    PROFILE_FIELD_ERROR_MESSAGES.FULL_NAME_REQUIRED,
+    PROFILE_FIELD_ERROR_MESSAGES.FULL_NAME_INVALID_TYPE,
+  )
+    .trim()
+    .min(1, PROFILE_FIELD_ERROR_MESSAGES.FULL_NAME_REQUIRED)
+    .max(255, PROFILE_FIELD_ERROR_MESSAGES.FULL_NAME_MAX_LENGTH)
+    .optional(),
+  phoneNumber: z
+    .string({ error: PROFILE_FIELD_ERROR_MESSAGES.PHONE_NUMBER_INVALID_TYPE })
+    .regex(vietnamPhoneRegex, PROFILE_FIELD_ERROR_MESSAGES.PHONE_NUMBER_INVALID_TYPE)
+    .max(255, PROFILE_FIELD_ERROR_MESSAGES.PHONE_NUMBER_MAX_LENGTH)
+    .optional(),
+  dateOfBirth: z
+    .string({
+      error: PROFILE_FIELD_ERROR_MESSAGES.DATE_OF_BIRTH_INVALID_TYPE,
+    })
+    .regex(dateOnlyRegex, PROFILE_FIELD_ERROR_MESSAGES.DATE_OF_BIRTH_INVALID_FORMAT)
+    .optional(),
+  gender: z
+    .enum(PROFILE_GENDER_VALUES, {
+      error: PROFILE_FIELD_ERROR_MESSAGES.GENDER_INVALID,
+    })
+    .optional(),
+  avatar: optionalShortString(
+    PROFILE_FIELD_ERROR_MESSAGES.AVATAR_INVALID_TYPE,
+    PROFILE_FIELD_ERROR_MESSAGES.AVATAR_MAX_LENGTH,
+  ),
+  citizenId: optionalShortString(
+    PROFILE_FIELD_ERROR_MESSAGES.CITIZEN_ID_INVALID_TYPE,
+    PROFILE_FIELD_ERROR_MESSAGES.CITIZEN_ID_MAX_LENGTH,
+  ),
+  hometown: optionalShortString(
+    PROFILE_FIELD_ERROR_MESSAGES.HOMETOWN_INVALID_TYPE,
+    PROFILE_FIELD_ERROR_MESSAGES.HOMETOWN_MAX_LENGTH,
+  ),
+});
+
+const FORBIDDEN_FIELDS = [
+  'email', 'status', 'role', 'accountId', 'profileId',
+];
+
+export async function updateMyProfileHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> {
+  try {
+    // Check for forbidden fields in body
+    const forbidden = Object.keys(req.body).find((k) => FORBIDDEN_FIELDS.includes(k));
+    if (forbidden) {
+      const code = 'PROFILE_UPDATE_FORBIDDEN_FIELD';
+      const message = PROFILE_ERROR_MESSAGES[code] || code;
+      return next(new AppError(
+        message,
+        {
+          statusCode: 400,
+          code,
+          details: {
+            formErrors: [],
+            fieldErrors: {
+              [forbidden]: [message],
+            },
+          },
+        },
+      ));
+    }
+    const parsed = parseOrThrow(updateMyProfileSchema, req.body, {
+      code: PROFILE_ERROR_CODES.PROFILE_CREATE_INVALID_INPUT,
+      message: PROFILE_ERROR_MESSAGES.PROFILE_CREATE_INVALID_INPUT,
+    });
+    const accountId = req.user!.accountId;
+    const updated = await (await import('../services/profileService')).updateMyProfile(accountId, parsed);
+    sendSuccess(res, updated, 200);
+  } catch (error) {
+    next(error);
+  }
+}
+
 const listProfilesQuerySchema = z.object({
   page: z.coerce
     .number()

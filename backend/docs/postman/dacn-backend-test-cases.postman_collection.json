@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "06c4b952-931a-488c-b618-b2793b78902f",
+    "_postman_id": "9ff24765-8bf4-4f78-8f32-7fc96acf941e",
     "name": "DACN Backend - Full API Test Cases",
     "description": "Comprehensive test cases for existing modules: health, auth, subjects, rooms, sections.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
@@ -5139,7 +5139,6 @@
     },
     {
       "name": "Registrations",
-
       "item": [
         {
           "name": "Get Schedule List - Success (ADMIN)",
@@ -6089,6 +6088,22 @@
         },
         {
           "name": "Setup Attendance - Capture Existing Attendance ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const attendanceId = json?.data?.[0]?.attendanceId;",
+                  "if (attendanceId) {",
+                  "  pm.collectionVariables.set('attendance_editable_id', String(attendanceId));",
+                  "  pm.collectionVariables.set('existing_attendance_id', String(attendanceId));",
+                  "}"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [
@@ -6122,7 +6137,10 @@
               ]
             }
           },
-          "response": [],
+          "response": []
+        },
+        {
+          "name": "Create Attendance - Success (LECTURER)",
           "event": [
             {
               "listen": "test",
@@ -6130,18 +6148,14 @@
                 "type": "text/javascript",
                 "exec": [
                   "const json = pm.response.json();",
-                  "const attendanceId = json?.data?.[0]?.attendanceId;",
+                  "const attendanceId = json?.data?.attendanceId ?? json?.data?.AttendanceID;",
                   "if (attendanceId) {",
                   "  pm.collectionVariables.set('attendance_editable_id', String(attendanceId));",
-                  "  pm.collectionVariables.set('existing_attendance_id', String(attendanceId));",
                   "}"
                 ]
               }
             }
-          ]
-        },
-        {
-          "name": "Create Attendance - Success (LECTURER)",
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -6169,22 +6183,7 @@
               ]
             }
           },
-          "response": [],
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "const json = pm.response.json();",
-                  "const attendanceId = json?.data?.attendanceId ?? json?.data?.AttendanceID;",
-                  "if (attendanceId) {",
-                  "  pm.collectionVariables.set('attendance_editable_id', String(attendanceId));",
-                  "}"
-                ]
-              }
-            }
-          ]
+          "response": []
         },
         {
           "name": "Create Attendance - Forbidden (STUDENT)",
@@ -6793,6 +6792,21 @@
       "item": [
         {
           "name": "Setup Attendance Detail - Capture Student Profile ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const profileId = json?.data?.[0]?.profileId;",
+                  "if (profileId) {",
+                  "  pm.collectionVariables.set('attendance_detail_student_profile_id', String(profileId));",
+                  "}"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [
@@ -6823,25 +6837,22 @@
               ]
             }
           },
-          "response": [],
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "const json = pm.response.json();",
-                  "const profileId = json?.data?.[0]?.profileId;",
-                  "if (profileId) {",
-                  "  pm.collectionVariables.set('attendance_detail_student_profile_id', String(profileId));",
-                  "}"
-                ]
-              }
-            }
-          ]
+          "response": []
         },
         {
           "name": "Setup Attendance Detail - Create Attendance Session",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const slot = (Math.floor(Date.now() / 1000) % 900000) + 1000;",
+                  "pm.collectionVariables.set('attendance_detail_slot', String(slot));"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -6854,6 +6865,10 @@
                 "value": "application/json"
               }
             ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sectionId\": \"{{existing_section_id}}\",\n  \"attendanceDate\": \"2099-12-31\",\n  \"slot\": {{attendance_detail_slot}},\n  \"note\": \"Buoi diem danh cho attendance detail\"\n}"
+            },
             "url": {
               "raw": "{{base_url}}/api/attendances",
               "host": [
@@ -6863,28 +6878,27 @@
                 "api",
                 "attendances"
               ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"sectionId\": \"{{existing_section_id}}\",\n  \"attendanceDate\": \"2099-12-31\",\n  \"slot\": {{attendance_detail_slot}},\n  \"note\": \"Buoi diem danh cho attendance detail\"\n}"
             }
           },
-          "response": [],
-          "event": [
-            {
-              "listen": "prerequest",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "const slot = (Math.floor(Date.now() / 1000) % 900000) + 1000;",
-                  "pm.collectionVariables.set('attendance_detail_slot', String(slot));"
-                ]
-              }
-            }
-          ]
+          "response": []
         },
         {
           "name": "Setup Attendance Detail - Capture Attendance ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const attendanceId = json?.data?.[0]?.attendanceId;",
+                  "if (attendanceId) {",
+                  "  pm.collectionVariables.set('attendance_detail_target_attendance_id', String(attendanceId));",
+                  "}"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [
@@ -6926,7 +6940,10 @@
               ]
             }
           },
-          "response": [],
+          "response": []
+        },
+        {
+          "name": "Get Attendance Details - Success (ADMIN)",
           "event": [
             {
               "listen": "test",
@@ -6934,17 +6951,14 @@
                 "type": "text/javascript",
                 "exec": [
                   "const json = pm.response.json();",
-                  "const attendanceId = json?.data?.[0]?.attendanceId;",
-                  "if (attendanceId) {",
-                  "  pm.collectionVariables.set('attendance_detail_target_attendance_id', String(attendanceId));",
+                  "const detailId = json?.data?.[0]?.attendanceDetailId;",
+                  "if (detailId) {",
+                  "  pm.collectionVariables.set('existing_attendance_detail_id', String(detailId));",
                   "}"
                 ]
               }
             }
-          ]
-        },
-        {
-          "name": "Get Attendance Details - Success (ADMIN)",
+          ],
           "request": {
             "method": "GET",
             "header": [
@@ -6976,22 +6990,7 @@
               ]
             }
           },
-          "response": [],
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "const json = pm.response.json();",
-                  "const detailId = json?.data?.[0]?.attendanceDetailId;",
-                  "if (detailId) {",
-                  "  pm.collectionVariables.set('existing_attendance_detail_id', String(detailId));",
-                  "}"
-                ]
-              }
-            }
-          ]
+          "response": []
         },
         {
           "name": "Get Attendance Details - Missing Token",
@@ -7146,6 +7145,10 @@
                 "value": "application/json"
               }
             ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"details\": [\n    {\n      \"studentProfileId\": \"{{attendance_detail_student_profile_id}}\",\n      \"status\": \"PRESENT\",\n      \"note\": \"Co mat\"\n    }\n  ]\n}"
+            },
             "url": {
               "raw": "{{base_url}}/api/attendances/{{attendance_detail_target_attendance_id}}/details",
               "host": [
@@ -7157,10 +7160,6 @@
                 "{{attendance_detail_target_attendance_id}}",
                 "details"
               ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"details\": [\n    {\n      \"studentProfileId\": \"{{attendance_detail_student_profile_id}}\",\n      \"status\": \"PRESENT\",\n      \"note\": \"Co mat\"\n    }\n  ]\n}"
             }
           },
           "response": []
@@ -7179,6 +7178,10 @@
                 "value": "application/json"
               }
             ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"details\": [\n    {\n      \"studentProfileId\": \"{{attendance_detail_student_profile_id}}\",\n      \"status\": \"ABSENT\",\n      \"note\": \"Vang mat\"\n    }\n  ]\n}"
+            },
             "url": {
               "raw": "{{base_url}}/api/attendances/{{attendance_detail_target_attendance_id}}/details",
               "host": [
@@ -7190,10 +7193,6 @@
                 "{{attendance_detail_target_attendance_id}}",
                 "details"
               ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"details\": [\n    {\n      \"studentProfileId\": \"{{attendance_detail_student_profile_id}}\",\n      \"status\": \"ABSENT\",\n      \"note\": \"Vang mat\"\n    }\n  ]\n}"
             }
           },
           "response": []
@@ -7208,6 +7207,10 @@
                 "value": "application/json"
               }
             ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"details\": [\n    {\n      \"studentProfileId\": \"{{attendance_detail_student_profile_id}}\",\n      \"status\": \"ABSENT\",\n      \"note\": \"Thieu token\"\n    }\n  ]\n}"
+            },
             "url": {
               "raw": "{{base_url}}/api/attendances/{{attendance_detail_target_attendance_id}}/details",
               "host": [
@@ -7219,10 +7222,6 @@
                 "{{attendance_detail_target_attendance_id}}",
                 "details"
               ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"details\": [\n    {\n      \"studentProfileId\": \"{{attendance_detail_student_profile_id}}\",\n      \"status\": \"ABSENT\",\n      \"note\": \"Thieu token\"\n    }\n  ]\n}"
             }
           },
           "response": []
@@ -7241,6 +7240,10 @@
                 "value": "application/json"
               }
             ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"details\": []\n}"
+            },
             "url": {
               "raw": "{{base_url}}/api/attendances/{{attendance_detail_target_attendance_id}}/details",
               "host": [
@@ -7252,10 +7255,6 @@
                 "{{attendance_detail_target_attendance_id}}",
                 "details"
               ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"details\": []\n}"
             }
           },
           "response": []
@@ -7274,6 +7273,10 @@
                 "value": "application/json"
               }
             ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"details\": [\n    {\n      \"studentProfileId\": \"{{attendance_detail_student_profile_id}}\",\n      \"status\": \"PRESENT\",\n      \"note\": \"Khong tim thay attendance\"\n    }\n  ]\n}"
+            },
             "url": {
               "raw": "{{base_url}}/api/attendances/{{attendance_not_found_id}}/details",
               "host": [
@@ -7285,10 +7288,6 @@
                 "{{attendance_not_found_id}}",
                 "details"
               ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"details\": [\n    {\n      \"studentProfileId\": \"{{attendance_detail_student_profile_id}}\",\n      \"status\": \"PRESENT\",\n      \"note\": \"Khong tim thay attendance\"\n    }\n  ]\n}"
             }
           },
           "response": []
@@ -7307,6 +7306,10 @@
                 "value": "application/json"
               }
             ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"details\": [\n    {\n      \"studentProfileId\": \"{{attendance_detail_student_profile_id}}\",\n      \"status\": \"LATE\",\n      \"note\": \"Bi trung do da tao\"\n    }\n  ]\n}"
+            },
             "url": {
               "raw": "{{base_url}}/api/attendances/{{attendance_detail_target_attendance_id}}/details",
               "host": [
@@ -7318,16 +7321,27 @@
                 "{{attendance_detail_target_attendance_id}}",
                 "details"
               ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"details\": [\n    {\n      \"studentProfileId\": \"{{attendance_detail_student_profile_id}}\",\n      \"status\": \"LATE\",\n      \"note\": \"Bi trung do da tao\"\n    }\n  ]\n}"
             }
           },
           "response": []
         },
         {
           "name": "Setup Attendance Detail - Capture Detail ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const detailId = json?.data?.[0]?.attendanceDetailId;",
+                  "if (detailId) {",
+                  "  pm.collectionVariables.set('existing_attendance_detail_id', String(detailId));",
+                  "}"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [
@@ -7359,22 +7373,7 @@
               ]
             }
           },
-          "response": [],
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "const json = pm.response.json();",
-                  "const detailId = json?.data?.[0]?.attendanceDetailId;",
-                  "if (detailId) {",
-                  "  pm.collectionVariables.set('existing_attendance_detail_id', String(detailId));",
-                  "}"
-                ]
-              }
-            }
-          ]
+          "response": []
         },
         {
           "name": "Update Attendance Detail - Success (LECTURER)",
@@ -7390,6 +7389,10 @@
                 "value": "application/json"
               }
             ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"LATE\",\n  \"note\": \"Den muon 10 phut\"\n}"
+            },
             "url": {
               "raw": "{{base_url}}/api/attendances/{{attendance_detail_target_attendance_id}}/details/{{existing_attendance_detail_id}}",
               "host": [
@@ -7402,10 +7405,6 @@
                 "details",
                 "{{existing_attendance_detail_id}}"
               ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"status\": \"LATE\",\n  \"note\": \"Den muon 10 phut\"\n}"
             }
           },
           "response": []
@@ -7424,6 +7423,10 @@
                 "value": "application/json"
               }
             ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"ABSENT\"\n}"
+            },
             "url": {
               "raw": "{{base_url}}/api/attendances/{{attendance_detail_target_attendance_id}}/details/{{existing_attendance_detail_id}}",
               "host": [
@@ -7436,10 +7439,6 @@
                 "details",
                 "{{existing_attendance_detail_id}}"
               ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"status\": \"ABSENT\"\n}"
             }
           },
           "response": []
@@ -7454,6 +7453,10 @@
                 "value": "application/json"
               }
             ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"ABSENT\"\n}"
+            },
             "url": {
               "raw": "{{base_url}}/api/attendances/{{attendance_detail_target_attendance_id}}/details/{{existing_attendance_detail_id}}",
               "host": [
@@ -7466,10 +7469,6 @@
                 "details",
                 "{{existing_attendance_detail_id}}"
               ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"status\": \"ABSENT\"\n}"
             }
           },
           "response": []
@@ -7488,6 +7487,10 @@
                 "value": "application/json"
               }
             ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"ABSENT\"\n}"
+            },
             "url": {
               "raw": "{{base_url}}/api/attendances/abc/details/xyz",
               "host": [
@@ -7500,10 +7503,6 @@
                 "details",
                 "xyz"
               ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"status\": \"ABSENT\"\n}"
             }
           },
           "response": []
@@ -7522,6 +7521,10 @@
                 "value": "application/json"
               }
             ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
             "url": {
               "raw": "{{base_url}}/api/attendances/{{attendance_detail_target_attendance_id}}/details/{{existing_attendance_detail_id}}",
               "host": [
@@ -7534,10 +7537,6 @@
                 "details",
                 "{{existing_attendance_detail_id}}"
               ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{}"
             }
           },
           "response": []
@@ -7556,6 +7555,10 @@
                 "value": "application/json"
               }
             ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"ABSENT\",\n  \"note\": \"Khong tim thay detail\"\n}"
+            },
             "url": {
               "raw": "{{base_url}}/api/attendances/{{attendance_detail_target_attendance_id}}/details/{{attendance_detail_not_found_id}}",
               "host": [
@@ -7568,10 +7571,6 @@
                 "details",
                 "{{attendance_detail_not_found_id}}"
               ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"status\": \"ABSENT\",\n  \"note\": \"Khong tim thay detail\"\n}"
             }
           },
           "response": []
@@ -9344,7 +9343,6 @@
     },
     {
       "name": "Usage Histories",
-      "description": "Room usage history CRUD + section linking tests",
       "item": [
         {
           "name": "Create test usage (setup ID)",
@@ -9377,7 +9375,7 @@
               "raw": "{\n  \"roomId\": {{existing_room_id}},\n  \"startTime\": \"2026-03-20T09:00:00Z\",\n  \"endTime\": \"2026-03-20T11:00:00Z\",\n  \"note\": \"Test\"\n}"
             },
             "url": {
-              "raw": "{{base_url}}/api/usage-Histories",
+              "raw": "{{base_url}}/api/usageHistories",
               "host": [
                 "{{base_url}}"
               ],
@@ -9526,7 +9524,7 @@
               "raw": "{\n  \"roomId\": {{existing_room_id}},\n  \"startTime\": \"2026-03-20T10:00:00Z\",\n  \"endTime\": \"2026-03-20T10:30:00Z\"\n}"
             },
             "url": {
-              "raw": "{{base_url}}/api/usage-Histories",
+              "raw": "{{base_url}}/api/usageHistories",
               "host": [
                 "{{base_url}}"
               ],
@@ -9557,7 +9555,7 @@
               "raw": "{\"roomId\":999999,\"startTime\":\"2026-03-20T09:00:00Z\",\"endTime\":\"2026-03-20T11:00:00Z\"}"
             },
             "url": {
-              "raw": "{{base_url}}/api/usage-Histories",
+              "raw": "{{base_url}}/api/usageHistories",
               "host": [
                 "{{base_url}}"
               ],
@@ -9619,11 +9617,250 @@
           },
           "response": []
         }
-      ]
+      ],
+      "description": "Room usage history CRUD + section linking tests"
     },
     {
       "name": "User Profiles",
       "item": [
+        {
+          "name": "Update My Profile - Success (All Fields)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjIsInJvbGUiOiJBRE1JTiIsInVzZXJuYW1lIjoic3R1ZGVudF90ZXN0XzAwMSIsImlhdCI6MTc3MzgyNTU3OSwiZXhwIjozNjAwMDAxNzczODI1NTc5fQ.FeX3PXNKyyuBeCDx9GEYshS9w290mapxnjft1DxZTfg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Updated Name\",\n  \"phoneNumber\": \"0123456789\",\n  \"dateOfBirth\": \"2000-01-01\",\n  \"gender\": \"MALE\",\n  \"avatar\": \"https://example.com/avatar.png\",\n  \"citizenId\": \"123456789012\",\n  \"hometown\": \"Hanoi\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/profiles/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "profiles",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update My Profile - Partial (phoneNumber only)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjIsInJvbGUiOiJBRE1JTiIsInVzZXJuYW1lIjoic3R1ZGVudF90ZXN0XzAwMSIsImlhdCI6MTc3MzgyNTU3OSwiZXhwIjozNjAwMDAxNzczODI1NTc5fQ.FeX3PXNKyyuBeCDx9GEYshS9w290mapxnjft1DxZTfg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phoneNumber\": \"0987654321fff\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/profiles/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "profiles",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update My Profile - Forbidden Field (email)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjIsInJvbGUiOiJBRE1JTiIsInVzZXJuYW1lIjoic3R1ZGVudF90ZXN0XzAwMSIsImlhdCI6MTc3MzgyNTU3OSwiZXhwIjozNjAwMDAxNzczODI1NTc5fQ.FeX3PXNKyyuBeCDx9GEYshS9w290mapxnjft1DxZTfg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"hacker@example.com\",\n  \"fullName\": \"Should Fail\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/profiles/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "profiles",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update My Profile - Invalid Input (bad date)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjIsInJvbGUiOiJBRE1JTiIsInVzZXJuYW1lIjoic3R1ZGVudF90ZXN0XzAwMSIsImlhdCI6MTc3MzgyNTU3OSwiZXhwIjozNjAwMDAxNzczODI1NTc5fQ.FeX3PXNKyyuBeCDx9GEYshS9w290mapxnjft1DxZTfg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dateOfBirth\": \"not-a-date\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/profiles/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "profiles",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update My Profile - Invalid Input (wrong gender)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjIsInJvbGUiOiJBRE1JTiIsInVzZXJuYW1lIjoic3R1ZGVudF90ZXN0XzAwMSIsImlhdCI6MTc3MzgyNTU3OSwiZXhwIjozNjAwMDAxNzczODI1NTc5fQ.FeX3PXNKyyuBeCDx9GEYshS9w290mapxnjft1DxZTfg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"gender\": \"wrong_gender\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/profiles/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "profiles",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update My Profile - Unauthenticated (401)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"No Token\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/profiles/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "profiles",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
         {
           "name": "Get Profiles - Success (ADMIN)",
           "request": {
@@ -10238,15 +10475,30 @@
             }
           },
           "response": []
-    }
-  ]
-},
-{
-  "name": "Profile Applications",
-      "description": "Profile application CRUD and review tests",
+        }
+      ]
+    },
+    {
+      "name": "Profile Applications",
       "item": [
         {
           "name": "Submit Application - Success (STUDENT)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+                  "const json = pm.response.json();",
+                  "if (json.data && json.data.id) {",
+                  "  pm.collectionVariables.set(\"existing_app_id\", json.data.id);",
+                  "  pm.collectionVariables.set(\"pending_app_id\", json.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -10265,30 +10517,34 @@
             },
             "url": {
               "raw": "{{base_url}}/api/profile-applications",
-              "host": ["{{base_url}}"],
-              "path": ["api", "profile-applications"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "profile-applications"
+              ]
             }
           },
-          "response": [],
+          "response": []
+        },
+        {
+          "name": "Submit Application - Duplicate",
           "event": [
             {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
-                  "const json = pm.response.json();",
-                  "if (json.data && json.data.id) {",
-                  "  pm.collectionVariables.set(\"existing_app_id\", json.data.id);",
-                  "  pm.collectionVariables.set(\"pending_app_id\", json.data.id);",
-                  "}"
+                  "pm.test(\"409 Already Pending\", () => {",
+                  "  pm.expect(pm.response.code).to.eql(409);",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.error.code).to.eql('PROFILE_APPLICATION_SUBMIT_ALREADY_PENDING');",
+                  "});"
                 ]
               }
             }
-          ]
-        },
-        {
-          "name": "Submit Application - Duplicate",
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -10307,26 +10563,16 @@
             },
             "url": {
               "raw": "{{base_url}}/api/profile-applications",
-              "host": ["{{base_url}}"],
-              "path": ["api", "profile-applications"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "profile-applications"
+              ]
             }
           },
-          "response": [],
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"409 Already Pending\", () => {",
-                  "  pm.expect(pm.response.code).to.eql(409);",
-                  "  const json = pm.response.json();",
-                  "  pm.expect(json.error.code).to.eql('PROFILE_APPLICATION_SUBMIT_ALREADY_PENDING');",
-                  "});"
-                ]
-              }
-            }
-          ]
+          "response": []
         },
         {
           "name": "List Applications - ADMIN",
@@ -10340,11 +10586,22 @@
             ],
             "url": {
               "raw": "{{base_url}}/api/profile-applications?page=1&limit=10",
-              "host": ["{{base_url}}"],
-              "path": ["api", "profile-applications"],
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "profile-applications"
+              ],
               "query": [
-                {"key": "page", "value": "1"},
-                {"key": "limit", "value": "10"}
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
               ]
             }
           },
@@ -10362,9 +10619,19 @@
             ],
             "url": {
               "raw": "{{base_url}}/api/profile-applications?applicationStatus=PENDING",
-              "host": ["{{base_url}}"],
-              "path": ["api", "profile-applications"],
-              "query": [{"key": "applicationStatus", "value": "PENDING"}]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "profile-applications"
+              ],
+              "query": [
+                {
+                  "key": "applicationStatus",
+                  "value": "PENDING"
+                }
+              ]
             }
           },
           "response": []
@@ -10381,8 +10648,14 @@
             ],
             "url": {
               "raw": "{{base_url}}/api/profile-applications/my-applications",
-              "host": ["{{base_url}}"],
-              "path": ["api", "profile-applications", "my-applications"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "profile-applications",
+                "my-applications"
+              ]
             }
           },
           "response": []
@@ -10399,8 +10672,14 @@
             ],
             "url": {
               "raw": "{{base_url}}/api/profile-applications/{{existing_app_id}}",
-              "host": ["{{base_url}}"],
-              "path": ["api", "profile-applications", "{{existing_app_id}}"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "profile-applications",
+                "{{existing_app_id}}"
+              ]
             }
           },
           "response": []
@@ -10425,14 +10704,31 @@
             },
             "url": {
               "raw": "{{base_url}}/api/profile-applications/{{pending_app_id}}",
-              "host": ["{{base_url}}"],
-              "path": ["api", "profile-applications", "{{pending_app_id}}"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "profile-applications",
+                "{{pending_app_id}}"
+              ]
             }
           },
           "response": []
         },
         {
           "name": "Review - APPROVE (ADMIN)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('reviewed_app_id', pm.collectionVariables.get('pending_app_id'));"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "PATCH",
             "header": [
@@ -10451,22 +10747,18 @@
             },
             "url": {
               "raw": "{{base_url}}/api/profile-applications/{{pending_app_id}}/review",
-              "host": ["{{base_url}}"],
-              "path": ["api", "profile-applications", "{{pending_app_id}}", "review"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "profile-applications",
+                "{{pending_app_id}}",
+                "review"
+              ]
             }
           },
-          "response": [],
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.collectionVariables.set('reviewed_app_id', pm.collectionVariables.get('pending_app_id'));"
-                ]
-              }
-            }
-          ]
+          "response": []
         },
         {
           "name": "Review - REJECT (ADMIN)",
@@ -10488,8 +10780,15 @@
             },
             "url": {
               "raw": "{{base_url}}/api/profile-applications/{{pending_app_id}}/review",
-              "host": ["{{base_url}}"],
-              "path": ["api", "profile-applications", "{{pending_app_id}}", "review"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "profile-applications",
+                "{{pending_app_id}}",
+                "review"
+              ]
             }
           },
           "response": []
@@ -10514,8 +10813,15 @@
             },
             "url": {
               "raw": "{{base_url}}/api/profile-applications/{{reviewed_app_id}}/review",
-              "host": ["{{base_url}}"],
-              "path": ["api", "profile-applications", "{{reviewed_app_id}}", "review"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "profile-applications",
+                "{{reviewed_app_id}}",
+                "review"
+              ]
             }
           },
           "response": []
@@ -10532,13 +10838,21 @@
             ],
             "url": {
               "raw": "{{base_url}}/api/profile-applications/{{existing_app_id}}/certificates",
-              "host": ["{{base_url}}"],
-              "path": ["api", "profile-applications", "{{existing_app_id}}", "certificates"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "profile-applications",
+                "{{existing_app_id}}",
+                "certificates"
+              ]
             }
           },
           "response": []
         }
-      ]
+      ],
+      "description": "Profile application CRUD and review tests"
     }
   ],
   "variable": [
@@ -10753,6 +11067,8 @@
     {
       "key": "reviewed_app_id",
       "value": ""
+    },
+    {
       "key": "existing_attendance_id",
       "value": "1",
       "type": "default"

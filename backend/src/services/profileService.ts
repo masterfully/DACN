@@ -1,3 +1,46 @@
+export interface UpdateMyProfileInput {
+  fullName?: string;
+  phoneNumber?: string;
+  dateOfBirth?: string;
+  gender?: "MALE" | "FEMALE";
+  avatar?: string;
+  citizenId?: string;
+  hometown?: string;
+}
+
+export const updateMyProfile = async (accountId: number, data: UpdateMyProfileInput) => {
+  // Find profile
+  const profile = await prisma.userProfile.findUnique({
+    where: { AccountID: accountId },
+    select: { ProfileID: true },
+  });
+  if (!profile) {
+    throw new AppError(PROFILE_ERROR_MESSAGES.PROFILE_ME_NOT_FOUND, {
+      statusCode: 404,
+      code: PROFILE_ERROR_CODES.PROFILE_ME_NOT_FOUND,
+      details: {
+        formErrors: [PROFILE_ERROR_MESSAGES.PROFILE_ME_NOT_FOUND],
+        fieldErrors: {},
+      },
+    });
+  }
+  // Prepare update data
+  const updateData: Prisma.UserProfileUpdateInput = {};
+  if (data.fullName !== undefined) updateData.FullName = data.fullName.trim();
+  if (data.phoneNumber !== undefined) updateData.PhoneNumber = data.phoneNumber;
+  if (data.dateOfBirth !== undefined) updateData.DateOfBirth = data.dateOfBirth ? new Date(`${data.dateOfBirth}T00:00:00.000Z`) : undefined;
+  if (data.gender !== undefined) updateData.Gender = data.gender;
+  if (data.avatar !== undefined) updateData.Avatar = data.avatar;
+  if (data.citizenId !== undefined) updateData.CitizenID = data.citizenId;
+  if (data.hometown !== undefined) updateData.Hometown = data.hometown;
+
+  const updated = await prisma.userProfile.update({
+    where: { AccountID: accountId },
+    data: updateData,
+    select: profileSelect,
+  });
+  return mapProfile(updated);
+};
 import { Prisma, RoleEnum } from "@prisma/client";
 import { prisma } from "../prisma/prismaClient";
 import { AppError } from "../middleware/errorHandler";
@@ -54,16 +97,13 @@ const mapProfile = (profile: Prisma.UserProfileGetPayload<{ select: typeof profi
   return {
     profileId: profile.ProfileID,
     accountId: profile.AccountID,
-    role: profile.account.Role,
     fullName: profile.FullName,
-    email: profile.account.Email,
     phoneNumber: profile.PhoneNumber,
     dateOfBirth: profile.DateOfBirth,
     gender: profile.Gender,
     avatar: profile.Avatar,
     citizenId: profile.CitizenID,
     hometown: profile.Hometown,
-    status: profile.Status,
   };
 };
 
