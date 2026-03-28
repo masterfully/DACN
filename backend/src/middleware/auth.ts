@@ -39,6 +39,12 @@ const getJwtSecret = (): string => {
   return jwtSecret;
 };
 
+/** When true, `requireRole` skips role checks (JWT via `requireAuth` still required). */
+const isRoleCheckDisabled = (): boolean => {
+  const v = process.env.DISABLE_ROLE_CHECK?.trim().toLowerCase();
+  return v === "true" || v === "1" || v === "yes";
+};
+
 export const requireAuth = (
   req: Request,
   res: Response,
@@ -128,6 +134,11 @@ export const requireRole = (...allowedRoles: UserRole[]) => {
         },
         meta: null,
       });
+      return;
+    }
+
+    if (isRoleCheckDisabled()) {
+      next();
       return;
     }
 
