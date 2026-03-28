@@ -190,9 +190,9 @@ Base path: `/api/attendances` and `/api/sections/:sectionId/attendances`
 
 Base path: `/api/attendances/:attendanceId/details`
 
-- [ ] `GET /api/attendances/:attendanceId/details` — all student statuses for a session. **Role: ADMIN, LECTURER**
-- [ ] `POST /api/attendances/:attendanceId/details` — bulk create details. **Role: LECTURER** _(guard: already created for this session)_
-- [ ] `PUT /api/attendances/:attendanceId/details/:detailId` — update one student's status. **Role: LECTURER**
+- [x] `GET /api/attendances/:attendanceId/details` — all student statuses for a session. **Role: ADMIN, LECTURER**
+- [x] `POST /api/attendances/:attendanceId/details` — bulk create details. **Role: LECTURER** _(guard: already created for this session)_
+- [x] `PUT /api/attendances/:attendanceId/details/:detailId` — update one student's status. **Role: LECTURER**
 
 **Status values**: `present`, `absent`, `late`
 
