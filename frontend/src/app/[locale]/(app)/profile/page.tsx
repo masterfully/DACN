@@ -95,19 +95,19 @@ export default function ProfilePage() {
   ): Promise<MutationResult<Profile>> => {
     const payload = buildUpdateProfilePayload(values, { profile });
     const result = await updateMyProfileMut(payload);
-    if (result.ok) {
-      if (result.data) {
-        updateCurrentUser((user) => ({
-          ...user,
-          profile: {
-            profileId: result.data.profileId,
-            fullName: result.data.fullName,
-            email: result.data.email,
-            avatar: result.data.avatar,
-            status: result.data.status,
-          },
-        }));
-      }
+    if (result.ok && result.data) {
+      const updatedProfile = result.data;
+
+      updateCurrentUser((user) => ({
+        ...user,
+        profile: {
+          profileId: updatedProfile.profileId,
+          fullName: updatedProfile.fullName,
+          email: updatedProfile.email,
+          avatar: updatedProfile.avatar,
+          status: updatedProfile.status,
+        },
+      }));
 
       toast.success("Cập nhật thông tin thành công.");
       setDialogOpen(false);

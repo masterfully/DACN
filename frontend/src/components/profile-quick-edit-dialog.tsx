@@ -204,14 +204,16 @@ export function ProfileQuickEditDialog({
       return;
     }
 
+    const updatedProfile = result.data;
+
     updateCurrentUser((user) => ({
       ...user,
       profile: {
-        profileId: result.data.profileId,
-        fullName: result.data.fullName,
-        email: result.data.email,
-        avatar: result.data.avatar,
-        status: result.data.status,
+        profileId: updatedProfile.profileId,
+        fullName: updatedProfile.fullName,
+        email: updatedProfile.email,
+        avatar: updatedProfile.avatar,
+        status: updatedProfile.status,
       },
     }));
 
