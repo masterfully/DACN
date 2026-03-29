@@ -21,6 +21,7 @@ interface AuthState {
   refreshToken: string | null;
   setAuth: (payload: SetAuthPayload) => void;
   setTokens: (payload: TokensPayload) => void;
+  updateCurrentUser: (updater: (user: AuthAccount) => AuthAccount) => void;
   clearAuth: () => void;
   hydrateFromStorage: () => void;
 }
@@ -74,6 +75,23 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({
       accessToken,
       refreshToken,
+    });
+  },
+  updateCurrentUser: (updater) => {
+    set((state) => {
+      if (!state.currentUser) {
+        return state;
+      }
+
+      const updatedUser = updater(state.currentUser);
+      if (typeof window !== "undefined") {
+        localStorage.setItem(
+          AUTH_STORAGE_KEYS.currentUser,
+          JSON.stringify(updatedUser),
+        );
+      }
+
+      return { currentUser: updatedUser };
     });
   },
   clearAuth: () => {

@@ -24,6 +24,9 @@ export interface ProfileListItem {
   phoneNumber: string | null;
   dateOfBirth: string | null;
   gender: string | null;
+  avatar: string | null;
+  citizenId: string | null;
+  hometown: string | null;
   status: string | null;
 }
 
@@ -31,6 +34,9 @@ export interface GetProfileListParams {
   page?: number;
   limit?: number;
   search?: string;
+  role?: Role;
+  status?: string;
+  gender?: string;
 }
 
 export interface CreateProfileInput {

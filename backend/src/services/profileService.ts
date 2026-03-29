@@ -33,7 +33,6 @@ export const updateMyProfile = async (accountId: number, data: UpdateMyProfileIn
   if (data.avatar !== undefined) updateData.Avatar = data.avatar;
   if (data.citizenId !== undefined) updateData.CitizenID = data.citizenId;
   if (data.hometown !== undefined) updateData.Hometown = data.hometown;
-
   const updated = await prisma.userProfile.update({
     where: { AccountID: accountId },
     data: updateData,
@@ -97,13 +96,16 @@ const mapProfile = (profile: Prisma.UserProfileGetPayload<{ select: typeof profi
   return {
     profileId: profile.ProfileID,
     accountId: profile.AccountID,
+    role: profile.account.Role,
     fullName: profile.FullName,
+    email: profile.account.Email,
     phoneNumber: profile.PhoneNumber,
     dateOfBirth: profile.DateOfBirth,
     gender: profile.Gender,
     avatar: profile.Avatar,
     citizenId: profile.CitizenID,
     hometown: profile.Hometown,
+    status: profile.Status ?? "ACTIVE",
   };
 };
 
@@ -239,7 +241,7 @@ export const createProfile = async (input: CreateProfileInput) => {
       Avatar: input.avatar,
       CitizenID: input.citizenId,
       Hometown: input.hometown,
-      Status: input.status,
+      Status: input.status ?? "ACTIVE",
     },
     select: profileSelect,
   });
