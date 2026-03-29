@@ -2,6 +2,7 @@
 
 import type { Row } from "@tanstack/react-table";
 import * as React from "react";
+import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import type { ToolbarActionGroup } from "@/components/data-table";
 import { DataTable } from "@/components/data-table";
@@ -24,6 +25,7 @@ import {
 import { SectionRowActions } from "./section-row-actions";
 
 export function SectionsTable() {
+  const searchParams = useSearchParams();
   const [page, setPage] = React.useState(1);
   const [pageSize, setPageSize] = React.useState(10);
   const [search, setSearch] = React.useState("");
@@ -35,6 +37,17 @@ export function SectionsTable() {
   const [detailSectionId, setDetailSectionId] = React.useState<number | null>(
     null,
   );
+
+  // Handle sectionId query parameter
+  React.useEffect(() => {
+    const sectionIdParam = searchParams.get("sectionId");
+    if (sectionIdParam) {
+      const sectionId = parseInt(sectionIdParam, 10);
+      if (!isNaN(sectionId)) {
+        setDetailSectionId(sectionId);
+      }
+    }
+  }, [searchParams]);
 
   const {
     data,

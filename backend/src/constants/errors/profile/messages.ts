@@ -6,6 +6,7 @@ export const PROFILE_ERROR_MESSAGES = {
   PROFILE_CREATE_ACCOUNT_NOT_FOUND: "Tài khoản không tồn tại",
   PROFILE_CREATE_ALREADY_EXISTS: "Tài khoản đã có hồ sơ",
   PROFILE_ME_NOT_FOUND: "Không tìm thấy hồ sơ của người dùng hiện tại",
+  PROFILE_UPDATE_FORBIDDEN_FIELD: "Trường này không được phép cập nhật",
 } as const;
 
 export const PROFILE_FIELD_ERROR_MESSAGES = {
@@ -27,7 +28,7 @@ export const PROFILE_FIELD_ERROR_MESSAGES = {
   FULL_NAME_REQUIRED: "Họ và tên là bắt buộc",
   FULL_NAME_INVALID_TYPE: "Họ và tên phải là chuỗi",
   FULL_NAME_MAX_LENGTH: "Họ và tên tối đa 255 ký tự",
-  PHONE_NUMBER_INVALID_TYPE: "Số điện thoại phải là chuỗi",
+  PHONE_NUMBER_INVALID_TYPE: "Số điện thoại không hợp lệ",
   PHONE_NUMBER_MAX_LENGTH: "Số điện thoại tối đa 255 ký tự",
   DATE_OF_BIRTH_INVALID_TYPE: "Ngày sinh phải là chuỗi",
   DATE_OF_BIRTH_INVALID_FORMAT: "Ngày sinh phải theo định dạng YYYY-MM-DD",
