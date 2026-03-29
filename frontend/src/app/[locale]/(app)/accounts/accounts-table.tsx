@@ -11,6 +11,7 @@ import {
   useCreateAccount,
   useUpdateAccount,
 } from "@/hooks/use-accounts";
+import { useCreateProfile } from "@/hooks/use-profiles";
 import type { MutationResult } from "@/types/api";
 import type { Account } from "@/types/account";
 import {
@@ -50,6 +51,7 @@ export function AccountsTable() {
 
   const { mutateWithResult: createAccount, isLoading: isCreating } =
     useCreateAccount();
+  const { mutateWithResult: createProfile } = useCreateProfile();
   const { mutateWithResult: updateAccount, isLoading: isUpdating } =
     useUpdateAccount(editingAccount?.accountId ?? 0);
   const isSubmitting = isCreating || isUpdating;
@@ -90,7 +92,25 @@ export function AccountsTable() {
 
     const result = await createAccount(buildCreateAccountPayload(values));
     if (result.ok) {
-      toast.success("Tạo tài khoản thành công.");
+      const createdAccount = result.data;
+      if (createdAccount) {
+        const createProfileResult = await createProfile({
+          accountId: createdAccount.accountId,
+          fullName: createdAccount.username,
+        });
+
+        if (!createProfileResult.ok) {
+          toast.error(
+            createProfileResult.error?.message ??
+              "Tạo profile tự động thất bại. Vui lòng tạo profile thủ công.",
+          );
+        } else {
+          toast.success("Tạo tài khoản và profile thành công.");
+        }
+      } else {
+        toast.success("Tạo tài khoản thành công.");
+      }
+
       await refreshAccounts();
       setDialogOpen(false);
       setEditingAccount(null);

@@ -1,10 +1,22 @@
 "use client";
 
-import { Check, Globe, LogOut, Monitor, Moon, Sun, User } from "lucide-react";
+import {
+  Check,
+  Globe,
+  LogOut,
+  Monitor,
+  Moon,
+  Pencil,
+  Sun,
+  User,
+} from "lucide-react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useState } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ProfileQuickEditDialog } from "@/components/profile-quick-edit-dialog";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -41,6 +53,7 @@ export function AppTopbar({
   accountName?: string;
 }) {
   const { theme, setTheme } = useTheme();
+  const [isProfileEditOpen, setIsProfileEditOpen] = useState(false);
   const tTheme = useTranslations("ThemeToggle");
   const locale = useLocale();
   const router = useRouter();
@@ -88,9 +101,19 @@ export function AppTopbar({
         <div className="text-sm font-medium">Academic Portal</div>
 
         <div className="flex items-center gap-2">
+          <Button
+            size="icon"
+            variant="outline"
+            onClick={() => setIsProfileEditOpen(true)}
+            title="Chỉnh sửa profile"
+          >
+            <Pencil className="size-4" />
+          </Button>
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Avatar size="lg" className="cursor-pointer">
+                <AvatarImage src={currentUser?.profile?.avatar ?? undefined} />
                 <AvatarFallback>
                   <User />
                 </AvatarFallback>
@@ -202,6 +225,11 @@ export function AppTopbar({
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+
+          <ProfileQuickEditDialog
+            open={isProfileEditOpen}
+            onOpenChange={setIsProfileEditOpen}
+          />
         </div>
       </div>
     </header>

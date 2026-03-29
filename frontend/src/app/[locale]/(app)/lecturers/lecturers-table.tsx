@@ -4,8 +4,7 @@ import type { Row } from "@tanstack/react-table";
 import * as React from "react";
 import { DataTable } from "@/components/data-table";
 import { toast } from "@/components/ui/sonner";
-import { useAccountList } from "@/hooks/use-accounts";
-import { useUpdateProfile } from "@/hooks/use-profiles";
+import { useLecturerList, useUpdateProfile } from "@/hooks/use-profiles";
 import type { ProfileListItem } from "@/types/profile";
 import { lecturerColumns } from "./columns";
 import { LecturerDetailSheet } from "./lecturer-detail-sheet";
@@ -31,30 +30,11 @@ export function LecturersTable() {
     React.useState<ProfileListItem | null>(null);
 
   const {
-    data: accountData,
+    data,
     isLoading,
     error,
     mutate: refreshLecturers,
-  } = useAccountList({ page, limit: pageSize, role: "LECTURER" });
-
-  const data = React.useMemo(() => {
-    if (!accountData) return undefined;
-
-    return {
-      items: accountData.items.map((account) => ({
-        profileId: account.profile?.profileId ?? 0,
-        accountId: account.accountId,
-        role: account.role,
-        fullName: account.profile?.fullName ?? account.username,
-        email: account.email ?? account.profile?.email ?? null,
-        phoneNumber: null,
-        dateOfBirth: null,
-        gender: null,
-        status: account.profile?.status ?? null,
-      })) satisfies ProfileListItem[],
-      meta: accountData.meta,
-    };
-  }, [accountData]);
+  } = useLecturerList({ page, limit: pageSize });
 
   const { mutateWithResult: updateProfile, isLoading: isUpdating } =
     useUpdateProfile(editingLecturer?.profileId ?? 0);

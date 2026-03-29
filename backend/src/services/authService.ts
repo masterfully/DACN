@@ -290,6 +290,7 @@ export const register = async (input: RegisterInput) => {
         data: {
           AccountID: account.AccountID,
           FullName: normalizedFullName,
+          Status: "ACTIVE",
         },
         select: {
           ProfileID: true,

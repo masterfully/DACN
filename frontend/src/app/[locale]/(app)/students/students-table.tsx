@@ -11,7 +11,7 @@ import {
   useCreateAccount,
   useUpdateAccount,
 } from "@/hooks/use-accounts";
-import { useCreateProfile } from "@/hooks/use-profiles";
+import { useCreateProfile, useStudentList } from "@/hooks/use-profiles";
 import { studentColumns } from "./columns";
 import { StudentDetailSheet } from "./student-detail-sheet";
 import {
@@ -36,29 +36,45 @@ export function StudentsTable() {
   );
 
   const {
-    data,
-    isLoading,
-    error,
-    mutate: refreshStudents,
+    data: profileData,
+    isLoading: isLoadingProfiles,
+    error: profileError,
+    mutate: refreshProfiles,
+  } = useStudentList({ page, limit: pageSize });
+
+  const {
+    data: accountData,
+    isLoading: isLoadingAccounts,
+    error: accountError,
+    mutate: refreshAccounts,
   } = useAccountList({ page, limit: pageSize, role: "STUDENT" });
 
   const students = React.useMemo<Student[]>(() => {
-    return (data?.items ?? []).map((account) => ({
-      profileId: account.profile?.profileId ?? 0,
-      accountId: account.accountId,
+    const usernameByAccountId = new Map(
+      (accountData?.items ?? []).map((account) => [
+        account.accountId,
+        account.username,
+      ]),
+    );
+
+    return (profileData?.items ?? []).map((profile) => ({
+      profileId: profile.profileId,
+      accountId: profile.accountId,
       role: "STUDENT",
-      username: account.username,
-      fullName: account.profile?.fullName ?? account.username,
-      email: account.email ?? account.profile?.email ?? null,
-      phoneNumber: null,
-      dateOfBirth: null,
-      gender: null,
-      avatar: account.profile?.avatar ?? null,
-      citizenId: null,
-      hometown: null,
-      status: account.profile?.status ?? null,
+      username:
+        usernameByAccountId.get(profile.accountId) ??
+        `user-${profile.accountId}`,
+      fullName: profile.fullName,
+      email: profile.email,
+      phoneNumber: profile.phoneNumber,
+      dateOfBirth: profile.dateOfBirth,
+      gender: profile.gender,
+      avatar: profile.avatar,
+      citizenId: profile.citizenId,
+      hometown: profile.hometown,
+      status: profile.status,
     }));
-  }, [data?.items]);
+  }, [accountData?.items, profileData?.items]);
 
   const { mutateWithResult: createAccount, isLoading: isCreating } =
     useCreateAccount();
@@ -98,7 +114,7 @@ export function StudentsTable() {
         }
 
         toast.success("Cập nhật sinh viên thành công.");
-        await refreshStudents();
+        await Promise.all([refreshProfiles(), refreshAccounts()]);
         setDialogOpen(false);
         setEditingStudent(null);
         return true;
@@ -138,13 +154,14 @@ export function StudentsTable() {
             "Đã tạo account nhưng tạo profile thất bại. Vui lòng tạo profile thủ công.",
         );
         await refreshStudents();
+        await refreshAccounts();
         setDialogOpen(false);
         return false;
       }
 
       setPage(1);
       toast.success("Tạo sinh viên thành công.");
-      await refreshStudents();
+      await Promise.all([refreshProfiles(), refreshAccounts()]);
       setDialogOpen(false);
       return true;
     } catch {
@@ -167,6 +184,7 @@ export function StudentsTable() {
       setDialogOpen(false);
     }
     await refreshStudents();
+    await refreshAccounts();
   }
 
   function handlePaginationChange(newPage: number, newPageSize: number) {
@@ -205,13 +223,13 @@ export function StudentsTable() {
         columns={studentColumns}
         data={students}
         pagination={{
-          page: data?.meta.page ?? 1,
-          pageSize: data?.meta.limit ?? 10,
-          total: data?.meta.total ?? 0,
+          page: profileData?.meta.page ?? 1,
+          pageSize: profileData?.meta.limit ?? 10,
+          total: profileData?.meta.total ?? 0,
         }}
         onPaginationChange={handlePaginationChange}
-        isLoading={isLoading}
-        error={error?.message ?? null}
+        isLoading={isLoadingProfiles || isLoadingAccounts}
+        error={profileError?.message ?? accountError?.message ?? null}
         getRowId={(row) => String(row.accountId)}
         enableRowSelection
         enableColumnVisibility
