@@ -46,11 +46,6 @@ const DAY_OF_WEEK_LABELS: Record<DayOfWeek, string> = {
   SUNDAY: "CN",
 };
 
-const SECTION_VISIBILITY_OPTIONS = [
-  { value: "0", label: "Ẩn" },
-  { value: "1", label: "Hiển thị" },
-];
-
 type DayOfWeek = (typeof DAY_OF_WEEK_OPTIONS)[number];
 
 export interface SectionScheduleFormItem {
@@ -94,7 +89,8 @@ export function sectionToFormValues(
     year: section.year ?? "",
     maxCapacity: String(section.maxCapacity),
     status: String(section.status),
-    visibility: String(section.visibility),
+    // UI không cho chọn visibility; mặc định là hiển thị.
+    visibility: "1",
     startDate: "",
     endDate: "",
     // schedule is only editable when creating; keep empty for edit.
@@ -208,7 +204,8 @@ export function buildCreateSectionPayload(
     year: values.year,
     maxCapacity: Number(values.maxCapacity),
     status: Number(values.status),
-    visibility: Number(values.visibility),
+    // Backend visibility is 0|1; UI luôn mặc định hiển thị.
+    visibility: 1,
     schedule: values.schedule.map((s) => ({
       roomId: Number(s.roomId),
       dayOfWeek: s.dayOfWeek,
@@ -228,7 +225,8 @@ export function buildUpdateSectionPayload(
     year: values.year,
     maxCapacity: Number(values.maxCapacity),
     status: Number(values.status),
-    visibility: Number(values.visibility),
+    // No "visibility" picker in UI; always send visibility=1.
+    visibility: 1,
   };
 }
 
@@ -480,30 +478,6 @@ export function SectionFormDialog({
                   {fieldErrors.status ? (
                     <p className="text-destructive text-sm">
                       {fieldErrors.status}
-                    </p>
-                  ) : null}
-                </div>
-
-                <div className="grid gap-1.5">
-                  <Label htmlFor="visibility">Hiển thị</Label>
-                  <select
-                    id="visibility"
-                    value={values.visibility}
-                    onChange={(e) =>
-                      setBasicField("visibility", e.target.value)
-                    }
-                    disabled={isSubmitting || isOptionsLoading}
-                    className="border-input focus-visible:border-ring focus-visible:ring-ring/50 h-9 w-full rounded-md border bg-transparent px-3 py-1 text-sm shadow-xs outline-none disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    {SECTION_VISIBILITY_OPTIONS.map((opt) => (
-                      <option key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </option>
-                    ))}
-                  </select>
-                  {fieldErrors.visibility ? (
-                    <p className="text-destructive text-sm">
-                      {fieldErrors.visibility}
                     </p>
                   ) : null}
                 </div>

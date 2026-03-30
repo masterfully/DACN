@@ -4,6 +4,7 @@ import type { PaginatedData } from "@/types/api";
 import type {
   Schedule,
   MyScheduleItem,
+  ScheduleUpdateResponse,
   GetScheduleListParams,
   GetMyScheduleParams,
   CreateScheduleInput,
@@ -45,17 +46,20 @@ export async function getSchedulesBySection(sectionId: number): Promise<Schedule
   return (res.data ?? []) as Schedule[];
 }
 
-export async function createSchedule(input: CreateScheduleInput): Promise<Schedule> {
-  const res = await apiClient.post<Schedule>("/schedules", input);
-  return res.data as Schedule;
+export async function createSchedule(input: CreateScheduleInput): Promise<null> {
+  await apiClient.post<null>("/schedules", input);
+  return null;
 }
 
 export async function updateSchedule(
   scheduleId: number,
   input: UpdateScheduleInput,
-): Promise<Schedule> {
-  const res = await apiClient.put<Schedule>(`/schedules/${scheduleId}`, input);
-  return res.data as Schedule;
+): Promise<ScheduleUpdateResponse> {
+  const res = await apiClient.put<ScheduleUpdateResponse>(
+    `/schedules/${scheduleId}`,
+    input,
+  );
+  return res.data as ScheduleUpdateResponse;
 }
 
 export async function deleteSchedule(scheduleId: number): Promise<null> {
