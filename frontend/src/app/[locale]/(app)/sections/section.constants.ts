@@ -1,6 +1,8 @@
 export const SECTION_STATUS = {
-  OPEN: 0,
-  COMPLETED: 1,
+  // Backend contract (Section.status): open-for-registration must be `1`.
+  // Allowed values are {0, 1, 2}.
+  OPEN: 1,
+  COMPLETED: 0,
   CANCELLED: 2,
 } as const;
 

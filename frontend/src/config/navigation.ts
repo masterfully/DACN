@@ -29,6 +29,12 @@ export const navGroups: NavGroup[] = [
     roles: ["ADMIN"],
     items: [
       {
+        href: "/accounts",
+        label: "Tài khoản",
+        icon: Key,
+        roles: ["ADMIN"],
+      },
+      {
         href: "/lecturers",
         label: "Giảng viên",
         icon: GraduationCap,
@@ -38,12 +44,6 @@ export const navGroups: NavGroup[] = [
         href: "/students",
         label: "Sinh viên",
         icon: Users,
-        roles: ["ADMIN"],
-      },
-      {
-        href: "/accounts",
-        label: "Tài khoản",
-        icon: Key,
         roles: ["ADMIN"],
       },
       {
@@ -67,7 +67,7 @@ export const navGroups: NavGroup[] = [
         href: "/sections",
         label: "Học phần",
         icon: BookOpen,
-        roles: ["ADMIN", "LECTURER"],
+        roles: ["ADMIN"],
       },
       {
         href: "/registrations",
@@ -77,9 +77,9 @@ export const navGroups: NavGroup[] = [
       },
       {
         href: "/schedules",
-        label: "Lịch học",
+        label: "Lịch",
         icon: Calendar,
-        roles: ["ADMIN", "LECTURER", "STUDENT"],
+        roles: ["LECTURER", "STUDENT"],
       },
       {
         href: "/my-classes",
@@ -149,7 +149,7 @@ export const navGroups: NavGroup[] = [
         href: "/profile-applications",
         label: "Nộp hồ sơ",
         icon: FileText,
-        roles: ["ADMIN", "STUDENT"],
+        roles: ["STUDENT"],
       },
     ],
   },

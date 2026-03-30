@@ -28,6 +28,7 @@ import {
 import { useSectionList } from "@/hooks/use-sections";
 import type { MyRegistration } from "@/types/registration";
 import type { SectionListItem } from "@/types/section";
+import { SECTION_STATUS } from "../sections/section.constants";
 
 function RegisterToggleCell({
   section,
@@ -135,7 +136,7 @@ export function RegistrationsTable() {
     page: openPage,
     limit: openPageSize,
     search: openSearch.trim() || undefined,
-    status: 0,
+    status: SECTION_STATUS.OPEN,
     visibility: 1,
   });
 
