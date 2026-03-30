@@ -4,6 +4,7 @@ import type { Row } from "@tanstack/react-table";
 import * as React from "react";
 import { DataTable } from "@/components/data-table";
 import { toast } from "@/components/ui/sonner";
+import { useListTableUrl } from "@/hooks/use-list-table-url";
 import { useLecturerList, useUpdateProfile } from "@/hooks/use-profiles";
 import type { ProfileListItem } from "@/types/profile";
 import { lecturerColumns } from "./columns";
@@ -16,9 +17,8 @@ import {
 import { LecturerRowActions } from "./lecturer-row-actions";
 
 export function LecturersTable() {
-  // Pagination
-  const [page, setPage] = React.useState(1);
-  const [pageSize, setPageSize] = React.useState(10);
+  const { state: urlState, replaceState } = useListTableUrl();
+  const { page, limit: pageSize, q: search } = urlState;
 
   // Detail sheet
   const [detailLecturer, setDetailLecturer] =
@@ -34,7 +34,11 @@ export function LecturersTable() {
     isLoading,
     error,
     mutate: refreshLecturers,
-  } = useLecturerList({ page, limit: pageSize });
+  } = useLecturerList({
+    page,
+    limit: pageSize,
+    search: search.trim() || undefined,
+  });
 
   const { mutateWithResult: updateProfile, isLoading: isUpdating } =
     useUpdateProfile(editingLecturer?.profileId ?? 0);
@@ -72,8 +76,12 @@ export function LecturersTable() {
   }
 
   function handlePaginationChange(newPage: number, newPageSize: number) {
-    setPage(newPage);
-    setPageSize(newPageSize);
+    const limitChanged = newPageSize !== pageSize;
+    replaceState({
+      ...urlState,
+      page: limitChanged ? 1 : newPage,
+      limit: newPageSize,
+    });
   }
 
   function handleRowDoubleClick(row: Row<ProfileListItem>) {
@@ -90,8 +98,8 @@ export function LecturersTable() {
         columns={lecturerColumns}
         data={data?.items ?? []}
         pagination={{
-          page: data?.meta.page ?? 1,
-          pageSize: data?.meta.limit ?? 10,
+          page: data?.meta.page ?? page,
+          pageSize: data?.meta.limit ?? pageSize,
           total: data?.meta.total ?? 0,
         }}
         onPaginationChange={handlePaginationChange}
@@ -100,6 +108,14 @@ export function LecturersTable() {
         getRowId={(row) => String(row.accountId)}
         enableColumnVisibility
         emptyMessage="Chưa có giảng viên nào."
+        searchValue={search}
+        onSearchChange={(value) => {
+          replaceState({ ...urlState, page: 1, q: value });
+        }}
+        onSearch={(value) => {
+          replaceState({ ...urlState, page: 1, q: value });
+        }}
+        searchPlaceholder="Tìm theo tên, username…"
         onRowDoubleClick={handleRowDoubleClick}
         renderRowActions={(row) => (
           <LecturerRowActions

@@ -2,6 +2,7 @@
 
 import type { Table } from "@tanstack/react-table";
 import { ChevronDown, SearchIcon, Settings2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,6 +20,7 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "../ui/input-group";
+import { Label } from "../ui/label";
 import type { ToolbarActionGroup } from "./data-table-toolbar.types";
 
 interface DataTableToolbarProps<TData> {
@@ -41,7 +43,7 @@ export function DataTableToolbar<TData>({
   searchValue,
   onSearchChange,
   onSearch,
-  searchPlaceholder = "Tìm kiếm...",
+  searchPlaceholder = "Tìm kiếm…",
   enableColumnVisibility = true,
   toolbarActions,
   selectedCount: _selectedCount = 0,
@@ -49,6 +51,8 @@ export function DataTableToolbar<TData>({
   showHideColumnsLabel = "Hiện / ẩn cột",
   debounceMs = 400,
 }: DataTableToolbarProps<TData>) {
+  const t = useTranslations("DataTable");
+  const searchInputId = React.useId();
   const [localSearch, setLocalSearch] = React.useState(searchValue ?? "");
   const debounceRef = React.useRef<ReturnType<typeof setTimeout> | undefined>(
     undefined,
@@ -86,11 +90,15 @@ export function DataTableToolbar<TData>({
   const hasMenuActions = visibleMenuActions && visibleMenuActions.length > 0;
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 select-none">
       <div className="flex items-center justify-end gap-2">
         <div className="flex items-center gap-2">
+          <Label htmlFor={searchInputId} className="sr-only">
+            {t("searchTable")}
+          </Label>
           <InputGroup>
             <InputGroupInput
+              id={searchInputId}
               placeholder={searchPlaceholder}
               value={localSearch}
               onChange={(e) => handleSearchChange(e.target.value)}
@@ -98,7 +106,7 @@ export function DataTableToolbar<TData>({
               onKeyDown={handleSearchKeyDown}
             />
             <InputGroupAddon>
-              <SearchIcon />
+              <SearchIcon aria-hidden />
             </InputGroupAddon>
           </InputGroup>
         </div>
@@ -153,8 +161,12 @@ export function DataTableToolbar<TData>({
             {hasMenuActions && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm">
-                    <ChevronDown className="size-4" />
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    aria-label={t("moreActions")}
+                  >
+                    <ChevronDown className="size-4" aria-hidden />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">

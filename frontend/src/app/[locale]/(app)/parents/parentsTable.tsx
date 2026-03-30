@@ -6,9 +6,9 @@ import { DataTable } from "@/components/data-table";
 import { useAccountList } from "@/hooks/use-accounts";
 import { useProfileList } from "@/hooks/use-profiles";
 import { parentColumns } from "./columns";
+import type { Parent } from "./parent.types";
 import { ParentDetailSheet } from "./parent-detail-sheet";
 import { ParentRowActions } from "./parent-row-actions";
-import type { Parent } from "./parent.types";
 
 export function ParentsTable() {
   const [page, setPage] = React.useState(1);

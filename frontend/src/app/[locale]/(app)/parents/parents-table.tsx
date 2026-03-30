@@ -4,14 +4,15 @@ import type { Row } from "@tanstack/react-table";
 import * as React from "react";
 import { DataTable } from "@/components/data-table";
 import { useAccountList } from "@/hooks/use-accounts";
+import { useListTableUrl } from "@/hooks/use-list-table-url";
 import { parentColumns } from "./columns";
+import type { Parent } from "./parent.types";
 import { ParentDetailSheet } from "./parent-detail-sheet";
 import { ParentRowActions } from "./parent-row-actions";
-import type { Parent } from "./parent.types";
 
 export function ParentsTable() {
-  const [page, setPage] = React.useState(1);
-  const [pageSize, setPageSize] = React.useState(10);
+  const { state: urlState, replaceState } = useListTableUrl();
+  const { page, limit: pageSize } = urlState;
   const [detailParent, setDetailParent] = React.useState<Parent | null>(null);
 
   const {
@@ -40,8 +41,12 @@ export function ParentsTable() {
   }, [accountData]);
 
   function handlePaginationChange(newPage: number, newPageSize: number) {
-    setPage(newPage);
-    setPageSize(newPageSize);
+    const limitChanged = newPageSize !== pageSize;
+    replaceState({
+      ...urlState,
+      page: limitChanged ? 1 : newPage,
+      limit: newPageSize,
+    });
   }
 
   function handleRowDoubleClick(row: Row<Parent>) {
@@ -61,8 +66,8 @@ export function ParentsTable() {
         columns={parentColumns}
         data={data?.items ?? []}
         pagination={{
-          page: data?.meta.page ?? 1,
-          pageSize: data?.meta.limit ?? 10,
+          page: data?.meta.page ?? page,
+          pageSize: data?.meta.limit ?? pageSize,
           total: data?.meta.total ?? 0,
         }}
         onPaginationChange={handlePaginationChange}

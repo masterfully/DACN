@@ -1,4 +1,51 @@
 {
+  "A11y": {
+    "skipToContent": "Skip to main content",
+    "toggleSidebar": "Collapse or expand sidebar",
+    "close": "Close"
+  },
+
+  "Auth": {
+    "brandName": "Academic Portal",
+    "brandInitials": "AP",
+    "loginTitle": "Sign in",
+    "loginDescription": "Use your assigned account to access the system.",
+    "signupTitle": "Sign up",
+    "signupDescription": "Create an account to get started.",
+    "fullNameLabel": "Full name",
+    "usernameLabel": "Username",
+    "passwordLabel": "Password",
+    "emailLabel": "Email",
+    "confirmPasswordLabel": "Confirm password",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "loginSubmit": "Sign in",
+    "loginSubmitting": "Signing in…",
+    "signupSubmit": "Sign up",
+    "signupSubmitting": "Creating account…",
+    "promptNoAccount": "Don't have an account?",
+    "linkSignup": "Sign up",
+    "promptHasAccount": "Already have an account?",
+    "linkLogin": "Sign in",
+    "loginErrorGeneric": "Could not sign in. Please try again.",
+    "loginErrorInvalid": "Could not sign in. Please check your details.",
+    "signupSubmitFailed": "Sign up failed. Please check your information."
+  },
+
+  "Dashboard": {
+    "title": "Home",
+    "description": "Training portal overview. Use the shortcuts below or the left menu.",
+    "ctaApprovalsTitle": "Application review",
+    "ctaApprovalsDesc": "Pending certificate applications.",
+    "ctaProfileTitle": "Your profile",
+    "ctaProfileDesc": "Account details and avatar."
+  },
+
+  "DataTable": {
+    "moreActions": "More actions",
+    "searchTable": "Search table"
+  },
+
   "HomePage": {
     "title": "Hello World!",
     "description": "This is a simple Next.js template with built-in theme and locale features."

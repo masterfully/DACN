@@ -6,11 +6,11 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import type { Student } from "./student.types";
 import {
   STUDENT_GENDER_LABELS,
   STUDENT_STATUS_LABELS,
 } from "./student.constants";
+import type { Student } from "./student.types";
 
 interface StudentDetailSheetProps {
   student: Student | null;

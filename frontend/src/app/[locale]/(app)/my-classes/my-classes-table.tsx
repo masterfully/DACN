@@ -3,15 +3,15 @@
 import type { Row } from "@tanstack/react-table";
 import * as React from "react";
 import { DataTable } from "@/components/data-table";
+import { useListTableUrl } from "@/hooks/use-list-table-url";
 import { useMySections } from "@/hooks/use-sections";
 import type { MySectionListItem } from "@/types/section";
 import { ClassAttendanceSheet } from "./class-attendance-sheet";
 import { myClassesColumns } from "./columns";
 
 export function MyClassesTable() {
-  const [page, setPage] = React.useState(1);
-  const [pageSize, setPageSize] = React.useState(10);
-  const [search, setSearch] = React.useState("");
+  const { state: urlState, replaceState } = useListTableUrl();
+  const { page, limit: pageSize, q: search } = urlState;
 
   const [selectedClass, setSelectedClass] =
     React.useState<MySectionListItem | null>(null);
@@ -23,8 +23,12 @@ export function MyClassesTable() {
   });
 
   function handlePaginationChange(newPage: number, newPageSize: number) {
-    setPage(newPage);
-    setPageSize(newPageSize);
+    const limitChanged = newPageSize !== pageSize;
+    replaceState({
+      ...urlState,
+      page: limitChanged ? 1 : newPage,
+      limit: newPageSize,
+    });
   }
 
   function handleRowDoubleClick(row: Row<MySectionListItem>) {
@@ -37,8 +41,8 @@ export function MyClassesTable() {
         columns={myClassesColumns}
         data={data?.items ?? []}
         pagination={{
-          page: data?.meta.page ?? 1,
-          pageSize: data?.meta.limit ?? 10,
+          page: data?.meta.page ?? page,
+          pageSize: data?.meta.limit ?? pageSize,
           total: data?.meta.total ?? 0,
         }}
         onPaginationChange={handlePaginationChange}
@@ -48,10 +52,13 @@ export function MyClassesTable() {
         enableRowSelection
         enableColumnVisibility
         searchValue={search}
-        onSearch={(value) => {
-          setSearch(value);
-          setPage(1);
+        onSearchChange={(value) => {
+          replaceState({ ...urlState, page: 1, q: value });
         }}
+        onSearch={(value) => {
+          replaceState({ ...urlState, page: 1, q: value });
+        }}
+        searchPlaceholder="Lọc theo năm học (ví dụ 2024)…"
         onRowDoubleClick={handleRowDoubleClick}
       />
 

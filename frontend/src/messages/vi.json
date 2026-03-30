@@ -1,4 +1,51 @@
 {
+  "A11y": {
+    "skipToContent": "Bỏ qua menu, tới nội dung chính",
+    "toggleSidebar": "Thu gọn hoặc mở rộng thanh điều hướng",
+    "close": "Đóng"
+  },
+
+  "Auth": {
+    "brandName": "Academic Portal",
+    "brandInitials": "AP",
+    "loginTitle": "Đăng nhập",
+    "loginDescription": "Sử dụng tài khoản được cấp để truy cập hệ thống.",
+    "signupTitle": "Đăng ký",
+    "signupDescription": "Tạo tài khoản để bắt đầu sử dụng hệ thống.",
+    "fullNameLabel": "Họ và tên",
+    "usernameLabel": "Tên đăng nhập",
+    "passwordLabel": "Mật khẩu",
+    "emailLabel": "Email",
+    "confirmPasswordLabel": "Xác nhận mật khẩu",
+    "showPassword": "Hiển thị mật khẩu",
+    "hidePassword": "Ẩn mật khẩu",
+    "loginSubmit": "Đăng nhập",
+    "loginSubmitting": "Đang đăng nhập…",
+    "signupSubmit": "Đăng ký",
+    "signupSubmitting": "Đang tạo tài khoản…",
+    "promptNoAccount": "Bạn chưa có tài khoản?",
+    "linkSignup": "Đăng ký",
+    "promptHasAccount": "Bạn đã có tài khoản?",
+    "linkLogin": "Đăng nhập",
+    "loginErrorGeneric": "Không thể đăng nhập. Vui lòng thử lại.",
+    "loginErrorInvalid": "Không thể đăng nhập. Vui lòng kiểm tra lại thông tin.",
+    "signupSubmitFailed": "Đăng ký thất bại. Vui lòng kiểm tra lại thông tin."
+  },
+
+  "Dashboard": {
+    "title": "Trang chủ",
+    "description": "Tổng quan cổng đào tạo. Dùng các lối tắt bên dưới hoặc menu trái.",
+    "ctaApprovalsTitle": "Xét duyệt hồ sơ",
+    "ctaApprovalsDesc": "Danh sách chờ duyệt chứng chỉ.",
+    "ctaProfileTitle": "Hồ sơ cá nhân",
+    "ctaProfileDesc": "Thông tin tài khoản và avatar."
+  },
+
+  "DataTable": {
+    "moreActions": "Thêm thao tác",
+    "searchTable": "Tìm trong bảng"
+  },
+
   "HomePage": {
     "title": "Hello World!",
     "description": "Đây là một template Next.js đơn giản với các tính năng theme và locale được xây dựng sẵn."

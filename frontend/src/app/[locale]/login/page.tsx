@@ -1,24 +1,33 @@
-import { LoginForm } from "@/components/login-form";
+import { getTranslations } from "next-intl/server";
 
-export default function LoginPage() {
+import { LoginForm } from "@/components/login-form";
+import { Link } from "@/i18n/navigation";
+
+export default async function LoginPage() {
+  const t = await getTranslations("Auth");
+
   return (
     <div className="grid min-h-svh">
       <div className="flex flex-col gap-4 p-6 md:p-10">
         <div className="flex justify-center gap-2 md:justify-start">
-          <a href="/" className="flex items-center gap-2 font-medium">
+          <Link href="/" className="flex items-center gap-2 font-medium">
             <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
               <span className="text-xs font-semibold tracking-wide uppercase">
-                AP
+                {t("brandInitials")}
               </span>
             </div>
-            <span>Academic Portal</span>
-          </a>
+            <span>{t("brandName")}</span>
+          </Link>
         </div>
-        <div className="flex flex-1 items-center justify-center">
+        <main
+          id="main-content"
+          tabIndex={-1}
+          className="flex flex-1 items-center justify-center outline-none"
+        >
           <div className="w-full max-w-xs">
             <LoginForm />
           </div>
-        </div>
+        </main>
       </div>
       {/* <div className="bg-muted relative hidden lg:block">
         <img

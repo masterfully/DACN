@@ -17,6 +17,7 @@ import {
   Target,
 } from "lucide-react";
 import * as React from "react";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -66,7 +67,7 @@ export function DataTable<TData>({
       actionsColumn: messages?.actionsColumn ?? "Hành động",
       empty: messages?.empty ?? emptyMessage ?? "Không có dữ liệu.",
       searchPlaceholder:
-        messages?.searchPlaceholder ?? searchPlaceholder ?? "Tìm kiếm...",
+        messages?.searchPlaceholder ?? searchPlaceholder ?? "Tìm kiếm…",
       hideColumns: messages?.hideColumns ?? "Ẩn cột",
       showHideColumns: messages?.showHideColumns ?? "Hiện / ẩn cột",
       recordsPerPage: messages?.recordsPerPage ?? "Số bản ghi mỗi trang",
@@ -233,17 +234,27 @@ export function DataTable<TData>({
                     }}
                   >
                     {header.isPlaceholder ? null : header.column.getCanSort() ? (
-                      <button
+                      <Button
                         type="button"
-                        className="flex cursor-pointer items-center gap-1 text-left select-none"
+                        variant="ghost"
+                        size="sm"
+                        className="-ml-2 h-8 justify-start gap-1 px-2 font-normal"
                         onClick={header.column.getToggleSortingHandler()}
-                        onKeyDown={header.column.getToggleSortingHandler()}
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter" || event.key === " ") {
+                            event.preventDefault();
+                            header.column.getToggleSortingHandler()?.(event);
+                          }
+                        }}
                       >
                         {flexRender(
                           header.column.columnDef.header,
                           header.getContext(),
                         )}
-                        <span className="text-muted-foreground text-xs">
+                        <span
+                          className="text-muted-foreground text-xs"
+                          aria-hidden
+                        >
                           {header.column.getIsSorted() === "asc" ? (
                             <ArrowUpIcon className="size-4" />
                           ) : header.column.getIsSorted() === "desc" ? (
@@ -252,7 +263,7 @@ export function DataTable<TData>({
                             <ArrowUpDownIcon className="size-4" />
                           )}
                         </span>
-                      </button>
+                      </Button>
                     ) : (
                       flexRender(
                         header.column.columnDef.header,
@@ -369,7 +380,9 @@ export function ColHeader({
         className,
       )}
     >
-      {Icon && <Icon className="text-muted-foreground size-3.5 shrink-0" />}
+      {Icon && (
+        <Icon className="text-muted-foreground size-3.5 shrink-0" aria-hidden />
+      )}
       {label}
     </span>
   );
