@@ -78,7 +78,10 @@ export function buildApprovalColumns(
             <button
               type="button"
               className="text-primary text-sm font-medium underline-offset-4 hover:underline"
-              onClick={() => onReview(row.original)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onReview(row.original);
+              }}
             >
               Xét duyệt
             </button>

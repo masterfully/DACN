@@ -264,14 +264,51 @@ export const fetcher = async <T>(url: string): Promise<T> => {
 /**
  * Helper for paginated GET calls.
  * Returns { items: T[], meta: ApiMeta }.
+ *
+ * Supports:
+ * - `data` = T[] with `meta` on ApiResponse (axios `response.meta`)
+ * - `data` = { data: T[]; meta: ApiMeta } (e.g. profile-applications lists)
  */
 export const paginatedFetcher = async <T>(
   url: string,
 ): Promise<PaginatedData<T>> => {
-  const response = await apiClient.get<T[]>(url);
-  const axiosResponse = response as AxiosResponse<T[]> & { meta?: ApiMeta };
+  const response = await apiClient.get<unknown>(url);
+  const payload = response.data as unknown;
+  const axiosResponse = response as AxiosResponse<unknown> & { meta?: ApiMeta };
+
+  if (
+    payload !== null &&
+    typeof payload === "object" &&
+    !Array.isArray(payload) &&
+    "data" in payload &&
+    Array.isArray((payload as { data: unknown }).data)
+  ) {
+    const p = payload as { data: T[]; meta?: ApiMeta };
+    return {
+      items: p.data,
+      meta:
+        p.meta ??
+        axiosResponse.meta ?? {
+          page: 1,
+          limit: 10,
+          total: p.data.length,
+        },
+    };
+  }
+
+  if (Array.isArray(payload)) {
+    return {
+      items: payload as T[],
+      meta: axiosResponse.meta ?? {
+        page: 1,
+        limit: 10,
+        total: payload.length,
+      },
+    };
+  }
+
   return {
-    items: response.data as T[],
+    items: [],
     meta: axiosResponse.meta ?? { page: 1, limit: 10, total: 0 },
   };
 };

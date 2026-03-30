@@ -4,14 +4,13 @@ import * as React from "react";
 import { DataTable } from "@/components/data-table";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  useApplicationList,
-  useApplicationListMock,
-} from "@/hooks/use-profile-applications";
+import { useApplicationList } from "@/hooks/use-profile-applications";
+import { normalizePaginatedProfileApplications } from "@/lib/profile-application-dto";
 import type {
   ApplicationStatus,
   ProfileApplication,
 } from "@/types/profile-application";
+import { ApplicationPendingDetailSheet } from "./application-pending-detail-sheet";
 import { ApplicationReviewDialog } from "./application-review-dialog";
 import { buildApprovalColumns } from "./columns";
 
@@ -23,7 +22,7 @@ const STATUS_FILTER_OPTIONS: {
   { value: "PENDING", label: "Chờ duyệt" },
   { value: "APPROVED", label: "Đã duyệt" },
   { value: "REJECTED", label: "Từ chối" },
-  { value: "CANCELLED", label: "Đã hủy" },
+  // { value: "CANCELLED", label: "Đã hủy" },
 ];
 
 export function ApprovalsTable() {
@@ -39,6 +38,10 @@ export function ApprovalsTable() {
   const [reviewTarget, setReviewTarget] =
     React.useState<ProfileApplication | null>(null);
   const [reviewOpen, setReviewOpen] = React.useState(false);
+
+  const [detailTarget, setDetailTarget] =
+    React.useState<ProfileApplication | null>(null);
+  const [detailOpen, setDetailOpen] = React.useState(false);
 
   const listParams = React.useMemo(
     () => ({
@@ -57,11 +60,22 @@ export function ApprovalsTable() {
     isLoading,
     error,
     mutate: refreshList,
-  } = useApplicationListMock(listParams);
+  } = useApplicationList(listParams);
+
+  const { items: tableItems, meta: tableMeta } = React.useMemo(
+    () => normalizePaginatedProfileApplications(data),
+    [data],
+  );
 
   const handleOpenReview = React.useCallback((row: ProfileApplication) => {
     setReviewTarget(row);
     setReviewOpen(true);
+  }, []);
+
+  const handleRowDoubleClick = React.useCallback((row: ProfileApplication) => {
+    // if (row.applicationStatus !== "PENDING") return;
+    setDetailTarget(row);
+    setDetailOpen(true);
   }, []);
 
   const columns = React.useMemo(
@@ -123,16 +137,17 @@ export function ApprovalsTable() {
 
       <DataTable<ProfileApplication>
         columns={columns}
-        data={data?.items ?? []}
+        data={tableItems}
         pagination={{
-          page: data?.meta.page ?? page,
-          pageSize: data?.meta.limit ?? pageSize,
-          total: data?.meta.total ?? 0,
+          page: tableMeta.page ?? page,
+          pageSize: tableMeta.limit ?? pageSize,
+          total: tableMeta.total ?? 0,
         }}
         onPaginationChange={handlePaginationChange}
         isLoading={isLoading}
         error={error?.message ?? null}
         getRowId={(row) => String(row.applicationId)}
+        onRowDoubleClick={(row) => handleRowDoubleClick(row.original)}
         enableColumnVisibility
         searchValue={search}
         onSearch={(value) => {
@@ -141,6 +156,24 @@ export function ApprovalsTable() {
         }}
         searchPlaceholder="Tìm theo tên sinh viên..."
         messages={{ empty: "Không có hồ sơ nào." }}
+      />
+
+      <ApplicationPendingDetailSheet
+        key={detailTarget?.applicationId ?? "detail-closed"}
+        application={detailTarget}
+        open={detailOpen}
+        onOpenChange={(open) => {
+          setDetailOpen(open);
+          if (!open) setDetailTarget(null);
+        }}
+        onRequestReview={() => {
+          if (!detailTarget) return;
+          const app = detailTarget;
+          setDetailOpen(false);
+          setDetailTarget(null);
+          setReviewTarget(app);
+          setReviewOpen(true);
+        }}
       />
 
       <ApplicationReviewDialog

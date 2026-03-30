@@ -1,23 +1,19 @@
-import { prisma } from "../prisma/prismaClient";
 import { z } from "zod";
-import { AppError } from "../middleware/errorHandler";
 import {
   PROFILE_APPLICATION_ERROR_CODES,
   type ProfileApplicationErrorCode,
 } from "../constants/errors/profileApplication/codes";
-import {
-  PROFILE_APPLICATION_ERROR_MESSAGES,
-} from "../constants/errors/profileApplication/messages";
-import {
-  PROFILE_APPLICATION_FIELD_ERROR_MESSAGES,
-} from "../constants/errors/profileApplication/fieldMessages";
+import { PROFILE_APPLICATION_FIELD_ERROR_MESSAGES } from "../constants/errors/profileApplication/fieldMessages";
+import { PROFILE_APPLICATION_ERROR_MESSAGES } from "../constants/errors/profileApplication/messages";
+import { AppError } from "../middleware/errorHandler";
+import { prisma } from "../prisma/prismaClient";
 import type {
   GetApplicationsListParams,
   GetMyApplicationsParams,
-  ProfileApplicationListItem,
-  ProfileApplicationDetail,
-  ReviewApplicationInput,
   PaginatedProfileApplicationListItem,
+  ProfileApplicationDetail,
+  ProfileApplicationListItem,
+  ReviewApplicationInput,
 } from "../types/profileApplication";
 
 const PENDING_STATUS = "PENDING";
@@ -33,24 +29,31 @@ const getListSchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(10),
   search: z.string().max(255).optional(),
-  applicationStatus: z.enum([PENDING_STATUS, APPROVED_STATUS, REJECTED_STATUS]).optional(),
+  applicationStatus: z
+    .enum([PENDING_STATUS, APPROVED_STATUS, REJECTED_STATUS])
+    .optional(),
   submissionFrom: z.string().optional(),
   submissionTo: z.string().optional(),
 });
 
 const reviewSchema = z.object({
   applicationStatus: z.enum([APPROVED_STATUS, REJECTED_STATUS]),
-  reviewNotes: z.string().max(1000, PROFILE_APPLICATION_FIELD_ERROR_MESSAGES.REVIEW_NOTES_TOO_LONG).optional(),
+  reviewNotes: z
+    .string()
+    .max(1000, PROFILE_APPLICATION_FIELD_ERROR_MESSAGES.REVIEW_NOTES_TOO_LONG)
+    .optional(),
 });
 
 export const getApplicationsList = async (
-  params: GetApplicationsListParams
+  params: GetApplicationsListParams,
 ): Promise<PaginatedProfileApplicationListItem> => {
   const validated = getListSchema.parse(params);
-  
+
   const where: any = {
     student: {
-      FullName: validated.search ? { contains: validated.search, mode: "insensitive" } : undefined,
+      FullName: validated.search
+        ? { contains: validated.search, mode: "insensitive" }
+        : undefined,
     },
   };
 
@@ -120,9 +123,9 @@ export const submitApplication = async (studentAccountId: number) => {
         statusCode: 404,
         code: PROFILE_APPLICATION_ERROR_CODES.PROFILE_APPLICATION_SUBMIT_STUDENT_PROFILE_NOT_FOUND,
         details: businessErrorDetails(
-          PROFILE_APPLICATION_ERROR_MESSAGES.PROFILE_APPLICATION_SUBMIT_STUDENT_PROFILE_NOT_FOUND
+          PROFILE_APPLICATION_ERROR_MESSAGES.PROFILE_APPLICATION_SUBMIT_STUDENT_PROFILE_NOT_FOUND,
         ),
-      }
+      },
     );
   }
 
@@ -140,9 +143,9 @@ export const submitApplication = async (studentAccountId: number) => {
         statusCode: 409,
         code: PROFILE_APPLICATION_ERROR_CODES.PROFILE_APPLICATION_SUBMIT_ALREADY_PENDING,
         details: businessErrorDetails(
-          PROFILE_APPLICATION_ERROR_MESSAGES.PROFILE_APPLICATION_SUBMIT_ALREADY_PENDING
+          PROFILE_APPLICATION_ERROR_MESSAGES.PROFILE_APPLICATION_SUBMIT_ALREADY_PENDING,
         ),
-      }
+      },
     );
   }
 
@@ -163,7 +166,7 @@ export const submitApplication = async (studentAccountId: number) => {
 
 export const getMyApplications = async (
   studentAccountId: number,
-  params: GetMyApplicationsParams
+  params: GetMyApplicationsParams,
 ): Promise<PaginatedProfileApplicationListItem> => {
   const validated = getListSchema.parse({ ...params, page: params.page ?? 1 });
 
@@ -179,9 +182,9 @@ export const getMyApplications = async (
         statusCode: 404,
         code: PROFILE_APPLICATION_ERROR_CODES.PROFILE_APPLICATION_SUBMIT_STUDENT_PROFILE_NOT_FOUND,
         details: businessErrorDetails(
-          PROFILE_APPLICATION_ERROR_MESSAGES.PROFILE_APPLICATION_SUBMIT_STUDENT_PROFILE_NOT_FOUND
+          PROFILE_APPLICATION_ERROR_MESSAGES.PROFILE_APPLICATION_SUBMIT_STUDENT_PROFILE_NOT_FOUND,
         ),
-      }
+      },
     );
   }
 
@@ -217,7 +220,10 @@ export const getMyApplications = async (
   };
 };
 
-export const getApplicationDetail = async (applicationId: number, reviewerAccountId?: number) => {
+export const getApplicationDetail = async (
+  applicationId: number,
+  reviewerAccountId?: number,
+) => {
   const app = await prisma.profileApplication.findUnique({
     where: { ApplicationID: applicationId },
     include: {
@@ -243,9 +249,9 @@ export const getApplicationDetail = async (applicationId: number, reviewerAccoun
         statusCode: 404,
         code: PROFILE_APPLICATION_ERROR_CODES.PROFILE_APPLICATION_DETAIL_NOT_FOUND,
         details: businessErrorDetails(
-          PROFILE_APPLICATION_ERROR_MESSAGES.PROFILE_APPLICATION_DETAIL_NOT_FOUND
+          PROFILE_APPLICATION_ERROR_MESSAGES.PROFILE_APPLICATION_DETAIL_NOT_FOUND,
         ),
-      }
+      },
     );
   }
 
@@ -273,7 +279,7 @@ export const getApplicationDetail = async (applicationId: number, reviewerAccoun
 
 export const updateApplication = async (
   applicationId: number,
-  studentAccountId: number
+  studentAccountId: number,
 ) => {
   const studentProfile = await prisma.userProfile.findUnique({
     where: { AccountID: studentAccountId },
@@ -287,9 +293,9 @@ export const updateApplication = async (
         statusCode: 403,
         code: PROFILE_APPLICATION_ERROR_CODES.PROFILE_APPLICATION_UPDATE_NOT_OWNER,
         details: businessErrorDetails(
-          PROFILE_APPLICATION_ERROR_MESSAGES.PROFILE_APPLICATION_UPDATE_NOT_OWNER
+          PROFILE_APPLICATION_ERROR_MESSAGES.PROFILE_APPLICATION_UPDATE_NOT_OWNER,
         ),
-      }
+      },
     );
   }
 
@@ -309,9 +315,9 @@ export const updateApplication = async (
           statusCode: 403,
           code: PROFILE_APPLICATION_ERROR_CODES.PROFILE_APPLICATION_UPDATE_NOT_OWNER,
           details: businessErrorDetails(
-            PROFILE_APPLICATION_ERROR_MESSAGES.PROFILE_APPLICATION_UPDATE_NOT_OWNER
+            PROFILE_APPLICATION_ERROR_MESSAGES.PROFILE_APPLICATION_UPDATE_NOT_OWNER,
           ),
-        }
+        },
       );
     }
 
@@ -321,9 +327,9 @@ export const updateApplication = async (
         statusCode: 409,
         code: PROFILE_APPLICATION_ERROR_CODES.PROFILE_APPLICATION_UPDATE_NOT_PENDING,
         details: businessErrorDetails(
-          PROFILE_APPLICATION_ERROR_MESSAGES.PROFILE_APPLICATION_UPDATE_NOT_PENDING
+          PROFILE_APPLICATION_ERROR_MESSAGES.PROFILE_APPLICATION_UPDATE_NOT_PENDING,
         ),
-      }
+      },
     );
   }
 
@@ -344,7 +350,7 @@ export const updateApplication = async (
 export const reviewApplication = async (
   applicationId: number,
   input: ReviewApplicationInput,
-  reviewerAccountId: number
+  reviewerAccountId: number,
 ) => {
   const validated = reviewSchema.parse(input);
 
@@ -354,14 +360,11 @@ export const reviewApplication = async (
   });
 
   if (!reviewerProfile) {
-    throw new AppError(
-      "Người xét duyệt không tồn tại",
-      {
-        statusCode: 404,
-        code: "REVIEWER_NOT_FOUND" as ProfileApplicationErrorCode,
-        details: businessErrorDetails("Người xét duyệt không tồn tại"),
-      }
-    );
+    throw new AppError("Người xét duyệt không tồn tại", {
+      statusCode: 404,
+      code: "REVIEWER_NOT_FOUND" as ProfileApplicationErrorCode,
+      details: businessErrorDetails("Người xét duyệt không tồn tại"),
+    });
   }
 
   const app = await prisma.profileApplication.findFirst({
@@ -378,9 +381,9 @@ export const reviewApplication = async (
         statusCode: 409,
         code: PROFILE_APPLICATION_ERROR_CODES.PROFILE_APPLICATION_REVIEW_ALREADY_REVIEWED,
         details: businessErrorDetails(
-          PROFILE_APPLICATION_ERROR_MESSAGES.PROFILE_APPLICATION_REVIEW_ALREADY_REVIEWED
+          PROFILE_APPLICATION_ERROR_MESSAGES.PROFILE_APPLICATION_REVIEW_ALREADY_REVIEWED,
         ),
-      }
+      },
     );
   }
 
@@ -423,12 +426,11 @@ export const getApplicationCertificates = async (applicationId: number) => {
         statusCode: 404,
         code: PROFILE_APPLICATION_ERROR_CODES.PROFILE_APPLICATION_CERTIFICATES_NOT_FOUND,
         details: businessErrorDetails(
-          PROFILE_APPLICATION_ERROR_MESSAGES.PROFILE_APPLICATION_CERTIFICATES_NOT_FOUND
+          PROFILE_APPLICATION_ERROR_MESSAGES.PROFILE_APPLICATION_CERTIFICATES_NOT_FOUND,
         ),
-      }
+      },
     );
   }
 
   return certificates;
 };
-
