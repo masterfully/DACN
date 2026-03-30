@@ -68,6 +68,7 @@ export function DataTable<TData>({
       empty: messages?.empty ?? emptyMessage ?? "Không có dữ liệu.",
       searchPlaceholder:
         messages?.searchPlaceholder ?? searchPlaceholder ?? "Tìm kiếm…",
+      searchAriaLabel: messages?.searchAriaLabel,
       hideColumns: messages?.hideColumns ?? "Ẩn cột",
       showHideColumns: messages?.showHideColumns ?? "Hiện / ẩn cột",
       recordsPerPage: messages?.recordsPerPage ?? "Số bản ghi mỗi trang",
@@ -83,6 +84,7 @@ export function DataTable<TData>({
       messages?.actionsColumn,
       messages?.empty,
       messages?.searchPlaceholder,
+      messages?.searchAriaLabel,
       messages?.hideColumns,
       messages?.showHideColumns,
       messages?.recordsPerPage,
@@ -128,6 +130,7 @@ export function DataTable<TData>({
               }
             }}
             onChange={table.getToggleAllPageRowsSelectedHandler()}
+            onClick={(e) => e.stopPropagation()}
             aria-label={resolvedMessages.selectAll}
             className="cursor-pointer"
           />
@@ -138,6 +141,7 @@ export function DataTable<TData>({
             checked={row.getIsSelected()}
             disabled={!row.getCanSelect()}
             onChange={row.getToggleSelectedHandler()}
+            onClick={(e) => e.stopPropagation()}
             aria-label={resolvedMessages.selectRow}
             className="cursor-pointer"
           />
@@ -211,6 +215,7 @@ export function DataTable<TData>({
         onSearchChange={onSearchChange}
         onSearch={onSearch}
         searchPlaceholder={resolvedMessages.searchPlaceholder}
+        searchAriaLabel={resolvedMessages.searchAriaLabel}
         enableColumnVisibility={enableColumnVisibility}
         selectedCount={selectedRows.length}
         toolbarActions={resolvedToolbarActions}
@@ -317,7 +322,9 @@ export function DataTable<TData>({
                   key={row.id}
                   data-state={row.getIsSelected() ? "selected" : undefined}
                   className={cn(
-                    onRowDoubleClick ? "cursor-pointer" : undefined,
+                    onRowClick || onRowDoubleClick
+                      ? "cursor-pointer"
+                      : undefined,
                     getRowClassName?.(row),
                   )}
                   onClick={() => onRowClick?.(row)}
