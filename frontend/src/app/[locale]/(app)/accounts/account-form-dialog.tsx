@@ -9,13 +9,13 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import type { MutationResult } from "@/types/api";
 import type {
   Account,
   CreateAccountInput,
   Role,
   UpdateAccountInput,
 } from "@/types/account";
+import type { MutationResult } from "@/types/api";
 import { ACCOUNT_ROLE_OPTIONS } from "./account.constants";
 
 export interface AccountFormValues {

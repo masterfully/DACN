@@ -6,6 +6,7 @@ import * as React from "react";
 import { toast } from "sonner";
 import type { ToolbarActionGroup } from "@/components/data-table";
 import { DataTable } from "@/components/data-table";
+import { useListTableUrl } from "@/hooks/use-list-table-url";
 import {
   useCreateSubject,
   useSubjectList,
@@ -24,10 +25,8 @@ import {
 import { SubjectRowActions } from "./subject-row-actions";
 
 export function SubjectsTable() {
-  const [page, setPage] = React.useState(1);
-  const [pageSize, setPageSize] = React.useState(10);
-
-  const [search, setSearch] = React.useState<string>("");
+  const { state: urlState, replaceState } = useListTableUrl();
+  const { page, limit: pageSize, q: search } = urlState;
 
   const [detailSubject, setDetailSubject] = React.useState<Subject | null>(
     null,
@@ -100,8 +99,12 @@ export function SubjectsTable() {
   }
 
   function handlePaginationChange(newPage: number, newPageSize: number) {
-    setPage(newPage);
-    setPageSize(newPageSize);
+    const limitChanged = newPageSize !== pageSize;
+    replaceState({
+      ...urlState,
+      page: limitChanged ? 1 : newPage,
+      limit: newPageSize,
+    });
   }
 
   function handleRowDoubleClick(row: Row<Subject>) {
@@ -137,8 +140,8 @@ export function SubjectsTable() {
         columns={subjectColumns}
         data={data?.items ?? []}
         pagination={{
-          page: data?.meta.page ?? 1,
-          pageSize: data?.meta.limit ?? 10,
+          page: data?.meta.page ?? page,
+          pageSize: data?.meta.limit ?? pageSize,
           total: data?.meta.total ?? 0,
         }}
         onPaginationChange={handlePaginationChange}
@@ -148,13 +151,11 @@ export function SubjectsTable() {
         enableRowSelection
         enableColumnVisibility
         searchValue={search}
-        // onSearchChange={(value) => {
-        //   setSearch(value);
-        //   setPage(1); // reset to first page when applying server-side search
-        // }}
+        onSearchChange={(value) => {
+          replaceState({ ...urlState, page: 1, q: value });
+        }}
         onSearch={(value) => {
-          setSearch(value);
-          setPage(1);
+          replaceState({ ...urlState, page: 1, q: value });
         }}
         toolbarActions={buildToolbarActions}
         onRowDoubleClick={handleRowDoubleClick}

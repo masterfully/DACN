@@ -1,11 +1,12 @@
 "use client";
 
 import type { Row } from "@tanstack/react-table";
-import * as React from "react";
 import { useSearchParams } from "next/navigation";
+import * as React from "react";
 import { toast } from "sonner";
 import type { ToolbarActionGroup } from "@/components/data-table";
 import { DataTable } from "@/components/data-table";
+import { useListTableUrl } from "@/hooks/use-list-table-url";
 import {
   useCreateSection,
   useSectionDetail,
@@ -26,9 +27,8 @@ import { SectionRowActions } from "./section-row-actions";
 
 export function SectionsTable() {
   const searchParams = useSearchParams();
-  const [page, setPage] = React.useState(1);
-  const [pageSize, setPageSize] = React.useState(10);
-  const [search, setSearch] = React.useState("");
+  const { state: urlState, replaceState } = useListTableUrl();
+  const { page, limit: pageSize, q: search } = urlState;
 
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const [editingSection, setEditingSection] =
@@ -43,7 +43,7 @@ export function SectionsTable() {
     const sectionIdParam = searchParams.get("sectionId");
     if (sectionIdParam) {
       const sectionId = parseInt(sectionIdParam, 10);
-      if (!isNaN(sectionId)) {
+      if (!Number.isNaN(sectionId)) {
         setDetailSectionId(sectionId);
       }
     }
@@ -113,8 +113,12 @@ export function SectionsTable() {
   }
 
   function handlePaginationChange(newPage: number, newPageSize: number) {
-    setPage(newPage);
-    setPageSize(newPageSize);
+    const limitChanged = newPageSize !== pageSize;
+    replaceState({
+      ...urlState,
+      page: limitChanged ? 1 : newPage,
+      limit: newPageSize,
+    });
   }
 
   function handleRowDoubleClick(row: Row<SectionListItem>) {
@@ -139,8 +143,8 @@ export function SectionsTable() {
         columns={sectionColumns}
         data={data?.items ?? []}
         pagination={{
-          page: data?.meta.page ?? 1,
-          pageSize: data?.meta.limit ?? 10,
+          page: data?.meta.page ?? page,
+          pageSize: data?.meta.limit ?? pageSize,
           total: data?.meta.total ?? 0,
         }}
         onPaginationChange={handlePaginationChange}
@@ -150,9 +154,11 @@ export function SectionsTable() {
         enableRowSelection
         enableColumnVisibility
         searchValue={search}
+        onSearchChange={(value) => {
+          replaceState({ ...urlState, page: 1, q: value });
+        }}
         onSearch={(value) => {
-          setSearch(value);
-          setPage(1);
+          replaceState({ ...urlState, page: 1, q: value });
         }}
         toolbarActions={buildToolbarActions}
         onRowDoubleClick={handleRowDoubleClick}

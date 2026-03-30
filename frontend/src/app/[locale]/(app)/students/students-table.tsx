@@ -11,8 +11,10 @@ import {
   useCreateAccount,
   useUpdateAccount,
 } from "@/hooks/use-accounts";
+import { useListTableUrl } from "@/hooks/use-list-table-url";
 import { useCreateProfile, useStudentList } from "@/hooks/use-profiles";
 import { studentColumns } from "./columns";
+import type { Student } from "./student.types";
 import { StudentDetailSheet } from "./student-detail-sheet";
 import {
   buildCreateStudentPayload,
@@ -21,11 +23,10 @@ import {
   type StudentFormValues,
 } from "./student-form-dialog";
 import { StudentRowActions } from "./student-row-actions";
-import type { Student } from "./student.types";
 
 export function StudentsTable() {
-  const [page, setPage] = React.useState(1);
-  const [pageSize, setPageSize] = React.useState(10);
+  const { state: urlState, replaceState } = useListTableUrl();
+  const { page, limit: pageSize, q: search } = urlState;
 
   const [detailStudent, setDetailStudent] = React.useState<Student | null>(
     null,
@@ -40,7 +41,11 @@ export function StudentsTable() {
     isLoading: isLoadingProfiles,
     error: profileError,
     mutate: refreshProfiles,
-  } = useStudentList({ page, limit: pageSize });
+  } = useStudentList({
+    page,
+    limit: pageSize,
+    search: search.trim() || undefined,
+  });
 
   const {
     data: accountData,
@@ -153,13 +158,13 @@ export function StudentsTable() {
           createProfileResult.error?.message ??
             "Đã tạo account nhưng tạo profile thất bại. Vui lòng tạo profile thủ công.",
         );
-        await refreshStudents();
+        await refreshProfiles();
         await refreshAccounts();
         setDialogOpen(false);
         return false;
       }
 
-      setPage(1);
+      replaceState({ ...urlState, page: 1 });
       toast.success("Tạo sinh viên thành công.");
       await Promise.all([refreshProfiles(), refreshAccounts()]);
       setDialogOpen(false);
@@ -183,13 +188,17 @@ export function StudentsTable() {
       setEditingStudent(null);
       setDialogOpen(false);
     }
-    await refreshStudents();
+    await refreshProfiles();
     await refreshAccounts();
   }
 
   function handlePaginationChange(newPage: number, newPageSize: number) {
-    setPage(newPage);
-    setPageSize(newPageSize);
+    const limitChanged = newPageSize !== pageSize;
+    replaceState({
+      ...urlState,
+      page: limitChanged ? 1 : newPage,
+      limit: newPageSize,
+    });
   }
 
   function handleRowDoubleClick(row: Row<Student>) {
@@ -223,8 +232,8 @@ export function StudentsTable() {
         columns={studentColumns}
         data={students}
         pagination={{
-          page: profileData?.meta.page ?? 1,
-          pageSize: profileData?.meta.limit ?? 10,
+          page: profileData?.meta.page ?? page,
+          pageSize: profileData?.meta.limit ?? pageSize,
           total: profileData?.meta.total ?? 0,
         }}
         onPaginationChange={handlePaginationChange}
@@ -235,6 +244,14 @@ export function StudentsTable() {
         enableColumnVisibility
         toolbarActions={buildToolbarActions}
         onRowDoubleClick={handleRowDoubleClick}
+        searchValue={search}
+        onSearchChange={(value) => {
+          replaceState({ ...urlState, page: 1, q: value });
+        }}
+        onSearch={(value) => {
+          replaceState({ ...urlState, page: 1, q: value });
+        }}
+        searchPlaceholder="Tìm theo tên, username…"
         renderRowActions={(row) => (
           <StudentRowActions
             student={row.original}

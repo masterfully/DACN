@@ -5,11 +5,11 @@ import { toast } from "sonner";
 import type { ToolbarActionGroup } from "@/components/data-table";
 import { DataTable } from "@/components/data-table";
 import {
-  useCertificateTypeList,
   useCertificateTypeListMock,
   useCreateCertificateType,
   useUpdateCertificateType,
 } from "@/hooks/use-certificate-types";
+import { useListTableUrl } from "@/hooks/use-list-table-url";
 import type { MutationResult } from "@/types/api";
 import type { CertificateType } from "@/types/certificate";
 import {
@@ -22,9 +22,8 @@ import { CertificateTypeRowActions } from "./certificate-type-row-actions";
 import { certificateTypeColumns } from "./columns";
 
 export function CertificateTypesTable() {
-  const [page, setPage] = React.useState(1);
-  const [pageSize, setPageSize] = React.useState(10);
-  const [search, setSearch] = React.useState("");
+  const { state: urlState, replaceState } = useListTableUrl();
+  const { page, limit: pageSize, q: search } = urlState;
 
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const [editing, setEditing] = React.useState<CertificateType | null>(null);
@@ -84,8 +83,12 @@ export function CertificateTypesTable() {
   }
 
   function handlePaginationChange(newPage: number, newPageSize: number) {
-    setPage(newPage);
-    setPageSize(newPageSize);
+    const limitChanged = newPageSize !== pageSize;
+    replaceState({
+      ...urlState,
+      page: limitChanged ? 1 : newPage,
+      limit: newPageSize,
+    });
   }
 
   const toolbarActions: ToolbarActionGroup = {
@@ -112,11 +115,13 @@ export function CertificateTypesTable() {
         getRowId={(row) => String(row.certificateTypeId)}
         enableColumnVisibility
         searchValue={search}
-        onSearch={(value) => {
-          setSearch(value);
-          setPage(1);
+        onSearchChange={(value) => {
+          replaceState({ ...urlState, page: 1, q: value });
         }}
-        searchPlaceholder="Tìm theo tên loại chứng chỉ..."
+        onSearch={(value) => {
+          replaceState({ ...urlState, page: 1, q: value });
+        }}
+        searchPlaceholder="Tìm theo tên loại chứng chỉ…"
         toolbarActions={toolbarActions}
         renderRowActions={(r) => (
           <CertificateTypeRowActions

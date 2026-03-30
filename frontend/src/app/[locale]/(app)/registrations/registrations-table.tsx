@@ -19,6 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useListTableUrl } from "@/hooks/use-list-table-url";
 import {
   useCancelRegistration,
   useMyRegistrations,
@@ -121,9 +122,9 @@ function RegisteredRowActions({
 }
 
 export function RegistrationsTable() {
-  const [openPage, setOpenPage] = React.useState(1);
-  const [openPageSize, setOpenPageSize] = React.useState(10);
-  const [openSearch, setOpenSearch] = React.useState("");
+  const { state: openUrlState, replaceState: replaceOpenUrl } =
+    useListTableUrl("open");
+  const { page: openPage, limit: openPageSize, q: openSearch } = openUrlState;
 
   const {
     data: openSections,
@@ -231,20 +232,26 @@ export function RegistrationsTable() {
             pageSize: openSections?.meta.limit ?? openPageSize,
             total: openSections?.meta.total ?? 0,
           }}
-          onPaginationChange={(page, pageSize) => {
-            setOpenPage(page);
-            setOpenPageSize(pageSize);
+          onPaginationChange={(page, size) => {
+            const limitChanged = size !== openPageSize;
+            replaceOpenUrl({
+              ...openUrlState,
+              page: limitChanged ? 1 : page,
+              limit: size,
+            });
           }}
           isLoading={isOpenLoading}
           error={openError?.message ?? null}
           getRowId={(row) => String(row.sectionId)}
           enableColumnVisibility
           searchValue={openSearch}
-          onSearch={(value) => {
-            setOpenSearch(value);
-            setOpenPage(1);
+          onSearchChange={(value) => {
+            replaceOpenUrl({ ...openUrlState, page: 1, q: value });
           }}
-          searchPlaceholder="Tìm theo tên môn học..."
+          onSearch={(value) => {
+            replaceOpenUrl({ ...openUrlState, page: 1, q: value });
+          }}
+          searchPlaceholder="Tìm theo tên môn học…"
           messages={{ empty: "Không có học phần đang mở." }}
         />
       </section>

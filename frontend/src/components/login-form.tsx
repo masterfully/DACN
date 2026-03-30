@@ -1,8 +1,9 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import * as React from "react";
+import { AuthPasswordInput } from "@/components/auth-password-input";
 import { Button } from "@/components/ui/button";
 import { useLogin } from "@/hooks/use-auth";
 import { Link, useRouter } from "@/i18n/navigation";
@@ -10,6 +11,7 @@ import { useAuthStore } from "@/stores/auth-store";
 import { Separator } from "./ui/separator";
 
 export function LoginForm() {
+  const t = useTranslations("Auth");
   const [username, setUsername] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [submitError, setSubmitError] = React.useState<string | null>(null);
@@ -30,7 +32,7 @@ export function LoginForm() {
       });
 
       if (!result) {
-        setSubmitError("Không thể đăng nhập. Vui lòng thử lại.");
+        setSubmitError(t("loginErrorGeneric"));
         return;
       }
 
@@ -62,17 +64,15 @@ export function LoginForm() {
 
       router.replace("/dashboard");
     } catch {
-      setSubmitError("Không thể đăng nhập. Vui lòng kiểm tra lại thông tin.");
+      setSubmitError(t("loginErrorInvalid"));
     }
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-2 text-center md:text-left">
-        <h1 className="text-2xl font-semibold tracking-tight">Đăng nhập</h1>
-        <p className="text-muted-foreground text-sm">
-          Sử dụng tài khoản được cấp để truy cập hệ thống.
-        </p>
+        <h1 className="text-2xl font-semibold tracking-tight">{t("loginTitle")}</h1>
+        <p className="text-muted-foreground text-sm">{t("loginDescription")}</p>
       </div>
 
       <div className="space-y-4">
@@ -81,12 +81,14 @@ export function LoginForm() {
             htmlFor="username"
             className="text-foreground text-sm leading-none font-medium"
           >
-            Tên đăng nhập
+            {t("usernameLabel")}
           </label>
           <input
             id="username"
+            name="username"
             type="text"
             autoComplete="username"
+            spellCheck={false}
             required
             className="border-input bg-background placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/60 flex h-9 w-full rounded-md border px-3 py-1 text-sm shadow-xs transition-colors focus-visible:ring-2 focus-visible:outline-none"
             value={username}
@@ -99,14 +101,14 @@ export function LoginForm() {
             htmlFor="password"
             className="text-foreground text-sm leading-none font-medium"
           >
-            Mật khẩu
+            {t("passwordLabel")}
           </label>
-          <input
+          <AuthPasswordInput
             id="password"
-            type="password"
+            name="password"
             autoComplete="current-password"
+            spellCheck={false}
             required
-            className="border-input bg-background placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/60 flex h-9 w-full rounded-md border px-3 py-1 text-sm shadow-xs transition-colors focus-visible:ring-2 focus-visible:outline-none"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
           />
@@ -119,18 +121,18 @@ export function LoginForm() {
         </p>
       ) : null}
 
+      <Button type="submit" className="w-full" disabled={isLoading}>
+        {isLoading ? t("loginSubmitting") : t("loginSubmit")}
+      </Button>
+
       <Separator />
 
       <div className="text-center text-sm">
-        Bạn chưa có tài khoản?{" "}
+        {t("promptNoAccount")}{" "}
         <Link href="/signup" className="underline">
-          Đăng ký
+          {t("linkSignup")}
         </Link>
       </div>
-
-      <Button type="submit" className="w-full" disabled={isLoading}>
-        {isLoading ? "Đang đăng nhập..." : "Đăng nhập"}
-      </Button>
     </form>
   );
 }

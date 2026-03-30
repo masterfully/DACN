@@ -8,11 +8,11 @@ import { formatApplicationStatus } from "./application-status";
 function statusBadgeClass(status: ProfileApplication["applicationStatus"]) {
   switch (status) {
     case "PENDING":
-      return "bg-amber-100 text-amber-900";
+      return "bg-amber-500/15 text-amber-900 dark:text-amber-200";
     case "APPROVED":
-      return "bg-emerald-100 text-emerald-900";
+      return "bg-emerald-500/15 text-emerald-900 dark:text-emerald-200";
     case "REJECTED":
-      return "bg-red-100 text-red-900";
+      return "bg-red-500/15 text-red-900 dark:text-red-200";
     case "CANCELLED":
       return "bg-muted text-muted-foreground";
     default:
@@ -29,7 +29,9 @@ export function buildApprovalColumns(
       header: () => <ColHeader icon={HashIcon} label="Mã hồ sơ" center />,
       enableSorting: false,
       cell: ({ row }) => (
-        <div className="text-center">{row.original.applicationId}</div>
+        <div className="text-center tabular-nums">
+          {row.original.applicationId}
+        </div>
       ),
     },
     {
