@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/table";
 import {
   useCancelRegistration,
-  useMyRegistrationsMock,
+  useMyRegistrations,
   useRegisterSection,
 } from "@/hooks/use-registrations";
 import { useSectionList } from "@/hooks/use-sections";
@@ -143,9 +143,9 @@ export function RegistrationsTable() {
     isLoading: isMyLoading,
     error: myError,
     mutate: refreshMyRegistrations,
-  } = useMyRegistrationsMock({
+  } = useMyRegistrations({
     page: 1,
-    limit: 1000,
+    limit: 50,
   });
 
   const registeredSectionIds = React.useMemo(

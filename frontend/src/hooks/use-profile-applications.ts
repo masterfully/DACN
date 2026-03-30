@@ -16,6 +16,7 @@ import type {
   GetApplicationListParams,
   GetMyApplicationsParams,
   ProfileApplication,
+  ProfileApplicationDetailModel,
   ReviewApplicationVariables,
 } from "@/types/profile-application";
 import type { UseFetchResult } from "./use-fetch";
@@ -32,7 +33,7 @@ export function useApplicationList(params: GetApplicationListParams = {}) {
 }
 
 export function useApplicationDetail(applicationId?: number) {
-  return useFetchWithFetcher<ProfileApplication>(
+  return useFetchWithFetcher<ProfileApplicationDetailModel>(
     applicationId ? `/profile-applications/${applicationId}` : null,
     () => {
       if (applicationId === undefined) {

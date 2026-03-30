@@ -176,9 +176,14 @@ export function useCertificatesByApplicationMock(
 
   const build = React.useCallback(() => {
     if (applicationId === undefined) return undefined;
-    return MOCK_CERTIFICATE_DETAILS.filter(
+    const exact = MOCK_CERTIFICATE_DETAILS.filter(
       (c) => c.applicationId === applicationId,
     );
+    if (exact.length > 0) return exact;
+    return MOCK_PROFILE_APPLICATION_CERTIFICATES.map((c) => ({
+      ...c,
+      applicationId,
+    }));
   }, [applicationId]);
 
   React.useEffect(() => {

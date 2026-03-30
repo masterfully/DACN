@@ -52,6 +52,8 @@ export function DataTable<TData>({
   toolbarActions,
   getRowId,
   emptyMessage,
+  onRowClick,
+  getRowClassName,
   onRowDoubleClick,
   messages,
   pageSizeOptions,
@@ -303,7 +305,11 @@ export function DataTable<TData>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() ? "selected" : undefined}
-                  className={onRowDoubleClick ? "cursor-pointer" : undefined}
+                  className={cn(
+                    onRowDoubleClick ? "cursor-pointer" : undefined,
+                    getRowClassName?.(row),
+                  )}
+                  onClick={() => onRowClick?.(row)}
                   onDoubleClick={() => onRowDoubleClick?.(row)}
                 >
                   {row.getVisibleCells().map((cell) => (

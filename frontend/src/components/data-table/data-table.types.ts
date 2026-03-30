@@ -93,6 +93,15 @@ export interface DataTableProps<TData> {
    */
   emptyMessage?: string;
   /**
+   * Called when a data row is clicked (single click).
+   * Use `stopPropagation` on interactive cells (links, buttons) when needed.
+   */
+  onRowClick?: (row: Row<TData>) => void;
+  /**
+   * Optional extra `className` per row (e.g. `cursor-pointer` only for some rows).
+   */
+  getRowClassName?: (row: Row<TData>) => string | undefined;
+  /**
    * Called when a data row is double-clicked.
    * DataTable forwards the tanstack Row object; the page is responsible
    * for deciding what to do (open dialog, navigate, etc.).

@@ -17,6 +17,28 @@ export interface ProfileApplication {
   reviewNotes?: string | null;
 }
 
+/**
+ * GET `/profile-applications/:id` — shape of `data` from backend (`ProfileApplicationDetail`).
+ */
+export interface ProfileApplicationDetailResponse {
+  ApplicationID: number;
+  StudentProfileID: number;
+  StudentFullName: string;
+  ApplicationStatus: string | null;
+  SubmissionDate: string | null;
+  ReviewedByProfileID: number | null;
+  ReviewedByFullName: string | null;
+  ReviewDate: string | null;
+  ReviewNotes: string | null;
+  CertificatesCount: number;
+}
+
+/** Normalized detail for UI (includes optional fields from detail endpoint). */
+export type ProfileApplicationDetailModel = ProfileApplication & {
+  reviewedByFullName?: string | null;
+  certificatesCount?: number;
+};
+
 export interface GetApplicationListParams {
   page?: number;
   limit?: number;
