@@ -21,14 +21,26 @@ export interface MyScheduleItem {
   endPeriod: number;
 }
 
+export interface ScheduleUpdateResponse {
+  scheduleId: number;
+  roomId: number;
+  dayOfWeek: string;
+}
+
 export interface GetScheduleListParams {
   page?: number;
   limit?: number;
   roomId?: number;
   sectionId?: number;
+  dayOfWeek?: string;
+  startDate?: string;
+  endDate?: string;
 }
 
 export interface GetMyScheduleParams {
+  sectionId?: number;
+  roomId?: number;
+  dayOfWeek?: string;
   startDate?: string;
   endDate?: string;
 }
