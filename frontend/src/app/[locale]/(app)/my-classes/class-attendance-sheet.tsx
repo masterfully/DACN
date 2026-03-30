@@ -1,6 +1,7 @@
 "use client";
 
 import { Check, Clock3, Plus, Users, X } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import * as React from "react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
@@ -23,11 +24,7 @@ import {
 import { useRegistrationsBySection } from "@/hooks/use-registrations";
 import { useSectionStudents } from "@/hooks/use-sections";
 import { updateAttendanceDetail } from "@/services/attendance-detail-service";
-import type {
-  Attendance,
-  AttendanceDetail,
-  AttendanceStatus,
-} from "@/types/attendance";
+import type { AttendanceDetail, AttendanceStatus } from "@/types/attendance";
 import type { MySectionListItem } from "@/types/section";
 
 interface ClassAttendanceSheetProps {
@@ -39,15 +36,6 @@ interface AttendanceStudent {
   profileId: number;
   fullName: string | null;
   email: string | null;
-}
-
-function formatDateLabel(value: string): string {
-  const d = new Date(value);
-  if (Number.isNaN(d.getTime())) return value;
-  return d.toLocaleDateString("vi-VN", {
-    day: "2-digit",
-    month: "2-digit",
-  });
 }
 
 function statusIcon(status: AttendanceStatus) {
@@ -67,6 +55,9 @@ export function ClassAttendanceSheet({
   section,
   onClose,
 }: ClassAttendanceSheetProps) {
+  const t = useTranslations("MyClasses");
+  const locale = useLocale();
+
   const [selectedAttendanceId, setSelectedAttendanceId] = React.useState<
     number | null
   >(null);
@@ -75,6 +66,19 @@ export function ClassAttendanceSheet({
   >(null);
 
   const sectionId = section?.sectionId;
+
+  const formatDateLabel = React.useCallback(
+    (value: string) => {
+      const d = new Date(value);
+      if (Number.isNaN(d.getTime())) return value;
+      const intlLocale = locale.startsWith("vi") ? "vi-VN" : "en-US";
+      return d.toLocaleDateString(intlLocale, {
+        day: "2-digit",
+        month: "2-digit",
+      });
+    },
+    [locale],
+  );
 
   const {
     data: attendancePage,
@@ -202,11 +206,13 @@ export function ClassAttendanceSheet({
       sectionId,
       slot: nextSlot,
       attendanceDate: today,
-      note: `Buoi ${nextSlot}`,
+      note: t("attendance.sessionNote", { slot: nextSlot }),
     });
 
     if (!result.ok) {
-      toast.error(result.error?.message ?? "Tao buoi diem danh that bai");
+      toast.error(
+        result.error?.message ?? t("attendance.toastCreateSessionFailed"),
+      );
       return;
     }
 
@@ -215,13 +221,13 @@ export function ClassAttendanceSheet({
     if (latest) {
       setSelectedAttendanceId(latest.attendanceId);
     }
-    toast.success("Da tao buoi diem danh moi");
+    toast.success(t("attendance.toastCreateSessionOk"));
   }
 
   async function handleInitializeDetails() {
     if (!selectedAttendanceId) return;
     if (!students.length) {
-      toast.error("Lop hoc chua co sinh vien de diem danh");
+      toast.error(t("attendance.toastNoStudentsInit"));
       return;
     }
 
@@ -234,13 +240,13 @@ export function ClassAttendanceSheet({
 
     if (!result.ok) {
       toast.error(
-        result.error?.message ?? "Khoi tao danh sach diem danh that bai",
+        result.error?.message ?? t("attendance.toastInitRosterFailed"),
       );
       return;
     }
 
     await refreshDetails();
-    toast.success("Da khoi tao danh sach diem danh");
+    toast.success(t("attendance.toastInitRosterOk"));
   }
 
   async function handleStatusChange(
@@ -251,7 +257,7 @@ export function ClassAttendanceSheet({
 
     const detail = detailsMap.get(studentProfileId);
     if (!detail) {
-      toast.error("Hay khoi tao danh sach diem danh truoc");
+      toast.error(t("attendance.toastInitRosterFirst"));
       return;
     }
 
@@ -265,12 +271,17 @@ export function ClassAttendanceSheet({
       await refreshDetails();
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : "Cap nhat diem danh that bai";
+        error instanceof Error
+          ? error.message
+          : t("attendance.toastUpdateFailed");
       toast.error(message);
     } finally {
       setUpdatingStudentId(null);
     }
   }
+
+  const studentLabel = (student: AttendanceStudent) =>
+    student.fullName?.trim() || t("attendance.studentNameFallback");
 
   return (
     <Sheet
@@ -281,19 +292,25 @@ export function ClassAttendanceSheet({
     >
       <SheetContent
         side="right"
-        className="w-full overflow-y-auto sm:max-w-6xl"
+        className="w-full overflow-y-auto px-4 sm:max-w-6xl"
       >
         <SheetHeader>
-          <SheetTitle>Diem danh - {section?.subjectName ?? ""}</SheetTitle>
+          <SheetTitle>
+            {t("attendance.sheetTitle", {
+              subject: section?.subjectName ?? "",
+            })}
+          </SheetTitle>
           <SheetDescription>
-            Double-click vao lop de mo man hinh diem danh theo tung buoi hoc.
+            {t("attendance.sheetDescription")}
           </SheetDescription>
         </SheetHeader>
 
         <div className="mt-4 space-y-4">
           <div className="rounded-lg border p-3">
             <div className="mb-3 flex items-center justify-between gap-2">
-              <p className="text-sm font-medium">Buoi hoc</p>
+              <p className="text-sm font-medium">
+                {t("attendance.sessionsTitle")}
+              </p>
               <Button
                 type="button"
                 size="sm"
@@ -302,26 +319,35 @@ export function ClassAttendanceSheet({
                 disabled={!sectionId || isCreatingAttendance}
               >
                 <Plus className="mr-1 h-4 w-4" />
-                Tao buoi
+                {t("attendance.createSession")}
               </Button>
             </div>
 
             {isAttendanceLoading ? (
               <p className="text-muted-foreground text-sm">
-                Dang tai buoi hoc...
+                {t("attendance.sessionsLoading")}
               </p>
             ) : attendances.length === 0 ? (
               <p className="text-muted-foreground text-sm">
-                Chua co buoi diem danh. Bam "Tao buoi" de bat dau.
+                {t("attendance.sessionsEmpty")}
               </p>
             ) : (
-              <div className="flex gap-2 overflow-x-auto pb-1">
+              <fieldset className="m-0 flex min-w-0 gap-2 overflow-x-auto border-0 p-0 pb-1">
+                <legend className="sr-only">
+                  {t("attendance.sessionPickerLabel")}
+                </legend>
                 {attendances.map((item, idx) => {
                   const active = item.attendanceId === selectedAttendanceId;
+                  const dateStr = formatDateLabel(item.attendanceDate);
                   return (
                     <button
                       key={item.attendanceId}
                       type="button"
+                      aria-pressed={active}
+                      aria-label={t("attendance.sessionChipLabel", {
+                        number: idx + 1,
+                        date: dateStr,
+                      })}
                       onClick={() => setSelectedAttendanceId(item.attendanceId)}
                       className={[
                         "min-w-[110px] rounded-md border px-3 py-2 text-left text-sm transition-colors",
@@ -331,23 +357,29 @@ export function ClassAttendanceSheet({
                       ].join(" ")}
                     >
                       <p className="font-semibold">#{idx + 1}</p>
-                      <p className="text-xs opacity-90">
-                        {formatDateLabel(item.attendanceDate)}
-                      </p>
+                      <p className="text-xs opacity-90">{dateStr}</p>
                     </button>
                   );
                 })}
-              </div>
+              </fieldset>
             )}
           </div>
 
           <div className="rounded-lg border p-3">
-            <div className="mb-3 flex items-center justify-between gap-2">
-              <p className="text-sm font-medium">Danh sach diem danh</p>
-              <div className="flex items-center gap-2">
-                <Badge variant="secondary">Present: {summary.present}</Badge>
-                <Badge variant="secondary">Late: {summary.late}</Badge>
-                <Badge variant="secondary">Absent: {summary.absent}</Badge>
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+              <p className="text-sm font-medium">
+                {t("attendance.rosterTitle")}
+              </p>
+              <div className="flex flex-wrap items-center gap-2">
+                <Badge variant="secondary">
+                  {t("attendance.summaryPresent", { count: summary.present })}
+                </Badge>
+                <Badge variant="secondary">
+                  {t("attendance.summaryLate", { count: summary.late })}
+                </Badge>
+                <Badge variant="secondary">
+                  {t("attendance.summaryAbsent", { count: summary.absent })}
+                </Badge>
                 <Button
                   type="button"
                   size="sm"
@@ -362,24 +394,24 @@ export function ClassAttendanceSheet({
                   }
                 >
                   <Users className="mr-1 h-4 w-4" />
-                  Khoi tao danh sach
+                  {t("attendance.initRoster")}
                 </Button>
               </div>
             </div>
 
             {!selectedAttendanceId ? (
               <p className="text-muted-foreground text-sm">
-                Hay chon mot buoi hoc de diem danh.
+                {t("attendance.selectSessionFirst")}
               </p>
             ) : isStudentsLoading ||
               isRegistrationsLoading ||
               isDetailsLoading ? (
               <p className="text-muted-foreground text-sm">
-                Dang tai du lieu...
+                {t("attendance.rosterLoading")}
               </p>
             ) : students.length === 0 ? (
               <p className="text-muted-foreground text-sm">
-                Lop hoc chua co sinh vien dang ky.
+                {t("attendance.noStudents")}
               </p>
             ) : (
               <div className="overflow-x-auto">
@@ -387,16 +419,16 @@ export function ClassAttendanceSheet({
                   <thead>
                     <tr className="border-b">
                       <th className="px-2 py-2 text-left font-medium">
-                        Sinh vien
+                        {t("attendance.colStudent")}
                       </th>
                       <th className="px-2 py-2 text-center font-medium">
-                        Present
+                        {t("attendance.statusPresent")}
                       </th>
                       <th className="px-2 py-2 text-center font-medium">
-                        Late
+                        {t("attendance.statusLate")}
                       </th>
                       <th className="px-2 py-2 text-center font-medium">
-                        Absent
+                        {t("attendance.statusAbsent")}
                       </th>
                     </tr>
                   </thead>
@@ -406,6 +438,7 @@ export function ClassAttendanceSheet({
                       const status = (detail?.status ?? "").toUpperCase();
                       const disabled =
                         updatingStudentId === student.profileId || !detail;
+                      const name = studentLabel(student);
 
                       return (
                         <tr
@@ -413,9 +446,7 @@ export function ClassAttendanceSheet({
                           className="border-b last:border-b-0"
                         >
                           <td className="px-2 py-2">
-                            <p className="font-medium">
-                              {student.fullName ?? "N/A"}
-                            </p>
+                            <p className="font-medium">{name}</p>
                             <p className="text-muted-foreground text-xs">
                               {student.email ?? ""}
                             </p>
@@ -427,6 +458,10 @@ export function ClassAttendanceSheet({
                               variant="ghost"
                               size="icon"
                               disabled={disabled}
+                              aria-label={t("attendance.markPresentFor", {
+                                name,
+                              })}
+                              aria-pressed={status === "PRESENT"}
                               onClick={() =>
                                 handleStatusChange(student.profileId, "PRESENT")
                               }
@@ -445,6 +480,10 @@ export function ClassAttendanceSheet({
                               variant="ghost"
                               size="icon"
                               disabled={disabled}
+                              aria-label={t("attendance.markLateFor", {
+                                name,
+                              })}
+                              aria-pressed={status === "LATE"}
                               onClick={() =>
                                 handleStatusChange(student.profileId, "LATE")
                               }
@@ -463,6 +502,10 @@ export function ClassAttendanceSheet({
                               variant="ghost"
                               size="icon"
                               disabled={disabled}
+                              aria-label={t("attendance.markAbsentFor", {
+                                name,
+                              })}
+                              aria-pressed={status === "ABSENT"}
                               onClick={() =>
                                 handleStatusChange(student.profileId, "ABSENT")
                               }

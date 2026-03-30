@@ -1,15 +1,18 @@
 "use client";
 
 import type { Row } from "@tanstack/react-table";
+import { useTranslations } from "next-intl";
 import * as React from "react";
 import { DataTable } from "@/components/data-table";
+import { Button } from "@/components/ui/button";
 import { useListTableUrl } from "@/hooks/use-list-table-url";
 import { useMySections } from "@/hooks/use-sections";
 import type { MySectionListItem } from "@/types/section";
 import { ClassAttendanceSheet } from "./class-attendance-sheet";
-import { myClassesColumns } from "./columns";
+import { createMyClassesColumns } from "./columns";
 
 export function MyClassesTable() {
+  const t = useTranslations("MyClasses");
   const { state: urlState, replaceState } = useListTableUrl();
   const { page, limit: pageSize, q: search } = urlState;
 
@@ -22,6 +25,18 @@ export function MyClassesTable() {
     year: search.trim() || undefined,
   });
 
+  const columns = React.useMemo(
+    () =>
+      createMyClassesColumns({
+        sectionId: t("colSectionId"),
+        subject: t("colSubject"),
+        year: t("colYear"),
+        enrollment: t("colEnrollment"),
+        capacity: t("colCapacity"),
+      }),
+    [t],
+  );
+
   function handlePaginationChange(newPage: number, newPageSize: number) {
     const limitChanged = newPageSize !== pageSize;
     replaceState({
@@ -31,14 +46,14 @@ export function MyClassesTable() {
     });
   }
 
-  function handleRowDoubleClick(row: Row<MySectionListItem>) {
+  function openAttendance(row: Row<MySectionListItem>) {
     setSelectedClass(row.original);
   }
 
   return (
     <>
       <DataTable<MySectionListItem>
-        columns={myClassesColumns}
+        columns={columns}
         data={data?.items ?? []}
         pagination={{
           page: data?.meta.page ?? page,
@@ -49,7 +64,6 @@ export function MyClassesTable() {
         isLoading={isLoading}
         error={error?.message ?? null}
         getRowId={(row) => String(row.sectionId)}
-        enableRowSelection
         enableColumnVisibility
         searchValue={search}
         onSearchChange={(value) => {
@@ -58,8 +72,31 @@ export function MyClassesTable() {
         onSearch={(value) => {
           replaceState({ ...urlState, page: 1, q: value });
         }}
-        searchPlaceholder="Lọc theo năm học (ví dụ 2024)…"
-        onRowDoubleClick={handleRowDoubleClick}
+        searchPlaceholder={t("searchPlaceholder")}
+        messages={{
+          empty: t("emptyTable"),
+          searchPlaceholder: t("searchPlaceholder"),
+          searchAriaLabel: t("searchAriaLabel"),
+          actionsColumn: t("actionsColumn"),
+        }}
+        onRowClick={openAttendance}
+        onRowDoubleClick={openAttendance}
+        renderRowActions={(row) => (
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            aria-label={t("openAttendanceAria", {
+              subject: row.original.subjectName,
+            })}
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedClass(row.original);
+            }}
+          >
+            {t("openAttendance")}
+          </Button>
+        )}
       />
 
       <ClassAttendanceSheet

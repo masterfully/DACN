@@ -29,6 +29,8 @@ interface DataTableToolbarProps<TData> {
   onSearchChange?: (value: string) => void;
   onSearch?: (value: string) => void;
   searchPlaceholder?: string;
+  /** When set, used as the sr-only label for the search field instead of DataTable.searchTable */
+  searchAriaLabel?: string;
   enableColumnVisibility?: boolean;
   toolbarActions?: ToolbarActionGroup;
   selectedCount?: number;
@@ -44,6 +46,7 @@ export function DataTableToolbar<TData>({
   onSearchChange,
   onSearch,
   searchPlaceholder = "Tìm kiếm…",
+  searchAriaLabel,
   enableColumnVisibility = true,
   toolbarActions,
   selectedCount: _selectedCount = 0,
@@ -94,7 +97,7 @@ export function DataTableToolbar<TData>({
       <div className="flex items-center justify-end gap-2">
         <div className="flex items-center gap-2">
           <Label htmlFor={searchInputId} className="sr-only">
-            {t("searchTable")}
+            {searchAriaLabel ?? t("searchTable")}
           </Label>
           <InputGroup>
             <InputGroupInput

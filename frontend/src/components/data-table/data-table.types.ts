@@ -23,6 +23,8 @@ export interface DataTableMessages {
   empty?: string;
   /** Placeholder for the search input */
   searchPlaceholder?: string;
+  /** Accessible name for the search input (replaces default toolbar label when set) */
+  searchAriaLabel?: string;
   /** Label on the "hide columns" trigger button */
   hideColumns?: string;
   /** Title of the column visibility dropdown */
