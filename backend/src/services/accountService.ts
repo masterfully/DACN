@@ -23,9 +23,66 @@ export interface CreateAccountInput {
   role: RoleEnum;
 }
 
+export interface UpdateAccountInput {
+  accountId: number;
+  username?: string;
+  role?: RoleEnum;
+}
+
+export interface DeleteAccountInput {
+  accountId: number;
+}
+
+export interface DeleteAccountResult {
+  accountId: number;
+  username: string;
+  email: string;
+  role: RoleEnum;
+  deleted: true;
+  deletedAt: Date;
+}
+
+const accountSelect = {
+  AccountID: true,
+  Username: true,
+  Email: true,
+  Role: true,
+  profile: {
+    select: {
+      ProfileID: true,
+      FullName: true,
+      Avatar: true,
+      Status: true,
+    },
+  },
+} satisfies Prisma.AccountSelect;
+
+type AccountWithProfile = Prisma.AccountGetPayload<{ select: typeof accountSelect }>;
+
+const mapAccount = (account: AccountWithProfile) => {
+  return {
+    accountId: account.AccountID,
+    username: account.Username,
+    email: account.Email,
+    role: account.Role,
+    profile: account.profile
+      ? {
+          profileId: account.profile.ProfileID,
+          fullName: account.profile.FullName,
+          avatar: account.profile.Avatar,
+          status: account.profile.Status,
+        }
+      : null,
+  };
+};
+
 export const getAccounts = async (input: GetAccountsInput) => {
   const skip = (input.page - 1) * input.limit;
-  const andClauses: Prisma.AccountWhereInput[] = [];
+  const andClauses: Prisma.AccountWhereInput[] = [
+    {
+      IsDeleted: false,
+    },
+  ];
 
   const normalizedSearch = input.search?.trim();
   if (normalizedSearch) {
@@ -87,39 +144,13 @@ export const getAccounts = async (input: GetAccountsInput) => {
       orderBy: {
         AccountID: "asc",
       },
-      select: {
-        AccountID: true,
-        Username: true,
-        Email: true,
-        Role: true,
-        profile: {
-          select: {
-            ProfileID: true,
-            FullName: true,
-            Avatar: true,
-            Status: true,
-          },
-        },
-      },
+      select: accountSelect,
     }),
     prisma.account.count({ where }),
   ]);
 
   return {
-    accounts: accounts.map((account) => ({
-      accountId: account.AccountID,
-      username: account.Username,
-      email: account.Email,
-      role: account.Role,
-      profile: account.profile
-        ? {
-            profileId: account.profile.ProfileID,
-            fullName: account.profile.FullName,
-            avatar: account.profile.Avatar,
-            status: account.profile.Status,
-          }
-        : null,
-    })),
+    accounts: accounts.map(mapAccount),
     total,
   };
 };
@@ -130,7 +161,12 @@ export const createAccount = async (input: CreateAccountInput) => {
 
   const existingAccount = await prisma.account.findFirst({
     where: {
-      OR: [{ Username: normalizedUsername }, { Email: normalizedEmail }],
+      AND: [
+        { IsDeleted: false },
+        {
+          OR: [{ Username: normalizedUsername }, { Email: normalizedEmail }],
+        },
+      ],
     },
     select: {
       Username: true,
@@ -220,4 +256,214 @@ export const createAccount = async (input: CreateAccountInput) => {
 
     throw error;
   }
+};
+
+export const getMyAccount = async (accountId: number) => {
+  const account = await prisma.account.findFirst({
+    where: {
+      AccountID: accountId,
+      IsDeleted: false,
+    },
+    select: accountSelect,
+  });
+
+  if (!account) {
+    throw new AppError(ACCOUNT_ERROR_MESSAGES.ACCOUNT_ME_NOT_FOUND, {
+      statusCode: 404,
+      code: ACCOUNT_ERROR_CODES.ACCOUNT_ME_NOT_FOUND,
+      details: {
+        formErrors: [ACCOUNT_ERROR_MESSAGES.ACCOUNT_ME_NOT_FOUND],
+        fieldErrors: {},
+      },
+    });
+  }
+
+  return mapAccount(account);
+};
+
+export const getAccountDetail = async (accountId: number) => {
+  const account = await prisma.account.findFirst({
+    where: {
+      AccountID: accountId,
+      IsDeleted: false,
+    },
+    select: accountSelect,
+  });
+
+  if (!account) {
+    throw new AppError(ACCOUNT_ERROR_MESSAGES.ACCOUNT_DETAIL_NOT_FOUND, {
+      statusCode: 404,
+      code: ACCOUNT_ERROR_CODES.ACCOUNT_DETAIL_NOT_FOUND,
+      details: {
+        formErrors: [ACCOUNT_ERROR_MESSAGES.ACCOUNT_DETAIL_NOT_FOUND],
+        fieldErrors: {},
+      },
+    });
+  }
+
+  return mapAccount(account);
+};
+
+export const updateAccount = async (input: UpdateAccountInput) => {
+  const currentAccount = await prisma.account.findFirst({
+    where: {
+      AccountID: input.accountId,
+      IsDeleted: false,
+    },
+    select: {
+      AccountID: true,
+      Username: true,
+    },
+  });
+
+  if (!currentAccount) {
+    throw new AppError(ACCOUNT_ERROR_MESSAGES.ACCOUNT_UPDATE_NOT_FOUND, {
+      statusCode: 404,
+      code: ACCOUNT_ERROR_CODES.ACCOUNT_UPDATE_NOT_FOUND,
+      details: {
+        formErrors: [ACCOUNT_ERROR_MESSAGES.ACCOUNT_UPDATE_NOT_FOUND],
+        fieldErrors: {},
+      },
+    });
+  }
+
+  const data: Prisma.AccountUpdateInput = {};
+
+  if (input.username !== undefined) {
+    const normalizedUsername = input.username.trim();
+
+    if (normalizedUsername !== currentAccount.Username) {
+      const existing = await prisma.account.findFirst({
+        where: {
+          Username: normalizedUsername,
+          IsDeleted: false,
+          NOT: {
+            AccountID: input.accountId,
+          },
+        },
+        select: {
+          AccountID: true,
+        },
+      });
+
+      if (existing) {
+        throw new AppError(ACCOUNT_ERROR_MESSAGES.ACCOUNT_UPDATE_USERNAME_EXISTS, {
+          statusCode: 409,
+          code: ACCOUNT_ERROR_CODES.ACCOUNT_UPDATE_USERNAME_EXISTS,
+          details: {
+            formErrors: [],
+            fieldErrors: {
+              username: [ACCOUNT_FIELD_ERROR_MESSAGES.USERNAME_EXISTS],
+            },
+          },
+        });
+      }
+    }
+
+    data.Username = normalizedUsername;
+  }
+
+  if (input.role !== undefined) {
+    data.Role = input.role;
+  }
+
+  try {
+    const updated = await prisma.account.update({
+      where: {
+        AccountID: input.accountId,
+      },
+      data,
+      select: accountSelect,
+    });
+
+    return mapAccount(updated);
+  } catch (error) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
+      throw new AppError(ACCOUNT_ERROR_MESSAGES.ACCOUNT_UPDATE_USERNAME_EXISTS, {
+        statusCode: 409,
+        code: ACCOUNT_ERROR_CODES.ACCOUNT_UPDATE_USERNAME_EXISTS,
+        details: {
+          formErrors: [],
+          fieldErrors: {
+            username: [ACCOUNT_FIELD_ERROR_MESSAGES.USERNAME_EXISTS],
+          },
+        },
+      });
+    }
+
+    throw error;
+  }
+};
+
+export const deleteAccount = async (
+  input: DeleteAccountInput,
+): Promise<DeleteAccountResult> => {
+  const account = await prisma.account.findFirst({
+    where: {
+      AccountID: input.accountId,
+      IsDeleted: false,
+    },
+    select: {
+      AccountID: true,
+      Username: true,
+      Email: true,
+      Role: true,
+    },
+  });
+
+  if (!account) {
+    throw new AppError(ACCOUNT_ERROR_MESSAGES.ACCOUNT_DELETE_NOT_FOUND, {
+      statusCode: 404,
+      code: ACCOUNT_ERROR_CODES.ACCOUNT_DELETE_NOT_FOUND,
+      details: {
+        formErrors: [ACCOUNT_ERROR_MESSAGES.ACCOUNT_DELETE_NOT_FOUND],
+        fieldErrors: {},
+      },
+    });
+  }
+
+  const deletedAt = new Date();
+
+  await prisma.$transaction(async (tx) => {
+    await tx.refreshToken.updateMany({
+      where: {
+        AccountID: input.accountId,
+        RevokedAt: null,
+      },
+      data: {
+        RevokedAt: deletedAt,
+      },
+    });
+
+    await tx.userProfile.updateMany({
+      where: {
+        AccountID: input.accountId,
+      },
+      data: {
+        Status: "INACTIVE",
+      },
+    });
+
+    await tx.account.update({
+      where: {
+        AccountID: input.accountId,
+      },
+      data: {
+        IsDeleted: true,
+        DeletedAt: deletedAt,
+      },
+    });
+  });
+
+  return {
+    accountId: account.AccountID,
+    username: account.Username,
+    email: account.Email,
+    role: account.Role,
+    deleted: true,
+    deletedAt,
+  };
 };

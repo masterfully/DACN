@@ -1413,6 +1413,469 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "Account Remaining Endpoints",
+          "item": [
+            {
+              "name": "Get My Account - Success",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/accounts/me",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "accounts",
+                    "me"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get My Account - Missing token",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/accounts/me",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "accounts",
+                    "me"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Account Detail - Success (ADMIN)",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/accounts/{{account_detail_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "accounts",
+                    "{{account_detail_id}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Account Detail - Invalid accountId",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/accounts/abc",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "accounts",
+                    "abc"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Account Detail - Not found",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/accounts/999999",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "accounts",
+                    "999999"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Account Detail - Forbidden (STUDENT)",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{student_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/accounts/{{account_detail_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "accounts",
+                    "{{account_detail_id}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Account - Success (username)",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "const ts = Date.now();",
+                      "pm.collectionVariables.set('account_updated_username', `updated_${ts}`);"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"username\": \"{{account_updated_username}}\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/accounts/{{account_update_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "accounts",
+                    "{{account_update_id}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Account - Success (role)",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"role\": \"LECTURER\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/accounts/{{account_update_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "accounts",
+                    "{{account_update_id}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Account - Empty body",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/accounts/{{account_update_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "accounts",
+                    "{{account_update_id}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Account - Invalid role",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"role\": \"SUPER_ADMIN\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/accounts/{{account_update_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "accounts",
+                    "{{account_update_id}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Account - Duplicate username",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"username\": \"{{account_duplicate_username}}\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/accounts/{{account_update_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "accounts",
+                    "{{account_update_id}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Account - Forbidden (STUDENT)",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{student_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"role\": \"LECTURER\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/accounts/{{account_update_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "accounts",
+                    "{{account_update_id}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Account - Success (ADMIN)",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/accounts/{{account_delete_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "accounts",
+                    "{{account_delete_id}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Account - Invalid accountId",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/accounts/abc",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "accounts",
+                    "abc"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Account - Not found",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/accounts/999999",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "accounts",
+                    "999999"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Account - Forbidden (STUDENT)",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{student_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/accounts/{{account_update_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "accounts",
+                    "{{account_update_id}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Account - Missing token",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/accounts/{{account_update_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "accounts",
+                    "{{account_update_id}}"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
         }
       ]
     },
@@ -11047,6 +11510,26 @@
     {
       "key": "account_new_email",
       "value": ""
+    },
+    {
+      "key": "account_detail_id",
+      "value": "2"
+    },
+    {
+      "key": "account_update_id",
+      "value": "2"
+    },
+    {
+      "key": "account_delete_id",
+      "value": ""
+    },
+    {
+      "key": "account_updated_username",
+      "value": ""
+    },
+    {
+      "key": "account_duplicate_username",
+      "value": "admin01"
     },
     {
       "key": "profile_existing_account_id",
