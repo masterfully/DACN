@@ -1,18 +1,24 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import * as React from "react";
 import { DataTable } from "@/components/data-table";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  useApplicationList,
-  useApplicationListMock,
-} from "@/hooks/use-profile-applications";
+import { useApplicationList } from "@/hooks/use-profile-applications";
+import { usePathname, useRouter } from "@/i18n/navigation";
+import { normalizePaginatedProfileApplications } from "@/lib/profile-application-dto";
 import type {
   ApplicationStatus,
   ProfileApplication,
 } from "@/types/profile-application";
+import { ApplicationPendingDetailSheet } from "./application-pending-detail-sheet";
 import { ApplicationReviewDialog } from "./application-review-dialog";
+import {
+  type ApprovalsUrlState,
+  buildApprovalsQueryString,
+  parseApprovalsSearchParams,
+} from "./approvals-url";
 import { buildApprovalColumns } from "./columns";
 
 const STATUS_FILTER_OPTIONS: {
@@ -23,22 +29,43 @@ const STATUS_FILTER_OPTIONS: {
   { value: "PENDING", label: "Chờ duyệt" },
   { value: "APPROVED", label: "Đã duyệt" },
   { value: "REJECTED", label: "Từ chối" },
-  { value: "CANCELLED", label: "Đã hủy" },
+  // { value: "CANCELLED", label: "Đã hủy" },
 ];
 
 export function ApprovalsTable() {
-  const [page, setPage] = React.useState(1);
-  const [pageSize, setPageSize] = React.useState(10);
-  const [search, setSearch] = React.useState("");
-  const [statusFilter, setStatusFilter] = React.useState<
-    "" | ApplicationStatus
-  >("");
-  const [submissionFrom, setSubmissionFrom] = React.useState("");
-  const [submissionTo, setSubmissionTo] = React.useState("");
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const urlState = React.useMemo(
+    () => parseApprovalsSearchParams(searchParams),
+    [searchParams],
+  );
+
+  const {
+    page,
+    limit: pageSize,
+    q: search,
+    status: statusFilter,
+    from: submissionFrom,
+    to: submissionTo,
+  } = urlState;
+
+  const replaceApprovalsUrl = React.useCallback(
+    (merged: ApprovalsUrlState) => {
+      const qs = buildApprovalsQueryString(merged);
+      router.replace(qs ? `${pathname}?${qs}` : pathname);
+    },
+    [pathname, router],
+  );
 
   const [reviewTarget, setReviewTarget] =
     React.useState<ProfileApplication | null>(null);
   const [reviewOpen, setReviewOpen] = React.useState(false);
+
+  const [detailTarget, setDetailTarget] =
+    React.useState<ProfileApplication | null>(null);
+  const [detailOpen, setDetailOpen] = React.useState(false);
 
   const listParams = React.useMemo(
     () => ({
@@ -57,11 +84,22 @@ export function ApprovalsTable() {
     isLoading,
     error,
     mutate: refreshList,
-  } = useApplicationListMock(listParams);
+  } = useApplicationList(listParams);
+
+  const { items: tableItems, meta: tableMeta } = React.useMemo(
+    () => normalizePaginatedProfileApplications(data),
+    [data],
+  );
 
   const handleOpenReview = React.useCallback((row: ProfileApplication) => {
     setReviewTarget(row);
     setReviewOpen(true);
+  }, []);
+
+  const handleRowDoubleClick = React.useCallback((row: ProfileApplication) => {
+    // if (row.applicationStatus !== "PENDING") return;
+    setDetailTarget(row);
+    setDetailOpen(true);
   }, []);
 
   const columns = React.useMemo(
@@ -70,8 +108,12 @@ export function ApprovalsTable() {
   );
 
   function handlePaginationChange(newPage: number, newPageSize: number) {
-    setPage(newPage);
-    setPageSize(newPageSize);
+    const limitChanged = newPageSize !== pageSize;
+    replaceApprovalsUrl({
+      ...urlState,
+      page: limitChanged ? 1 : newPage,
+      limit: newPageSize,
+    });
   }
 
   return (
@@ -84,8 +126,11 @@ export function ApprovalsTable() {
             className="border-input bg-background h-9 w-full rounded-md border px-2 text-sm"
             value={statusFilter}
             onChange={(e) => {
-              setStatusFilter(e.target.value as "" | ApplicationStatus);
-              setPage(1);
+              replaceApprovalsUrl({
+                ...urlState,
+                page: 1,
+                status: e.target.value as "" | ApplicationStatus,
+              });
             }}
           >
             {STATUS_FILTER_OPTIONS.map((opt) => (
@@ -102,8 +147,11 @@ export function ApprovalsTable() {
             type="date"
             value={submissionFrom}
             onChange={(e) => {
-              setSubmissionFrom(e.target.value);
-              setPage(1);
+              replaceApprovalsUrl({
+                ...urlState,
+                page: 1,
+                from: e.target.value,
+              });
             }}
           />
         </div>
@@ -114,8 +162,11 @@ export function ApprovalsTable() {
             type="date"
             value={submissionTo}
             onChange={(e) => {
-              setSubmissionTo(e.target.value);
-              setPage(1);
+              replaceApprovalsUrl({
+                ...urlState,
+                page: 1,
+                to: e.target.value,
+              });
             }}
           />
         </div>
@@ -123,24 +174,53 @@ export function ApprovalsTable() {
 
       <DataTable<ProfileApplication>
         columns={columns}
-        data={data?.items ?? []}
+        data={tableItems}
         pagination={{
-          page: data?.meta.page ?? page,
-          pageSize: data?.meta.limit ?? pageSize,
-          total: data?.meta.total ?? 0,
+          page: tableMeta.page ?? page,
+          pageSize: tableMeta.limit ?? pageSize,
+          total: tableMeta.total ?? 0,
         }}
         onPaginationChange={handlePaginationChange}
         isLoading={isLoading}
         error={error?.message ?? null}
         getRowId={(row) => String(row.applicationId)}
+        onRowDoubleClick={(row) => handleRowDoubleClick(row.original)}
         enableColumnVisibility
         searchValue={search}
-        onSearch={(value) => {
-          setSearch(value);
-          setPage(1);
+        onSearchChange={(value) => {
+          replaceApprovalsUrl({
+            ...urlState,
+            page: 1,
+            q: value,
+          });
         }}
-        searchPlaceholder="Tìm theo tên sinh viên..."
+        onSearch={(value) => {
+          replaceApprovalsUrl({
+            ...urlState,
+            page: 1,
+            q: value,
+          });
+        }}
+        searchPlaceholder="Tìm theo tên sinh viên…"
         messages={{ empty: "Không có hồ sơ nào." }}
+      />
+
+      <ApplicationPendingDetailSheet
+        key={detailTarget?.applicationId ?? "detail-closed"}
+        application={detailTarget}
+        open={detailOpen}
+        onOpenChange={(open) => {
+          setDetailOpen(open);
+          if (!open) setDetailTarget(null);
+        }}
+        onRequestReview={() => {
+          if (!detailTarget) return;
+          const app = detailTarget;
+          setDetailOpen(false);
+          setDetailTarget(null);
+          setReviewTarget(app);
+          setReviewOpen(true);
+        }}
       />
 
       <ApplicationReviewDialog

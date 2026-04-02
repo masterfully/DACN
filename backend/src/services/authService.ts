@@ -114,9 +114,10 @@ const signToken = (
 export const login = async (input: LoginInput) => {
   const normalizedUsername = input.username.trim();
 
-  const account = await prisma.account.findUnique({
+  const account = await prisma.account.findFirst({
     where: {
       Username: normalizedUsername,
+      IsDeleted: false,
     },
     select: {
       AccountID: true,
@@ -228,7 +229,12 @@ export const register = async (input: RegisterInput) => {
 
   const existingAccount = await prisma.account.findFirst({
     where: {
-      OR: [{ Username: normalizedUsername }, { Email: normalizedEmail }],
+      AND: [
+        { IsDeleted: false },
+        {
+          OR: [{ Username: normalizedUsername }, { Email: normalizedEmail }],
+        },
+      ],
     },
     select: {
       Username: true,
@@ -290,6 +296,7 @@ export const register = async (input: RegisterInput) => {
         data: {
           AccountID: account.AccountID,
           FullName: normalizedFullName,
+          Status: "ACTIVE",
         },
         select: {
           ProfileID: true,
@@ -475,9 +482,10 @@ export const refreshToken = async (input: RefreshTokenInput) => {
     });
   }
 
-  const account = await prisma.account.findUnique({
+  const account = await prisma.account.findFirst({
     where: {
       AccountID: refreshTokenRecord.AccountID,
+      IsDeleted: false,
     },
     select: {
       AccountID: true,

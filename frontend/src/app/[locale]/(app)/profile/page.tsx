@@ -37,10 +37,26 @@ function formatDate(date: string | null): string {
   return d.toLocaleDateString("vi-VN");
 }
 
+function extractApiErrorMessage(error: {
+  message: string;
+  details?: { fieldErrors?: Record<string, string[]> };
+}): string {
+  const fieldErrors = error.details?.fieldErrors;
+  if (fieldErrors) {
+    for (const messages of Object.values(fieldErrors)) {
+      if (Array.isArray(messages) && messages.length > 0) {
+        return messages[0];
+      }
+    }
+  }
+  return error.message;
+}
+
 export default function ProfilePage() {
   const [dialogOpen, setDialogOpen] = React.useState(false);
 
   const currentUser = useAuthStore((state) => state.currentUser);
+  const updateCurrentUser = useAuthStore((state) => state.updateCurrentUser);
 
   const {
     data: profile,
@@ -77,14 +93,27 @@ export default function ProfilePage() {
   const handleProfileSubmit = async (
     values: ProfileFormValues,
   ): Promise<MutationResult<Profile>> => {
-    const payload = buildUpdateProfilePayload(values);
+    const payload = buildUpdateProfilePayload(values, { profile });
     const result = await updateMyProfileMut(payload);
-    if (result.ok) {
+    if (result.ok && result.data) {
+      const updatedProfile = result.data;
+
+      updateCurrentUser((user) => ({
+        ...user,
+        profile: {
+          profileId: updatedProfile.profileId,
+          fullName: updatedProfile.fullName,
+          email: updatedProfile.email,
+          avatar: updatedProfile.avatar,
+          status: updatedProfile.status,
+        },
+      }));
+
       toast.success("Cập nhật thông tin thành công.");
       setDialogOpen(false);
     } else {
       toast.error(
-        result.error?.message ??
+        (result.error ? extractApiErrorMessage(result.error) : undefined) ??
           "Cập nhật thông tin thất bại. Vui lòng thử lại.",
       );
     }

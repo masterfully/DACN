@@ -1,6 +1,8 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import * as React from "react";
+import { AuthPasswordInput } from "@/components/auth-password-input";
 import { Button } from "@/components/ui/button";
 import { useRegister } from "@/hooks/use-auth";
 import { Link, useRouter } from "@/i18n/navigation";
@@ -16,7 +18,24 @@ type SignupField =
   | "password"
   | "confirmPassword";
 
+const SIGNUP_FIELD_ORDER: SignupField[] = [
+  "fullName",
+  "username",
+  "email",
+  "password",
+  "confirmPassword",
+];
+
+const SIGNUP_FIELD_DOM_ID: Record<SignupField, string> = {
+  fullName: "full-name",
+  username: "username",
+  email: "email",
+  password: "password",
+  confirmPassword: "confirm-password",
+};
+
 export function SignupForm() {
+  const t = useTranslations("Auth");
   const [fullName, setFullName] = React.useState("");
   const [username, setUsername] = React.useState("");
   const [email, setEmail] = React.useState("");
@@ -45,21 +64,34 @@ export function SignupForm() {
 
     if (!result.ok || !result.data) {
       const apiError = result.error as ApiError | undefined;
-      setFieldErrors(
-        mapApiFieldErrors<SignupField>(apiError, {
-          fullName: "fullName",
-          username: "username",
-          email: "email",
-          password: "password",
-          confirmPassword: ["confirmPassword", "passwordConfirmation"],
-        }),
-      );
+      const mapped = mapApiFieldErrors<SignupField>(apiError, {
+        fullName: "fullName",
+        username: "username",
+        email: "email",
+        password: "password",
+        confirmPassword: ["confirmPassword", "passwordConfirmation"],
+      });
+      setFieldErrors(mapped);
+
+      const hasFieldErrors = Object.keys(mapped).length > 0;
       setSubmitError(
-        getApiFormErrorMessage(
-          apiError,
-          "Đăng ký thất bại. Vui lòng kiểm tra lại thông tin.",
-        ),
+        hasFieldErrors
+          ? null
+          : getApiFormErrorMessage(apiError, t("signupSubmitFailed")),
       );
+
+      if (hasFieldErrors) {
+        const firstWithError = SIGNUP_FIELD_ORDER.find((key) => mapped[key]);
+        if (firstWithError) {
+          const domId = SIGNUP_FIELD_DOM_ID[firstWithError];
+          queueMicrotask(() => {
+            requestAnimationFrame(() => {
+              document.getElementById(domId)?.focus();
+            });
+          });
+        }
+      }
+
       return;
     }
 
@@ -75,10 +107,8 @@ export function SignupForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-2 text-center md:text-left">
-        <h1 className="text-2xl font-semibold tracking-tight">Đăng ký</h1>
-        <p className="text-muted-foreground text-sm">
-          Tạo tài khoản để bắt đầu sử dụng hệ thống.
-        </p>
+        <h1 className="text-2xl font-semibold tracking-tight">{t("signupTitle")}</h1>
+        <p className="text-muted-foreground text-sm">{t("signupDescription")}</p>
       </div>
 
       <div className="space-y-4">
@@ -87,10 +117,11 @@ export function SignupForm() {
             htmlFor="full-name"
             className="text-foreground text-sm leading-none font-medium"
           >
-            Họ và tên
+            {t("fullNameLabel")}
           </label>
           <input
             id="full-name"
+            name="fullName"
             type="text"
             autoComplete="name"
             required
@@ -110,12 +141,14 @@ export function SignupForm() {
             htmlFor="username"
             className="text-foreground text-sm leading-none font-medium"
           >
-            Tên đăng nhập
+            {t("usernameLabel")}
           </label>
           <input
             id="username"
+            name="username"
             type="text"
             autoComplete="username"
+            spellCheck={false}
             required
             className="border-input bg-background placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/60 flex h-9 w-full rounded-md border px-3 py-1 text-sm shadow-xs transition-colors focus-visible:ring-2 focus-visible:outline-none"
             value={username}
@@ -133,12 +166,14 @@ export function SignupForm() {
             htmlFor="email"
             className="text-foreground text-sm leading-none font-medium"
           >
-            Email
+            {t("emailLabel")}
           </label>
           <input
             id="email"
+            name="email"
             type="email"
             autoComplete="email"
+            spellCheck={false}
             required
             className="border-input bg-background placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/60 flex h-9 w-full rounded-md border px-3 py-1 text-sm shadow-xs transition-colors focus-visible:ring-2 focus-visible:outline-none"
             value={email}
@@ -156,14 +191,14 @@ export function SignupForm() {
             htmlFor="password"
             className="text-foreground text-sm leading-none font-medium"
           >
-            Mật khẩu
+            {t("passwordLabel")}
           </label>
-          <input
+          <AuthPasswordInput
             id="password"
-            type="password"
+            name="password"
             autoComplete="new-password"
+            spellCheck={false}
             required
-            className="border-input bg-background placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/60 flex h-9 w-full rounded-md border px-3 py-1 text-sm shadow-xs transition-colors focus-visible:ring-2 focus-visible:outline-none"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
           />
@@ -179,14 +214,14 @@ export function SignupForm() {
             htmlFor="confirm-password"
             className="text-foreground text-sm leading-none font-medium"
           >
-            Xác nhận mật khẩu
+            {t("confirmPasswordLabel")}
           </label>
-          <input
+          <AuthPasswordInput
             id="confirm-password"
-            type="password"
+            name="confirmPassword"
             autoComplete="new-password"
+            spellCheck={false}
             required
-            className="border-input bg-background placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/60 flex h-9 w-full rounded-md border px-3 py-1 text-sm shadow-xs transition-colors focus-visible:ring-2 focus-visible:outline-none"
             value={confirmPassword}
             onChange={(event) => setConfirmPassword(event.target.value)}
           />
@@ -204,18 +239,18 @@ export function SignupForm() {
         </p>
       ) : null}
 
+      <Button type="submit" className="w-full" disabled={isLoading}>
+        {isLoading ? t("signupSubmitting") : t("signupSubmit")}
+      </Button>
+
       <Separator />
 
       <div className="text-center text-sm">
-        Bạn đã có tài khoản?{" "}
+        {t("promptHasAccount")}{" "}
         <Link href="/login" className="underline">
-          Đăng nhập
+          {t("linkLogin")}
         </Link>
       </div>
-
-      <Button type="submit" className="w-full" disabled={isLoading}>
-        {isLoading ? "Đang tạo tài khoản..." : "Đăng ký"}
-      </Button>
     </form>
   );
 }

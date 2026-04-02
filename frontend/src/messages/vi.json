@@ -1,4 +1,101 @@
 {
+  "A11y": {
+    "skipToContent": "Bỏ qua menu, tới nội dung chính",
+    "toggleSidebar": "Thu gọn hoặc mở rộng thanh điều hướng",
+    "close": "Đóng"
+  },
+
+  "Auth": {
+    "brandName": "Academic Portal",
+    "brandInitials": "AP",
+    "loginTitle": "Đăng nhập",
+    "loginDescription": "Sử dụng tài khoản được cấp để truy cập hệ thống.",
+    "signupTitle": "Đăng ký",
+    "signupDescription": "Tạo tài khoản để bắt đầu sử dụng hệ thống.",
+    "fullNameLabel": "Họ và tên",
+    "usernameLabel": "Tên đăng nhập",
+    "passwordLabel": "Mật khẩu",
+    "emailLabel": "Email",
+    "confirmPasswordLabel": "Xác nhận mật khẩu",
+    "showPassword": "Hiển thị mật khẩu",
+    "hidePassword": "Ẩn mật khẩu",
+    "loginSubmit": "Đăng nhập",
+    "loginSubmitting": "Đang đăng nhập…",
+    "signupSubmit": "Đăng ký",
+    "signupSubmitting": "Đang tạo tài khoản…",
+    "promptNoAccount": "Bạn chưa có tài khoản?",
+    "linkSignup": "Đăng ký",
+    "promptHasAccount": "Bạn đã có tài khoản?",
+    "linkLogin": "Đăng nhập",
+    "loginErrorGeneric": "Không thể đăng nhập. Vui lòng thử lại.",
+    "loginErrorInvalid": "Không thể đăng nhập. Vui lòng kiểm tra lại thông tin.",
+    "signupSubmitFailed": "Đăng ký thất bại. Vui lòng kiểm tra lại thông tin."
+  },
+
+  "Dashboard": {
+    "title": "Trang chủ",
+    "description": "Tổng quan cổng đào tạo. Dùng các lối tắt bên dưới hoặc menu trái.",
+    "ctaApprovalsTitle": "Xét duyệt hồ sơ",
+    "ctaApprovalsDesc": "Danh sách chờ duyệt chứng chỉ.",
+    "ctaProfileTitle": "Hồ sơ cá nhân",
+    "ctaProfileDesc": "Thông tin tài khoản và avatar."
+  },
+
+  "MyClasses": {
+    "title": "Lớp học",
+    "description": "Danh sách các lớp học mà bạn đang dạy. Nhấp vào một dòng hoặc nút \"Điểm danh\" để mở bảng điểm danh.",
+    "searchPlaceholder": "Lọc theo năm học (ví dụ 2024)…",
+    "searchAriaLabel": "Lọc danh sách lớp theo năm học",
+    "emptyTable": "Không có lớp học nào khớp bộ lọc.",
+    "actionsColumn": "Thao tác",
+    "colSectionId": "Mã lớp",
+    "colSubject": "Môn học",
+    "colYear": "Năm học",
+    "colEnrollment": "Số đăng ký",
+    "colCapacity": "Sức chứa",
+    "openAttendance": "Điểm danh",
+    "openAttendanceAria": "Mở điểm danh cho môn {subject}",
+    "attendance": {
+      "sheetTitle": "Điểm danh — {subject}",
+      "sheetDescription": "Chọn buổi học, ghi nhận có mặt, muộn hoặc vắng cho từng sinh viên.",
+      "sessionsTitle": "Buổi học",
+      "createSession": "Tạo buổi",
+      "sessionsLoading": "Đang tải buổi học…",
+      "sessionsEmpty": "Chưa có buổi điểm danh. Bấm \"Tạo buổi\" để bắt đầu.",
+      "rosterTitle": "Danh sách điểm danh",
+      "summaryPresent": "Có mặt: {count}",
+      "summaryLate": "Muộn: {count}",
+      "summaryAbsent": "Vắng: {count}",
+      "initRoster": "Khởi tạo danh sách",
+      "selectSessionFirst": "Hãy chọn một buổi học để điểm danh.",
+      "rosterLoading": "Đang tải dữ liệu…",
+      "noStudents": "Lớp học chưa có sinh viên đăng ký.",
+      "colStudent": "Sinh viên",
+      "statusPresent": "Có mặt",
+      "statusLate": "Muộn",
+      "statusAbsent": "Vắng",
+      "markPresentFor": "Đánh dấu có mặt — {name}",
+      "markLateFor": "Đánh dấu muộn — {name}",
+      "markAbsentFor": "Đánh dấu vắng — {name}",
+      "toastCreateSessionFailed": "Tạo buổi điểm danh thất bại.",
+      "toastCreateSessionOk": "Đã tạo buổi điểm danh mới.",
+      "toastNoStudentsInit": "Lớp học chưa có sinh viên để điểm danh.",
+      "toastInitRosterFailed": "Khởi tạo danh sách điểm danh thất bại.",
+      "toastInitRosterOk": "Đã khởi tạo danh sách điểm danh.",
+      "toastInitRosterFirst": "Hãy khởi tạo danh sách điểm danh trước.",
+      "toastUpdateFailed": "Cập nhật điểm danh thất bại.",
+      "sessionPickerLabel": "Danh sách buổi điểm danh",
+      "sessionChipLabel": "Buổi {number}, ngày {date}",
+      "sessionNote": "Buổi {slot}",
+      "studentNameFallback": "—"
+    }
+  },
+
+  "DataTable": {
+    "moreActions": "Thêm thao tác",
+    "searchTable": "Tìm trong bảng"
+  },
+
   "HomePage": {
     "title": "Hello World!",
     "description": "Đây là một template Next.js đơn giản với các tính năng theme và locale được xây dựng sẵn."

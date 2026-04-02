@@ -23,6 +23,8 @@ export interface DataTableMessages {
   empty?: string;
   /** Placeholder for the search input */
   searchPlaceholder?: string;
+  /** Accessible name for the search input (replaces default toolbar label when set) */
+  searchAriaLabel?: string;
   /** Label on the "hide columns" trigger button */
   hideColumns?: string;
   /** Title of the column visibility dropdown */
@@ -92,6 +94,15 @@ export interface DataTableProps<TData> {
    * @deprecated Use `messages.empty` instead.
    */
   emptyMessage?: string;
+  /**
+   * Called when a data row is clicked (single click).
+   * Use `stopPropagation` on interactive cells (links, buttons) when needed.
+   */
+  onRowClick?: (row: Row<TData>) => void;
+  /**
+   * Optional extra `className` per row (e.g. `cursor-pointer` only for some rows).
+   */
+  getRowClassName?: (row: Row<TData>) => string | undefined;
   /**
    * Called when a data row is double-clicked.
    * DataTable forwards the tanstack Row object; the page is responsible

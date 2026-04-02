@@ -1,10 +1,11 @@
 "use client";
 
 import type { Row } from "@tanstack/react-table";
-import { PlusIcon, TrashIcon } from "lucide-react";
+import { PlusIcon } from "lucide-react";
 import * as React from "react";
 import type { ToolbarActionGroup } from "@/components/data-table";
 import { DataTable } from "@/components/data-table";
+import { useListTableUrl } from "@/hooks/use-list-table-url";
 import { useCreateRoom, useRoomList, useUpdateRoom } from "@/hooks/use-rooms";
 import type { MutationResult } from "@/types/api";
 import type { Room } from "@/types/room";
@@ -19,9 +20,8 @@ import {
 import { RoomRowActions } from "./room-row-actions";
 
 export function RoomsTable() {
-  // Pagination
-  const [page, setPage] = React.useState(1);
-  const [pageSize, setPageSize] = React.useState(10);
+  const { state: urlState, replaceState } = useListTableUrl();
+  const { page, limit: pageSize } = urlState;
 
   // Detail sheet
   const [detailRoom, setDetailRoom] = React.useState<Room | null>(null);
@@ -84,15 +84,19 @@ export function RoomsTable() {
   }
 
   function handlePaginationChange(newPage: number, newPageSize: number) {
-    setPage(newPage);
-    setPageSize(newPageSize);
+    const limitChanged = newPageSize !== pageSize;
+    replaceState({
+      ...urlState,
+      page: limitChanged ? 1 : newPage,
+      limit: newPageSize,
+    });
   }
 
   function handleRowDoubleClick(row: Row<Room>) {
     setDetailRoom(row.original);
   }
 
-  function buildToolbarActions(selectedRows: Row<Room>[]): ToolbarActionGroup {
+  function buildToolbarActions(_selectedRows: Row<Room>[]): ToolbarActionGroup {
     return {
       primary: {
         label: "Thêm mới",
@@ -123,8 +127,8 @@ export function RoomsTable() {
         columns={roomColumns}
         data={data?.items ?? []}
         pagination={{
-          page: data?.meta.page ?? 1,
-          pageSize: data?.meta.limit ?? 10,
+          page: data?.meta.page ?? page,
+          pageSize: data?.meta.limit ?? pageSize,
           total: data?.meta.total ?? 0,
         }}
         onPaginationChange={handlePaginationChange}

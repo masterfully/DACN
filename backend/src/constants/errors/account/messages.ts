@@ -5,6 +5,16 @@ export const ACCOUNT_ERROR_MESSAGES = {
   ACCOUNT_CREATE_INVALID_INPUT: "Dữ liệu tạo tài khoản không hợp lệ",
   ACCOUNT_CREATE_USERNAME_EXISTS: "Tên đăng nhập đã tồn tại",
   ACCOUNT_CREATE_EMAIL_EXISTS: "Email đã tồn tại",
+  ACCOUNT_ME_NOT_FOUND: "Tài khoản không tồn tại",
+  ACCOUNT_DETAIL_INVALID_PARAMS: "Tham số tài khoản không hợp lệ",
+  ACCOUNT_DETAIL_NOT_FOUND: "Tài khoản không tồn tại",
+  ACCOUNT_UPDATE_INVALID_PARAMS: "Tham số tài khoản không hợp lệ",
+  ACCOUNT_UPDATE_INVALID_INPUT: "Dữ liệu cập nhật tài khoản không hợp lệ",
+  ACCOUNT_UPDATE_NOT_FOUND: "Tài khoản không tồn tại",
+  ACCOUNT_UPDATE_USERNAME_EXISTS: "Tên đăng nhập đã tồn tại",
+  ACCOUNT_DELETE_INVALID_PARAMS: "Tham số tài khoản không hợp lệ",
+  ACCOUNT_DELETE_NOT_FOUND: "Tài khoản không tồn tại",
+  ACCOUNT_DELETE_IN_USE: "Không thể xóa tài khoản đang được sử dụng",
 } as const;
 
 export const ACCOUNT_FIELD_ERROR_MESSAGES = {
@@ -16,6 +26,7 @@ export const ACCOUNT_FIELD_ERROR_MESSAGES = {
     "Vai trò không hợp lệ. Giá trị cho phép: ADMIN, LECTURER, STUDENT, PARENT",
   QUERY_STATUS_INVALID:
     "Trạng thái không hợp lệ. Giá trị cho phép: ACTIVE, INACTIVE, BANNED",
+  ACCOUNT_ID_INVALID: "Mã tài khoản phải là số nguyên dương",
   USERNAME_REQUIRED: "Tên đăng nhập là bắt buộc",
   USERNAME_INVALID_TYPE: "Tên đăng nhập phải là chuỗi",
   USERNAME_MAX_LENGTH: "Tên đăng nhập tối đa 255 ký tự",
@@ -31,6 +42,7 @@ export const ACCOUNT_FIELD_ERROR_MESSAGES = {
   ROLE_REQUIRED: "Vai trò là bắt buộc",
   ROLE_INVALID:
     "Vai trò không hợp lệ. Giá trị cho phép: ADMIN, LECTURER, STUDENT, PARENT",
+  UPDATE_AT_LEAST_ONE_FIELD: "Cần ít nhất một trường để cập nhật",
   USERNAME_EXISTS: "Tên đăng nhập đã tồn tại",
   EMAIL_EXISTS: "Email đã tồn tại",
 } as const;

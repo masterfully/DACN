@@ -18,6 +18,7 @@ import type { PaginatedData } from "@/types/api";
 import type {
   Schedule,
   MyScheduleItem,
+  ScheduleUpdateResponse,
   GetScheduleListParams,
   GetMyScheduleParams,
   CreateScheduleInput,
@@ -55,11 +56,11 @@ export function useSchedulesBySection(sectionId?: number) {
 }
 
 export function useCreateSchedule() {
-  return useMutation<Schedule, CreateScheduleInput>("/schedules", createSchedule);
+  return useMutation<null, CreateScheduleInput>("/schedules", createSchedule);
 }
 
 export function useUpdateSchedule(scheduleId: number) {
-  return useMutation<Schedule, UpdateScheduleInput>(
+  return useMutation<ScheduleUpdateResponse, UpdateScheduleInput>(
     `/schedules/${scheduleId}`,
     (input) => updateSchedule(scheduleId, input),
   );
@@ -67,7 +68,7 @@ export function useUpdateSchedule(scheduleId: number) {
 
 export function useDeleteSchedule(scheduleId: number) {
   return useMutation<null, void>(
-    `/schedules/${scheduleId}/delete`,
+    `/schedules/${scheduleId}`,
     () => deleteSchedule(scheduleId),
   );
 }

@@ -4,10 +4,11 @@ import type { Row } from "@tanstack/react-table";
 import * as React from "react";
 import { DataTable } from "@/components/data-table";
 import { useAccountList } from "@/hooks/use-accounts";
+import { useProfileList } from "@/hooks/use-profiles";
 import { parentColumns } from "./columns";
+import type { Parent } from "./parent.types";
 import { ParentDetailSheet } from "./parent-detail-sheet";
 import { ParentRowActions } from "./parent-row-actions";
-import type { Parent } from "./parent.types";
 
 export function ParentsTable() {
   const [page, setPage] = React.useState(1);
@@ -15,29 +16,45 @@ export function ParentsTable() {
   const [detailParent, setDetailParent] = React.useState<Parent | null>(null);
 
   const {
+    data: profileData,
+    isLoading: isLoadingProfiles,
+    error: profileError,
+    mutate: refreshProfiles,
+  } = useProfileList({ page, limit: pageSize, role: "PARENT" });
+
+  const {
     data: accountData,
-    isLoading,
-    error,
-    mutate: refreshParents,
+    isLoading: isLoadingAccounts,
+    error: accountError,
+    mutate: refreshAccounts,
   } = useAccountList({ page, limit: pageSize, role: "PARENT" });
 
   const data = React.useMemo(() => {
-    if (!accountData) return undefined;
+    if (!profileData) return undefined;
+
+    const usernameByAccountId = new Map(
+      (accountData?.items ?? []).map((account) => [
+        account.accountId,
+        account.username,
+      ]),
+    );
 
     return {
-      items: accountData.items.map((account) => ({
-        accountId: account.accountId,
+      items: profileData.items.map((profile) => ({
+        accountId: profile.accountId,
         role: "PARENT" as const,
-        username: account.username,
-        fullName: account.profile?.fullName ?? account.username,
-        email: account.email ?? account.profile?.email ?? null,
-        profileId: account.profile?.profileId ?? 0,
-        avatar: account.profile?.avatar ?? null,
-        status: account.profile?.status ?? null,
+        username:
+          usernameByAccountId.get(profile.accountId) ??
+          `user-${profile.accountId}`,
+        fullName: profile.fullName,
+        email: profile.email,
+        profileId: profile.profileId,
+        avatar: profile.avatar,
+        status: profile.status,
       })) satisfies Parent[],
-      meta: accountData.meta,
+      meta: profileData.meta,
     };
-  }, [accountData]);
+  }, [accountData?.items, profileData]);
 
   function handlePaginationChange(newPage: number, newPageSize: number) {
     setPage(newPage);
@@ -52,7 +69,7 @@ export function ParentsTable() {
     if (detailParent) {
       setDetailParent(null);
     }
-    await refreshParents();
+    await Promise.all([refreshProfiles(), refreshAccounts()]);
   }
 
   return (
@@ -66,8 +83,8 @@ export function ParentsTable() {
           total: data?.meta.total ?? 0,
         }}
         onPaginationChange={handlePaginationChange}
-        isLoading={isLoading}
-        error={error?.message ?? null}
+        isLoading={isLoadingProfiles || isLoadingAccounts}
+        error={profileError?.message ?? accountError?.message ?? null}
         getRowId={(row) => String(row.accountId)}
         enableColumnVisibility
         emptyMessage="Chưa có phụ huynh nào."

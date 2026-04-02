@@ -1,10 +1,22 @@
 "use client";
 
-import { Check, Globe, LogOut, Monitor, Moon, Sun, User } from "lucide-react";
+import {
+  Check,
+  Globe,
+  LogOut,
+  Monitor,
+  Moon,
+  Pencil,
+  Sun,
+  User,
+} from "lucide-react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useState } from "react";
+import { ProfileQuickEditDialog } from "@/components/profile-quick-edit-dialog";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -41,7 +53,9 @@ export function AppTopbar({
   accountName?: string;
 }) {
   const { theme, setTheme } = useTheme();
+  const [isProfileEditOpen, setIsProfileEditOpen] = useState(false);
   const tTheme = useTranslations("ThemeToggle");
+  const tA11y = useTranslations("A11y");
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
@@ -82,15 +96,31 @@ export function AppTopbar({
 
   return (
     <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-      <SidebarTrigger className="-ml-1" />
+      <a
+        href="#main-content"
+        className="ring-offset-background bg-background text-foreground fixed left-4 top-0 z-[100] -translate-y-full rounded-md border px-4 py-2 text-sm font-medium shadow-md transition-[transform,top] focus:top-4 focus:translate-y-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      >
+        {tA11y("skipToContent")}
+      </a>
+      <SidebarTrigger className="-ml-1" srLabel={tA11y("toggleSidebar")} />
 
       <div className="flex flex-1 items-center justify-between gap-2">
         <div className="text-sm font-medium">Academic Portal</div>
 
         <div className="flex items-center gap-2">
+          <Button
+            size="icon"
+            variant="outline"
+            onClick={() => setIsProfileEditOpen(true)}
+            title="Chỉnh sửa profile"
+          >
+            <Pencil className="size-4" />
+          </Button>
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Avatar size="lg" className="cursor-pointer">
+                <AvatarImage src={currentUser?.profile?.avatar ?? undefined} />
                 <AvatarFallback>
                   <User />
                 </AvatarFallback>
@@ -202,6 +232,11 @@ export function AppTopbar({
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+
+          <ProfileQuickEditDialog
+            open={isProfileEditOpen}
+            onOpenChange={setIsProfileEditOpen}
+          />
         </div>
       </div>
     </header>

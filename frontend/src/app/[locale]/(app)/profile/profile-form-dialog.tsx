@@ -11,43 +11,49 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { MutationResult } from "@/types/api";
 import type { Profile, UpdateProfileInput } from "@/types/profile";
-import {
-  PROFILE_GENDER_OPTIONS,
-  PROFILE_STATUS_OPTIONS,
-} from "./profile.constants";
+import { PROFILE_GENDER_OPTIONS } from "./profile.constants";
 
 export interface ProfileFormValues {
   fullName: string;
+  email: string;
   phoneNumber: string;
   dateOfBirth: string;
   gender: string;
   avatar: string;
   citizenId: string;
   hometown: string;
-  status: string;
 }
 
 export const PROFILE_EMPTY_FORM: ProfileFormValues = {
   fullName: "",
+  email: "",
   phoneNumber: "",
   dateOfBirth: "",
   gender: "MALE",
   avatar: "",
   citizenId: "",
   hometown: "",
-  status: "ACTIVE",
 };
+
+function toDateInputValue(value: string | null | undefined): string {
+  if (!value) return "";
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return "";
+  return parsed.toISOString().slice(0, 10);
+}
 
 export function profileToFormValues(profile: Profile): ProfileFormValues {
   return {
     fullName: profile.fullName ?? "",
+    email: profile.email ?? "",
     phoneNumber: profile.phoneNumber ?? "",
-    dateOfBirth: profile.dateOfBirth ?? "",
+    dateOfBirth: toDateInputValue(profile.dateOfBirth),
     gender: profile.gender ?? "MALE",
     avatar: profile.avatar ?? "",
     citizenId: profile.citizenId ?? "",
     hometown: profile.hometown ?? "",
-    status: profile.status ?? "ACTIVE",
   };
 }
 
@@ -73,22 +79,85 @@ export function validateProfileForm(
     };
   }
 
+  if (values.email.trim() && !/^\S+@\S+\.\S+$/.test(values.email.trim())) {
+    return {
+      field: "email",
+      message: "Email không đúng định dạng.",
+    };
+  }
+
   return null;
 }
 
 export function buildUpdateProfilePayload(
   values: ProfileFormValues,
+  options?: { profile?: Profile | null },
 ): UpdateProfileInput {
-  return {
+  const currentProfile = options?.profile ?? null;
+
+  const nextValues = {
     fullName: values.fullName.trim(),
+    email: values.email.trim().toLowerCase() || undefined,
     phoneNumber: values.phoneNumber.trim() || undefined,
-    dateOfBirth: values.dateOfBirth || undefined,
+    dateOfBirth: toDateInputValue(values.dateOfBirth) || undefined,
     gender: values.gender || undefined,
     avatar: values.avatar.trim() || undefined,
     citizenId: values.citizenId.trim() || undefined,
     hometown: values.hometown.trim() || undefined,
-    status: values.status || undefined,
   };
+
+  if (!currentProfile) {
+    return nextValues;
+  }
+
+  const currentValues = {
+    fullName: (currentProfile.fullName ?? "").trim(),
+    email: (currentProfile.email ?? "").trim().toLowerCase() || undefined,
+    phoneNumber: (currentProfile.phoneNumber ?? "").trim() || undefined,
+    dateOfBirth: toDateInputValue(currentProfile.dateOfBirth) || undefined,
+    gender: currentProfile.gender ?? undefined,
+    avatar: (currentProfile.avatar ?? "").trim() || undefined,
+    citizenId: (currentProfile.citizenId ?? "").trim() || undefined,
+    hometown: (currentProfile.hometown ?? "").trim() || undefined,
+  };
+
+  const payload: UpdateProfileInput = {};
+
+  if (nextValues.fullName !== currentValues.fullName) {
+    payload.fullName = nextValues.fullName;
+  }
+  if (nextValues.email !== currentValues.email && nextValues.email) {
+    payload.email = nextValues.email;
+  }
+  if (
+    nextValues.phoneNumber !== currentValues.phoneNumber &&
+    nextValues.phoneNumber
+  ) {
+    payload.phoneNumber = nextValues.phoneNumber;
+  }
+  if (
+    nextValues.dateOfBirth !== currentValues.dateOfBirth &&
+    nextValues.dateOfBirth
+  ) {
+    payload.dateOfBirth = nextValues.dateOfBirth;
+  }
+  if (nextValues.gender !== currentValues.gender && nextValues.gender) {
+    payload.gender = nextValues.gender;
+  }
+  if (nextValues.avatar !== currentValues.avatar && nextValues.avatar) {
+    payload.avatar = nextValues.avatar;
+  }
+  if (
+    nextValues.citizenId !== currentValues.citizenId &&
+    nextValues.citizenId
+  ) {
+    payload.citizenId = nextValues.citizenId;
+  }
+  if (nextValues.hometown !== currentValues.hometown && nextValues.hometown) {
+    payload.hometown = nextValues.hometown;
+  }
+
+  return payload;
 }
 
 interface ProfileFormDialogProps {
@@ -151,7 +220,7 @@ export function ProfileFormDialog({
           onSubmit={handleSubmit}
           className="grid max-h-[60vh] gap-4 overflow-y-auto pr-4"
         >
-          {/* Row 1: Họ và tên, Giới tính */}
+          {/* Row 1: Họ và tên, Email */}
           <div className="grid grid-cols-2 gap-4">
             <div className="grid gap-1.5">
               <Label htmlFor="fullName">Họ và tên *</Label>
@@ -164,6 +233,21 @@ export function ProfileFormDialog({
                 required
               />
             </div>
+            <div className="grid gap-1.5">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="VD: user@example.com"
+                value={values.email}
+                onChange={(e) => handleFieldChange("email", e.target.value)}
+                disabled={isSubmitting}
+              />
+            </div>
+          </div>
+
+          {/* Row 2: Giới tính */}
+          <div className="grid grid-cols-2 gap-4">
             <div className="grid gap-1.5">
               <Label htmlFor="gender">Giới tính</Label>
               <select
@@ -182,39 +266,19 @@ export function ProfileFormDialog({
             </div>
           </div>
 
-          {/* Row 2: Ngày sinh, Trạng thái */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="grid gap-1.5">
-              <Label htmlFor="dateOfBirth">Ngày sinh</Label>
-              <Input
-                id="dateOfBirth"
-                type="date"
-                value={values.dateOfBirth}
-                onChange={(e) =>
-                  handleFieldChange("dateOfBirth", e.target.value)
-                }
-                disabled={isSubmitting}
-              />
-            </div>
-            <div className="grid gap-1.5">
-              <Label htmlFor="status">Trạng thái</Label>
-              <select
-                id="status"
-                value={values.status}
-                onChange={(e) => handleFieldChange("status", e.target.value)}
-                disabled={isSubmitting}
-                className="border-input focus-visible:border-ring focus-visible:ring-ring/50 h-9 rounded-md border bg-transparent px-3 py-1 text-sm shadow-xs outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {PROFILE_STATUS_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-            </div>
+          {/* Row 3: Ngày sinh */}
+          <div className="grid gap-1.5">
+            <Label htmlFor="dateOfBirth">Ngày sinh</Label>
+            <Input
+              id="dateOfBirth"
+              type="date"
+              value={values.dateOfBirth}
+              onChange={(e) => handleFieldChange("dateOfBirth", e.target.value)}
+              disabled={isSubmitting}
+            />
           </div>
 
-          {/* Row 3: Số điện thoại, CMND */}
+          {/* Row 4: Số điện thoại, CMND */}
           <div className="grid grid-cols-2 gap-4">
             <div className="grid gap-1.5">
               <Label htmlFor="phoneNumber">Số điện thoại</Label>
@@ -241,7 +305,7 @@ export function ProfileFormDialog({
             </div>
           </div>
 
-          {/* Row 4: Quê quán */}
+          {/* Row 5: Quê quán */}
           <div className="grid gap-1.5">
             <Label htmlFor="hometown">Quê quán</Label>
             <Input
@@ -253,7 +317,7 @@ export function ProfileFormDialog({
             />
           </div>
 
-          {/* Row 5: Ảnh đại diện */}
+          {/* Row 6: Ảnh đại diện */}
           <div className="grid gap-1.5">
             <Label htmlFor="avatar">URL ảnh đại diện</Label>
             <Input

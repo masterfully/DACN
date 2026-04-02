@@ -10,8 +10,15 @@ export interface UpdateMyProfileInput {
 
 export const updateMyProfile = async (accountId: number, data: UpdateMyProfileInput) => {
   // Find profile
-  const profile = await prisma.userProfile.findUnique({
-    where: { AccountID: accountId },
+  const profile = await prisma.userProfile.findFirst({
+    where: {
+      AccountID: accountId,
+      account: {
+        is: {
+          IsDeleted: false,
+        },
+      },
+    },
     select: { ProfileID: true },
   });
   if (!profile) {
@@ -33,9 +40,8 @@ export const updateMyProfile = async (accountId: number, data: UpdateMyProfileIn
   if (data.avatar !== undefined) updateData.Avatar = data.avatar;
   if (data.citizenId !== undefined) updateData.CitizenID = data.citizenId;
   if (data.hometown !== undefined) updateData.Hometown = data.hometown;
-
   const updated = await prisma.userProfile.update({
-    where: { AccountID: accountId },
+    where: { ProfileID: profile.ProfileID },
     data: updateData,
     select: profileSelect,
   });
@@ -97,18 +103,29 @@ const mapProfile = (profile: Prisma.UserProfileGetPayload<{ select: typeof profi
   return {
     profileId: profile.ProfileID,
     accountId: profile.AccountID,
+    role: profile.account.Role,
     fullName: profile.FullName,
+    email: profile.account.Email,
     phoneNumber: profile.PhoneNumber,
     dateOfBirth: profile.DateOfBirth,
     gender: profile.Gender,
     avatar: profile.Avatar,
     citizenId: profile.CitizenID,
     hometown: profile.Hometown,
+    status: profile.Status ?? "ACTIVE",
   };
 };
 
 const buildProfileWhere = (input: ListProfilesInput): Prisma.UserProfileWhereInput => {
-  const andClauses: Prisma.UserProfileWhereInput[] = [];
+  const andClauses: Prisma.UserProfileWhereInput[] = [
+    {
+      account: {
+        is: {
+          IsDeleted: false,
+        },
+      },
+    },
+  ];
 
   const normalizedSearch = input.search?.trim();
   if (normalizedSearch) {
@@ -189,9 +206,10 @@ export const listProfiles = async (input: ListProfilesInput) => {
 };
 
 export const createProfile = async (input: CreateProfileInput) => {
-  const account = await prisma.account.findUnique({
+  const account = await prisma.account.findFirst({
     where: {
       AccountID: input.accountId,
+      IsDeleted: false,
     },
     select: {
       AccountID: true,
@@ -239,7 +257,7 @@ export const createProfile = async (input: CreateProfileInput) => {
       Avatar: input.avatar,
       CitizenID: input.citizenId,
       Hometown: input.hometown,
-      Status: input.status,
+      Status: input.status ?? "ACTIVE",
     },
     select: profileSelect,
   });
@@ -248,9 +266,14 @@ export const createProfile = async (input: CreateProfileInput) => {
 };
 
 export const getMyProfile = async (accountId: number) => {
-  const profile = await prisma.userProfile.findUnique({
+  const profile = await prisma.userProfile.findFirst({
     where: {
       AccountID: accountId,
+      account: {
+        is: {
+          IsDeleted: false,
+        },
+      },
     },
     select: profileSelect,
   });

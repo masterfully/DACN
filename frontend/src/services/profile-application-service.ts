@@ -1,18 +1,27 @@
-import apiClient, { paginatedFetcher } from "./api-client";
-import { buildQuery } from "./utils";
+import {
+  profileApplicationDetailFromApi,
+  profileApplicationFromApi,
+} from "@/lib/profile-application-dto";
 import type { PaginatedData } from "@/types/api";
 import type {
-  ProfileApplication,
   GetApplicationListParams,
   GetMyApplicationsParams,
+  ProfileApplication,
+  ProfileApplicationDetailModel,
   ReviewApplicationInput,
 } from "@/types/profile-application";
+import apiClient, { paginatedFetcher } from "./api-client";
+import { buildQuery } from "./utils";
 
-export function getApplicationListUrl(params: GetApplicationListParams = {}): string {
+export function getApplicationListUrl(
+  params: GetApplicationListParams = {},
+): string {
   return `/profile-applications${buildQuery(params)}`;
 }
 
-export function getMyApplicationsUrl(params: GetMyApplicationsParams = {}): string {
+export function getMyApplicationsUrl(
+  params: GetMyApplicationsParams = {},
+): string {
   return `/profile-applications/my-applications${buildQuery(params)}`;
 }
 
@@ -24,11 +33,11 @@ export async function getApplicationList(
 
 export async function getApplicationDetail(
   applicationId: number,
-): Promise<ProfileApplication> {
-  const res = await apiClient.get<ProfileApplication>(
+): Promise<ProfileApplicationDetailModel> {
+  const res = await apiClient.get<unknown>(
     `/profile-applications/${applicationId}`,
   );
-  return res.data as ProfileApplication;
+  return profileApplicationDetailFromApi(res.data);
 }
 
 export async function getMyApplications(
@@ -38,25 +47,27 @@ export async function getMyApplications(
 }
 
 export async function submitApplication(): Promise<ProfileApplication> {
-  const res = await apiClient.post<ProfileApplication>("/profile-applications", {});
-  return res.data as ProfileApplication;
+  const res = await apiClient.post<unknown>("/profile-applications", {});
+  return profileApplicationFromApi(res.data);
 }
 
-export async function updateApplication(applicationId: number): Promise<ProfileApplication> {
-  const res = await apiClient.put<ProfileApplication>(
+export async function updateApplication(
+  applicationId: number,
+): Promise<ProfileApplication> {
+  const res = await apiClient.put<unknown>(
     `/profile-applications/${applicationId}`,
     {},
   );
-  return res.data as ProfileApplication;
+  return profileApplicationFromApi(res.data);
 }
 
 export async function reviewApplication(
   applicationId: number,
   input: ReviewApplicationInput,
 ): Promise<ProfileApplication> {
-  const res = await apiClient.patch<ProfileApplication>(
+  const res = await apiClient.patch<unknown>(
     `/profile-applications/${applicationId}/review`,
     input,
   );
-  return res.data as ProfileApplication;
+  return profileApplicationFromApi(res.data);
 }

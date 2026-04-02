@@ -11,11 +11,11 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import type { Student } from "./student.types";
 import {
   STUDENT_GENDER_OPTIONS,
   STUDENT_STATUS_OPTIONS,
 } from "./student.constants";
+import type { Student } from "./student.types";
 
 export interface StudentFormValues {
   username: string;

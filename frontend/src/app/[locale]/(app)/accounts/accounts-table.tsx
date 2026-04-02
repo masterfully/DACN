@@ -4,29 +4,30 @@ import type { Row } from "@tanstack/react-table";
 import { PlusIcon } from "lucide-react";
 import * as React from "react";
 import type { ToolbarActionGroup } from "@/components/data-table";
-import { toast } from "@/components/ui/sonner";
 import { DataTable } from "@/components/data-table";
+import { toast } from "@/components/ui/sonner";
 import {
   useAccountList,
   useCreateAccount,
   useUpdateAccount,
 } from "@/hooks/use-accounts";
-import type { MutationResult } from "@/types/api";
+import { useListTableUrl } from "@/hooks/use-list-table-url";
+import { useCreateProfile } from "@/hooks/use-profiles";
 import type { Account } from "@/types/account";
+import type { MutationResult } from "@/types/api";
+import { AccountDetailSheet } from "./account-detail-sheet";
 import {
   AccountFormDialog,
+  type AccountFormValues,
   buildCreateAccountPayload,
   buildUpdateAccountPayload,
-  type AccountFormValues,
 } from "./account-form-dialog";
-import { AccountDetailSheet } from "./account-detail-sheet";
 import { AccountRowActions } from "./account-row-actions";
 import { accountColumns } from "./columns";
 
 export function AccountsTable() {
-  // Pagination
-  const [page, setPage] = React.useState(1);
-  const [pageSize, setPageSize] = React.useState(10);
+  const { state: urlState, replaceState } = useListTableUrl();
+  const { page, limit: pageSize } = urlState;
 
   // Detail sheet
   const [detailAccount, setDetailAccount] = React.useState<Account | null>(
@@ -50,6 +51,7 @@ export function AccountsTable() {
 
   const { mutateWithResult: createAccount, isLoading: isCreating } =
     useCreateAccount();
+  const { mutateWithResult: createProfile } = useCreateProfile();
   const { mutateWithResult: updateAccount, isLoading: isUpdating } =
     useUpdateAccount(editingAccount?.accountId ?? 0);
   const isSubmitting = isCreating || isUpdating;
@@ -90,7 +92,25 @@ export function AccountsTable() {
 
     const result = await createAccount(buildCreateAccountPayload(values));
     if (result.ok) {
-      toast.success("Tạo tài khoản thành công.");
+      const createdAccount = result.data;
+      if (createdAccount) {
+        const createProfileResult = await createProfile({
+          accountId: createdAccount.accountId,
+          fullName: createdAccount.username,
+        });
+
+        if (!createProfileResult.ok) {
+          toast.error(
+            createProfileResult.error?.message ??
+              "Tạo profile tự động thất bại. Vui lòng tạo profile thủ công.",
+          );
+        } else {
+          toast.success("Tạo tài khoản và profile thành công.");
+        }
+      } else {
+        toast.success("Tạo tài khoản thành công.");
+      }
+
       await refreshAccounts();
       setDialogOpen(false);
       setEditingAccount(null);
@@ -103,8 +123,12 @@ export function AccountsTable() {
   }
 
   function handlePaginationChange(newPage: number, newPageSize: number) {
-    setPage(newPage);
-    setPageSize(newPageSize);
+    const limitChanged = newPageSize !== pageSize;
+    replaceState({
+      ...urlState,
+      page: limitChanged ? 1 : newPage,
+      limit: newPageSize,
+    });
   }
 
   function handleRowDoubleClick(row: Row<Account>) {
@@ -139,8 +163,8 @@ export function AccountsTable() {
         columns={accountColumns}
         data={data?.items ?? []}
         pagination={{
-          page: data?.meta.page ?? 1,
-          pageSize: data?.meta.limit ?? 10,
+          page: data?.meta.page ?? page,
+          pageSize: data?.meta.limit ?? pageSize,
           total: data?.meta.total ?? 0,
         }}
         onPaginationChange={handlePaginationChange}

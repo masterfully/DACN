@@ -1,4 +1,101 @@
 {
+  "A11y": {
+    "skipToContent": "Skip to main content",
+    "toggleSidebar": "Collapse or expand sidebar",
+    "close": "Close"
+  },
+
+  "Auth": {
+    "brandName": "Academic Portal",
+    "brandInitials": "AP",
+    "loginTitle": "Sign in",
+    "loginDescription": "Use your assigned account to access the system.",
+    "signupTitle": "Sign up",
+    "signupDescription": "Create an account to get started.",
+    "fullNameLabel": "Full name",
+    "usernameLabel": "Username",
+    "passwordLabel": "Password",
+    "emailLabel": "Email",
+    "confirmPasswordLabel": "Confirm password",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "loginSubmit": "Sign in",
+    "loginSubmitting": "Signing in…",
+    "signupSubmit": "Sign up",
+    "signupSubmitting": "Creating account…",
+    "promptNoAccount": "Don't have an account?",
+    "linkSignup": "Sign up",
+    "promptHasAccount": "Already have an account?",
+    "linkLogin": "Sign in",
+    "loginErrorGeneric": "Could not sign in. Please try again.",
+    "loginErrorInvalid": "Could not sign in. Please check your details.",
+    "signupSubmitFailed": "Sign up failed. Please check your information."
+  },
+
+  "Dashboard": {
+    "title": "Home",
+    "description": "Training portal overview. Use the shortcuts below or the left menu.",
+    "ctaApprovalsTitle": "Application review",
+    "ctaApprovalsDesc": "Pending certificate applications.",
+    "ctaProfileTitle": "Your profile",
+    "ctaProfileDesc": "Account details and avatar."
+  },
+
+  "MyClasses": {
+    "title": "My classes",
+    "description": "Classes you teach. Click a row or \"Take attendance\" to open the attendance sheet.",
+    "searchPlaceholder": "Filter by academic year (e.g. 2024)…",
+    "searchAriaLabel": "Filter class list by academic year",
+    "emptyTable": "No classes match the current filter.",
+    "actionsColumn": "Actions",
+    "colSectionId": "Section ID",
+    "colSubject": "Subject",
+    "colYear": "Year",
+    "colEnrollment": "Enrolled",
+    "colCapacity": "Capacity",
+    "openAttendance": "Take attendance",
+    "openAttendanceAria": "Open attendance for {subject}",
+    "attendance": {
+      "sheetTitle": "Attendance — {subject}",
+      "sheetDescription": "Pick a session, then mark each student present, late, or absent.",
+      "sessionsTitle": "Sessions",
+      "createSession": "Add session",
+      "sessionsLoading": "Loading sessions…",
+      "sessionsEmpty": "No attendance sessions yet. Click \"Add session\" to start.",
+      "rosterTitle": "Attendance roster",
+      "summaryPresent": "Present: {count}",
+      "summaryLate": "Late: {count}",
+      "summaryAbsent": "Absent: {count}",
+      "initRoster": "Initialize roster",
+      "selectSessionFirst": "Select a session to take attendance.",
+      "rosterLoading": "Loading data…",
+      "noStudents": "No students enrolled in this class.",
+      "colStudent": "Student",
+      "statusPresent": "Present",
+      "statusLate": "Late",
+      "statusAbsent": "Absent",
+      "markPresentFor": "Mark present — {name}",
+      "markLateFor": "Mark late — {name}",
+      "markAbsentFor": "Mark absent — {name}",
+      "toastCreateSessionFailed": "Could not create attendance session.",
+      "toastCreateSessionOk": "Attendance session created.",
+      "toastNoStudentsInit": "No students to take attendance for.",
+      "toastInitRosterFailed": "Could not initialize attendance roster.",
+      "toastInitRosterOk": "Attendance roster initialized.",
+      "toastInitRosterFirst": "Initialize the attendance roster first.",
+      "toastUpdateFailed": "Could not update attendance.",
+      "sessionPickerLabel": "Attendance sessions",
+      "sessionChipLabel": "Session {number}, {date}",
+      "sessionNote": "Session {slot}",
+      "studentNameFallback": "—"
+    }
+  },
+
+  "DataTable": {
+    "moreActions": "More actions",
+    "searchTable": "Search table"
+  },
+
   "HomePage": {
     "title": "Hello World!",
     "description": "This is a simple Next.js template with built-in theme and locale features."

@@ -10,11 +10,11 @@ import {
 import { ColHeader } from "@/components/data-table";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import type { Student } from "./student.types";
 import {
   STUDENT_STATUS_LABELS,
   STUDENT_STATUS_STYLES,
 } from "./student.constants";
+import type { Student } from "./student.types";
 
 export function StudentStatusBadge({ status }: { status: string | null }) {
   if (!status) return <span className="text-muted-foreground">—</span>;
