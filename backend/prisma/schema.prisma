@@ -23,9 +23,11 @@ enum RoleEnum {
 model Account {
   AccountID Int        @id @default(autoincrement())
   Role      RoleEnum
-  Username  String     @unique @db.VarChar(255)
-  Email     String     @unique @db.VarChar(255)
+  Username  String     @db.VarChar(255)
+  Email     String     @db.VarChar(255)
   Password  String     @db.VarChar(255)
+  IsDeleted Boolean    @default(false)
+  DeletedAt DateTime?
   profile   UserProfile?
   refreshTokens RefreshToken[]
 }

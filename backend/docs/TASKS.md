@@ -78,13 +78,12 @@ Base path: `/api/auth`
 
 Base path: `/api/accounts`
 
-- [ ] `GET /api/accounts` — paginated list, filter by `role`. **Role: ADMIN**
 - [x] `GET /api/accounts` — paginated list, filter by `role`. **Role: ADMIN**
 - [x] `POST /api/accounts` — create account (any role). **Role: ADMIN**
-- [ ] `GET /api/accounts/me` — current user's account. **Any auth** _(register before `/:id`)_
-- [ ] `GET /api/accounts/:accountId` — account detail. **Role: ADMIN**
-- [ ] `PUT /api/accounts/:accountId` — update `username`, `role`. **Role: ADMIN**
-- [ ] `DELETE /api/accounts/:accountId` — delete account. **Role: ADMIN**
+- [x] `GET /api/accounts/me` — current user's account. **Any auth** _(register before `/:id`)_
+- [x] `GET /api/accounts/:accountId` — account detail. **Role: ADMIN**
+- [x] `PUT /api/accounts/:accountId` — update `username`, `role`. **Role: ADMIN**
+- [x] `DELETE /api/accounts/:accountId` — delete account. **Role: ADMIN**
 
 ---
 
