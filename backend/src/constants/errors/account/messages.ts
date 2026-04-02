@@ -12,6 +12,7 @@ export const ACCOUNT_ERROR_MESSAGES = {
   ACCOUNT_UPDATE_INVALID_INPUT: "Dữ liệu cập nhật tài khoản không hợp lệ",
   ACCOUNT_UPDATE_NOT_FOUND: "Tài khoản không tồn tại",
   ACCOUNT_UPDATE_USERNAME_EXISTS: "Tên đăng nhập đã tồn tại",
+  ACCOUNT_UPDATE_EMAIL_EXISTS: "Email đã tồn tại",
   ACCOUNT_DELETE_INVALID_PARAMS: "Tham số tài khoản không hợp lệ",
   ACCOUNT_DELETE_NOT_FOUND: "Tài khoản không tồn tại",
   ACCOUNT_DELETE_IN_USE: "Không thể xóa tài khoản đang được sử dụng",

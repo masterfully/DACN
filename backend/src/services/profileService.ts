@@ -1,59 +1,8 @@
-export interface UpdateMyProfileInput {
-  fullName?: string;
-  phoneNumber?: string;
-  dateOfBirth?: string;
-  gender?: "MALE" | "FEMALE";
-  avatar?: string;
-  citizenId?: string;
-  hometown?: string;
-}
-
-export const updateMyProfile = async (accountId: number, data: UpdateMyProfileInput) => {
-  // Find profile
-  const profile = await prisma.userProfile.findFirst({
-    where: {
-      AccountID: accountId,
-      account: {
-        is: {
-          IsDeleted: false,
-        },
-      },
-    },
-    select: { ProfileID: true },
-  });
-  if (!profile) {
-    throw new AppError(PROFILE_ERROR_MESSAGES.PROFILE_ME_NOT_FOUND, {
-      statusCode: 404,
-      code: PROFILE_ERROR_CODES.PROFILE_ME_NOT_FOUND,
-      details: {
-        formErrors: [PROFILE_ERROR_MESSAGES.PROFILE_ME_NOT_FOUND],
-        fieldErrors: {},
-      },
-    });
-  }
-  // Prepare update data
-  const updateData: Prisma.UserProfileUpdateInput = {};
-  if (data.fullName !== undefined) updateData.FullName = data.fullName.trim();
-  if (data.phoneNumber !== undefined) updateData.PhoneNumber = data.phoneNumber;
-  if (data.dateOfBirth !== undefined) updateData.DateOfBirth = data.dateOfBirth ? new Date(`${data.dateOfBirth}T00:00:00.000Z`) : undefined;
-  if (data.gender !== undefined) updateData.Gender = data.gender;
-  if (data.avatar !== undefined) updateData.Avatar = data.avatar;
-  if (data.citizenId !== undefined) updateData.CitizenID = data.citizenId;
-  if (data.hometown !== undefined) updateData.Hometown = data.hometown;
-  const updated = await prisma.userProfile.update({
-    where: { ProfileID: profile.ProfileID },
-    data: updateData,
-    select: profileSelect,
-  });
-  return mapProfile(updated);
-};
 import { Prisma, RoleEnum } from "@prisma/client";
 import { prisma } from "../prisma/prismaClient";
 import { AppError } from "../middleware/errorHandler";
 import { PROFILE_ERROR_CODES } from "../constants/errors/profile/codes";
-import {
-  PROFILE_ERROR_MESSAGES,
-} from "../constants/errors/profile/messages";
+import { PROFILE_ERROR_MESSAGES } from "../constants/errors/profile/messages";
 
 export interface ListProfilesInput {
   page: number;
@@ -74,6 +23,25 @@ export interface CreateProfileInput {
   citizenId?: string;
   hometown?: string;
   status?: "ACTIVE" | "INACTIVE" | "BANNED";
+}
+
+export interface UpdateMyProfileInput {
+  fullName?: string;
+  phoneNumber?: string;
+  dateOfBirth?: string;
+  gender?: "MALE" | "FEMALE";
+  avatar?: string;
+  citizenId?: string;
+  hometown?: string;
+}
+
+export interface UpdateProfileByIdInput extends UpdateMyProfileInput {
+  status?: "ACTIVE" | "INACTIVE" | "BANNED";
+}
+
+interface ProfileActor {
+  accountId: number;
+  role: RoleEnum;
 }
 
 const toDateOnly = (input: string): Date => {
@@ -99,7 +67,9 @@ const profileSelect = {
   },
 } satisfies Prisma.UserProfileSelect;
 
-const mapProfile = (profile: Prisma.UserProfileGetPayload<{ select: typeof profileSelect }>) => {
+type ProfileWithAccount = Prisma.UserProfileGetPayload<{ select: typeof profileSelect }>;
+
+const mapProfile = (profile: ProfileWithAccount) => {
   return {
     profileId: profile.ProfileID,
     accountId: profile.AccountID,
@@ -180,6 +150,62 @@ const buildProfileWhere = (input: ListProfilesInput): Prisma.UserProfileWhereInp
   return {
     AND: andClauses,
   };
+};
+
+const buildProfileUpdateData = (
+  data: UpdateMyProfileInput,
+): Prisma.UserProfileUpdateInput => {
+  const updateData: Prisma.UserProfileUpdateInput = {};
+
+  if (data.fullName !== undefined) {
+    updateData.FullName = data.fullName.trim();
+  }
+
+  if (data.phoneNumber !== undefined) {
+    updateData.PhoneNumber = data.phoneNumber;
+  }
+
+  if (data.dateOfBirth !== undefined) {
+    updateData.DateOfBirth = data.dateOfBirth
+      ? toDateOnly(data.dateOfBirth)
+      : undefined;
+  }
+
+  if (data.gender !== undefined) {
+    updateData.Gender = data.gender;
+  }
+
+  if (data.avatar !== undefined) {
+    updateData.Avatar = data.avatar;
+  }
+
+  if (data.citizenId !== undefined) {
+    updateData.CitizenID = data.citizenId;
+  }
+
+  if (data.hometown !== undefined) {
+    updateData.Hometown = data.hometown;
+  }
+
+  return updateData;
+};
+
+const findActiveProfileById = async (profileId: number) => {
+  return prisma.userProfile.findFirst({
+    where: {
+      ProfileID: profileId,
+      account: {
+        is: {
+          IsDeleted: false,
+        },
+      },
+    },
+    select: profileSelect,
+  });
+};
+
+const isAllowedProfileActor = (actor: ProfileActor, targetAccountId: number): boolean => {
+  return actor.role === RoleEnum.ADMIN || actor.accountId === targetAccountId;
 };
 
 export const listProfiles = async (input: ListProfilesInput) => {
@@ -290,6 +316,129 @@ export const getMyProfile = async (accountId: number) => {
   }
 
   return mapProfile(profile);
+};
+
+export const updateMyProfile = async (accountId: number, data: UpdateMyProfileInput) => {
+  const profile = await prisma.userProfile.findFirst({
+    where: {
+      AccountID: accountId,
+      account: {
+        is: {
+          IsDeleted: false,
+        },
+      },
+    },
+    select: { ProfileID: true },
+  });
+
+  if (!profile) {
+    throw new AppError(PROFILE_ERROR_MESSAGES.PROFILE_ME_NOT_FOUND, {
+      statusCode: 404,
+      code: PROFILE_ERROR_CODES.PROFILE_ME_NOT_FOUND,
+      details: {
+        formErrors: [PROFILE_ERROR_MESSAGES.PROFILE_ME_NOT_FOUND],
+        fieldErrors: {},
+      },
+    });
+  }
+
+  const updateData = buildProfileUpdateData(data);
+  const updated = await prisma.userProfile.update({
+    where: { ProfileID: profile.ProfileID },
+    data: updateData,
+    select: profileSelect,
+  });
+
+  return mapProfile(updated);
+};
+
+export const getProfileDetailById = async (
+  profileId: number,
+  actor: ProfileActor,
+) => {
+  const profile = await findActiveProfileById(profileId);
+
+  if (!profile) {
+    throw new AppError(PROFILE_ERROR_MESSAGES.PROFILE_DETAIL_NOT_FOUND, {
+      statusCode: 404,
+      code: PROFILE_ERROR_CODES.PROFILE_DETAIL_NOT_FOUND,
+      details: {
+        formErrors: [PROFILE_ERROR_MESSAGES.PROFILE_DETAIL_NOT_FOUND],
+        fieldErrors: {},
+      },
+    });
+  }
+
+  if (!isAllowedProfileActor(actor, profile.AccountID)) {
+    throw new AppError(PROFILE_ERROR_MESSAGES.PROFILE_DETAIL_FORBIDDEN, {
+      statusCode: 403,
+      code: PROFILE_ERROR_CODES.PROFILE_DETAIL_FORBIDDEN,
+      details: {
+        formErrors: [PROFILE_ERROR_MESSAGES.PROFILE_DETAIL_FORBIDDEN],
+        fieldErrors: {},
+      },
+    });
+  }
+
+  return mapProfile(profile);
+};
+
+export const updateProfileById = async (
+  profileId: number,
+  actor: ProfileActor,
+  input: UpdateProfileByIdInput,
+) => {
+  const profile = await findActiveProfileById(profileId);
+
+  if (!profile) {
+    throw new AppError(PROFILE_ERROR_MESSAGES.PROFILE_UPDATE_BY_ID_NOT_FOUND, {
+      statusCode: 404,
+      code: PROFILE_ERROR_CODES.PROFILE_UPDATE_BY_ID_NOT_FOUND,
+      details: {
+        formErrors: [PROFILE_ERROR_MESSAGES.PROFILE_UPDATE_BY_ID_NOT_FOUND],
+        fieldErrors: {},
+      },
+    });
+  }
+
+  if (!isAllowedProfileActor(actor, profile.AccountID)) {
+    throw new AppError(PROFILE_ERROR_MESSAGES.PROFILE_UPDATE_BY_ID_FORBIDDEN, {
+      statusCode: 403,
+      code: PROFILE_ERROR_CODES.PROFILE_UPDATE_BY_ID_FORBIDDEN,
+      details: {
+        formErrors: [PROFILE_ERROR_MESSAGES.PROFILE_UPDATE_BY_ID_FORBIDDEN],
+        fieldErrors: {},
+      },
+    });
+  }
+
+  if (input.status !== undefined && actor.role !== RoleEnum.ADMIN) {
+    throw new AppError(PROFILE_ERROR_MESSAGES.PROFILE_UPDATE_BY_ID_FORBIDDEN_FIELD, {
+      statusCode: 400,
+      code: PROFILE_ERROR_CODES.PROFILE_UPDATE_BY_ID_FORBIDDEN_FIELD,
+      details: {
+        formErrors: [],
+        fieldErrors: {
+          status: [PROFILE_ERROR_MESSAGES.PROFILE_UPDATE_BY_ID_FORBIDDEN_FIELD],
+        },
+      },
+    });
+  }
+
+  const updateData = buildProfileUpdateData(input);
+  if (input.status !== undefined) {
+    updateData.Status = input.status;
+  }
+
+  const updated = await prisma.userProfile.update({
+    where: {
+      ProfileID: profile.ProfileID,
+    },
+    data: updateData,
+    select: profileSelect,
+  });
+
+  return mapProfile(updated);
 };
 
 export const listStudentProfiles = async (

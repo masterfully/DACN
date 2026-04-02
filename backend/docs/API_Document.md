@@ -896,7 +896,7 @@ GET /api/accounts?page=1&limit=10&search=student&role=STUDENT&status=ACTIVE
 | phoneNumber | string |    No    | Phone number                 |
 | dateOfBirth | string |    No    | Date of birth (YYYY-MM-DD)   |
 | gender      | string |    No    | Gender                       |
-| avatars     | string |    No    | Profile image URL            |
+| avatar     | string |    No    | Profile image URL            |
 | citizenId   | string |    No    | CCCD/CMND                    |
 | hometown    | string |    No    | Hometown                     |
 | status      | string |    No    | Status                       |
@@ -1037,7 +1037,7 @@ GET /api/profiles?page=1&limit=10&search=Nguyen&role=STUDENT&status=ACTIVE
   {
     "success": false,
     "error": {
-      "code": "PROFILE_NOT_FOUND",
+      "code": "PROFILE_DETAIL_NOT_FOUND",
       "message": "Hồ sơ không tồn tại"
     }
   }
@@ -1047,7 +1047,12 @@ GET /api/profiles?page=1&limit=10&search=Nguyen&role=STUDENT&status=ACTIVE
 
 #### 3.4. Update Profile
 
-**Description**: Update records by ID. Requires role: `ADMIN` or owner.
+**Description**: Update profile by ID. Requires role: `ADMIN` or owner.
+
+Rules:
+- `email` is not updatable in this endpoint.
+- `status` is updatable by `ADMIN` only.
+- Use `avatar` (singular) in request body.
 
 **URL**: `/api/profiles/{profileId}`
 
@@ -1061,17 +1066,16 @@ GET /api/profiles?page=1&limit=10&search=Nguyen&role=STUDENT&status=ACTIVE
 | phoneNumber | string |    No    | Phone number               |
 | dateOfBirth | string |    No    | Date of birth (YYYY-MM-DD) |
 | gender      | string |    No    | Gender                     |
-| email       | string |    No    | Email                      |
-| avatars     | string |    No    | Profile image URL          |
+| avatar      | string |    No    | Profile image URL          |
 | citizenId   | string |    No    | CCCD/CMND                  |
 | hometown    | string |    No    | Hometown                   |
-| status      | string |    No    | Status                     |
+| status      | string |    No    | Status (ADMIN only)        |
 
 ```json
 {
   "fullName": "Nguyễn Văn A",
   "phoneNumber": "0901234567",
-  "email": "nguyenvana@example.com"
+  "avatar": "https://storage.example.com/avatars/1.jpg"
 }
 ```
 
@@ -1088,7 +1092,9 @@ GET /api/profiles?page=1&limit=10&search=Nguyen&role=STUDENT&status=ACTIVE
       "role": "STUDENT",
       "fullName": "Nguyễn Văn A",
       "phoneNumber": "0901234567",
-      "email": "nguyenvana@example.com"
+      "email": "nguyenvana@example.com",
+      "avatar": "https://storage.example.com/avatars/1.jpg",
+      "status": "ACTIVE"
     }
   }
   ```
@@ -1169,7 +1175,7 @@ GET /api/profiles?page=1&limit=10&search=Nguyen&role=STUDENT&status=ACTIVE
 | dateOfBirth | string |    No    | Date of birth (YYYY-MM-DD) |
 | gender      | string |    No    | Gender                     |
 | email       | string |    No    | Email                      |
-| avatars     | string |    No    | Profile image URL          |
+| avatar     | string |    No    | Profile image URL          |
 | citizenId   | string |    No    | CCCD/CMND                  |
 | hometown    | string |    No    | Hometown                   |
 

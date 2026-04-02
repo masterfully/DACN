@@ -26,6 +26,7 @@ export interface CreateAccountInput {
 export interface UpdateAccountInput {
   accountId: number;
   username?: string;
+  email?: string;
   role?: RoleEnum;
 }
 
@@ -313,6 +314,7 @@ export const updateAccount = async (input: UpdateAccountInput) => {
     select: {
       AccountID: true,
       Username: true,
+      Email: true,
     },
   });
 
@@ -363,6 +365,40 @@ export const updateAccount = async (input: UpdateAccountInput) => {
     data.Username = normalizedUsername;
   }
 
+  if (input.email !== undefined) {
+    const normalizedEmail = input.email.trim().toLowerCase();
+
+    if (normalizedEmail !== currentAccount.Email.toLowerCase()) {
+      const existing = await prisma.account.findFirst({
+        where: {
+          Email: normalizedEmail,
+          IsDeleted: false,
+          NOT: {
+            AccountID: input.accountId,
+          },
+        },
+        select: {
+          AccountID: true,
+        },
+      });
+
+      if (existing) {
+        throw new AppError(ACCOUNT_ERROR_MESSAGES.ACCOUNT_UPDATE_EMAIL_EXISTS, {
+          statusCode: 409,
+          code: ACCOUNT_ERROR_CODES.ACCOUNT_UPDATE_EMAIL_EXISTS,
+          details: {
+            formErrors: [],
+            fieldErrors: {
+              email: [ACCOUNT_FIELD_ERROR_MESSAGES.EMAIL_EXISTS],
+            },
+          },
+        });
+      }
+    }
+
+    data.Email = normalizedEmail;
+  }
+
   if (input.role !== undefined) {
     data.Role = input.role;
   }
@@ -382,16 +418,28 @@ export const updateAccount = async (input: UpdateAccountInput) => {
       error instanceof Prisma.PrismaClientKnownRequestError &&
       error.code === "P2002"
     ) {
-      throw new AppError(ACCOUNT_ERROR_MESSAGES.ACCOUNT_UPDATE_USERNAME_EXISTS, {
-        statusCode: 409,
-        code: ACCOUNT_ERROR_CODES.ACCOUNT_UPDATE_USERNAME_EXISTS,
-        details: {
-          formErrors: [],
-          fieldErrors: {
-            username: [ACCOUNT_FIELD_ERROR_MESSAGES.USERNAME_EXISTS],
+      const target = Array.isArray(error.meta?.target)
+        ? error.meta.target.join(",")
+        : "";
+
+      const duplicateIsEmail = target.includes("Email");
+      throw new AppError(
+        duplicateIsEmail
+          ? ACCOUNT_ERROR_MESSAGES.ACCOUNT_UPDATE_EMAIL_EXISTS
+          : ACCOUNT_ERROR_MESSAGES.ACCOUNT_UPDATE_USERNAME_EXISTS,
+        {
+          statusCode: 409,
+          code: duplicateIsEmail
+            ? ACCOUNT_ERROR_CODES.ACCOUNT_UPDATE_EMAIL_EXISTS
+            : ACCOUNT_ERROR_CODES.ACCOUNT_UPDATE_USERNAME_EXISTS,
+          details: {
+            formErrors: [],
+            fieldErrors: duplicateIsEmail
+              ? { email: [ACCOUNT_FIELD_ERROR_MESSAGES.EMAIL_EXISTS] }
+              : { username: [ACCOUNT_FIELD_ERROR_MESSAGES.USERNAME_EXISTS] },
           },
         },
-      });
+      );
     }
 
     throw error;

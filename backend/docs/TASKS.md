@@ -97,8 +97,8 @@ Base path: `/api/profiles`
 - [x] `PUT /api/profiles/me` — update own profile. **Any auth**
 - [x] `GET /api/profiles/students` — student profiles. **Role: ADMIN, LECTURER** _(register before `/:id`)_
 - [x] `GET /api/profiles/lecturers` — lecturer profiles. **Role: ADMIN** _(register before `/:id`)_
-- [ ] `GET /api/profiles/:profileId` — profile detail. **Role: ADMIN or owner**
-- [ ] `PUT /api/profiles/:profileId` — update profile. **Role: ADMIN or owner**
+- [x] `GET /api/profiles/:profileId` — profile detail. **Role: ADMIN or owner**
+- [x] `PUT /api/profiles/:profileId` — update profile. **Role: ADMIN or owner**
 - [ ] `GET /api/profiles/:profileId/attendance-summary` — attendance stats. **Role: ADMIN, LECTURER, or owner**
 - [ ] `GET /api/profiles/:profileId/certificates` — student's certificates. **Role: ADMIN or owner**
 - [ ] `POST /api/profiles/:profileId/certificates` — link certificate to student. **Role: ADMIN**

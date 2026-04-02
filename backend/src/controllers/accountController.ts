@@ -108,16 +108,30 @@ const updateAccountSchema = z
       .min(1, ACCOUNT_FIELD_ERROR_MESSAGES.USERNAME_REQUIRED)
       .max(255, ACCOUNT_FIELD_ERROR_MESSAGES.USERNAME_MAX_LENGTH)
       .optional(),
+    email: z
+      .string({
+        error: ACCOUNT_FIELD_ERROR_MESSAGES.EMAIL_INVALID_TYPE,
+      })
+      .trim()
+      .email(ACCOUNT_FIELD_ERROR_MESSAGES.EMAIL_INVALID_FORMAT)
+      .max(255, ACCOUNT_FIELD_ERROR_MESSAGES.EMAIL_MAX_LENGTH)
+      .optional(),
     role: z
       .enum(ACCOUNT_ROLE_VALUES, {
         error: ACCOUNT_FIELD_ERROR_MESSAGES.ROLE_INVALID,
       })
       .optional(),
   })
-  .refine((data) => data.username !== undefined || data.role !== undefined, {
-    message: ACCOUNT_FIELD_ERROR_MESSAGES.UPDATE_AT_LEAST_ONE_FIELD,
-    path: ["form"],
-  });
+  .refine(
+    (data) =>
+      data.username !== undefined ||
+      data.email !== undefined ||
+      data.role !== undefined,
+    {
+      message: ACCOUNT_FIELD_ERROR_MESSAGES.UPDATE_AT_LEAST_ONE_FIELD,
+      path: ["form"],
+    },
+  );
 
 const getAccountIdFromParams = (
   req: Request,
@@ -259,6 +273,7 @@ export async function updateAccountHandler(
     const account = await updateAccount({
       accountId,
       username: parsed.username,
+      email: parsed.email,
       role: parsed.role as RoleEnum | undefined,
     });
 

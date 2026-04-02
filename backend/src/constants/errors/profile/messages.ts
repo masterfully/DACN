@@ -7,6 +7,14 @@ export const PROFILE_ERROR_MESSAGES = {
   PROFILE_CREATE_ALREADY_EXISTS: "Tài khoản đã có hồ sơ",
   PROFILE_ME_NOT_FOUND: "Không tìm thấy hồ sơ của người dùng hiện tại",
   PROFILE_UPDATE_FORBIDDEN_FIELD: "Trường này không được phép cập nhật",
+  PROFILE_DETAIL_INVALID_PARAMS: "Tham số hồ sơ không hợp lệ",
+  PROFILE_DETAIL_NOT_FOUND: "Hồ sơ không tồn tại",
+  PROFILE_DETAIL_FORBIDDEN: "Bạn không có quyền xem hồ sơ này",
+  PROFILE_UPDATE_BY_ID_INVALID_PARAMS: "Tham số hồ sơ không hợp lệ",
+  PROFILE_UPDATE_BY_ID_INVALID_INPUT: "Dữ liệu cập nhật hồ sơ không hợp lệ",
+  PROFILE_UPDATE_BY_ID_NOT_FOUND: "Hồ sơ không tồn tại",
+  PROFILE_UPDATE_BY_ID_FORBIDDEN: "Bạn không có quyền cập nhật hồ sơ này",
+  PROFILE_UPDATE_BY_ID_FORBIDDEN_FIELD: "Trường này không được phép cập nhật",
 } as const;
 
 export const PROFILE_FIELD_ERROR_MESSAGES = {
@@ -21,6 +29,7 @@ export const PROFILE_FIELD_ERROR_MESSAGES = {
   QUERY_GENDER_INVALID:
     "Giới tính không hợp lệ. Giá trị cho phép: MALE, FEMALE",
   SEARCH_INVALID_TYPE: "Từ khóa tìm kiếm phải là chuỗi",
+  PROFILE_ID_INVALID: "Mã hồ sơ phải là số nguyên dương",
   ACCOUNT_ID_REQUIRED: "accountId là bắt buộc",
   ACCOUNT_ID_INVALID_TYPE: "accountId phải là số",
   ACCOUNT_ID_INVALID_INTEGER: "accountId phải là số nguyên",
