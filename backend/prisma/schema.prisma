@@ -30,6 +30,8 @@ model Account {
   DeletedAt DateTime?
   profile   UserProfile?
   refreshTokens RefreshToken[]
+
+  certificateDetails CertificateDetail[]  
 }
 
 model RefreshToken {
@@ -200,18 +202,22 @@ model CertificateType {
 }
 
 model CertificateDetail {
-  CertificateID     Int      @id @default(autoincrement())
-  ApplicationID     Int
-  CertificateTypeID Int
-  Score             Float?
-  IssueDate         DateTime? @db.Date
-  ExpiryDate        DateTime? @db.Date
-  EvidenceURL       String?   @db.VarChar(255)
-  Metadata          Json?
+  CertificateID         Int      @id @default(autoincrement())
+  ApplicationID         Int
+  CertificateTypeID     Int
+  CreatedByAccountID    Int?     // NEW: Fix #2
+  Score                 Float?
+  IssueDate             DateTime? @db.Date
+  ExpiryDate            DateTime? @db.Date
+  EvidenceURL           String?   @db.VarChar(255)
+  Metadata              Json?
 
   application         ProfileApplication    @relation(fields: [ApplicationID], references: [ApplicationID])
   certificateType     CertificateType       @relation(fields: [CertificateTypeID], references: [CertificateTypeID])
+  createdByAccount    Account?              @relation(fields: [CreatedByAccountID], references: [AccountID])
   studentCertificates StudentCertificates[]
+
+  @@unique([ApplicationID, CertificateTypeID])  // Fix #3
 }
 
 model StudentCertificates {
