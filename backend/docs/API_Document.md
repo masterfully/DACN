@@ -2,6 +2,7 @@
 
 - [API Document](#api-document)
   - [I. General information](#i-general-information)
+    - [Error Details Conventions](#error-details-conventions)
     - [Enum Conventions](#enum-conventions)
     - [Query Param Conventions](#query-param-conventions)
   - [II. Endpoints](#ii-endpoints)
@@ -110,6 +111,14 @@
       - [15.1. Get Student Certificates](#151-get-student-certificates)
       - [15.2. Add Certificate to Student](#152-add-certificate-to-student)
       - [15.3. Remove Certificate from Student](#153-remove-certificate-from-student)
+    - [16. Parents](#16-parents)
+      - [16.1. Assign Parent to Student](#161-assign-parent-to-student)
+      - [16.2. Unassign Parent from Student](#162-unassign-parent-from-student)
+      - [16.3. Get Parents of a Student](#163-get-parents-of-a-student)
+      - [16.4. Get Students of a Parent](#164-get-students-of-a-parent)
+      - [16.5. Get My Students (Parent)](#165-get-my-students-parent)
+      - [16.6. Get Student Schedule (Parent)](#166-get-student-schedule-parent)
+      - [16.7. Get Student Attendance (Parent)](#167-get-student-attendance-parent)
 
 ## I. General information
 
@@ -272,9 +281,7 @@ Response Structure:
       "details": {
         "formErrors": [],
         "fieldErrors": {
-          "username": [
-            "Tên đăng nhập là bắt buộc"
-          ]
+          "username": ["Tên đăng nhập là bắt buộc"]
         }
       }
     },
@@ -292,9 +299,7 @@ Response Structure:
       "code": "AUTH_LOGIN_INVALID_CREDENTIALS",
       "message": "Tên đăng nhập hoặc mật khẩu không đúng",
       "details": {
-        "formErrors": [
-          "Tên đăng nhập hoặc mật khẩu không đúng"
-        ],
+        "formErrors": ["Tên đăng nhập hoặc mật khẩu không đúng"],
         "fieldErrors": {}
       }
     },
@@ -351,9 +356,7 @@ Response Structure:
       "details": {
         "formErrors": [],
         "fieldErrors": {
-          "refreshToken": [
-            "Refresh token là bắt buộc"
-          ]
+          "refreshToken": ["Refresh token là bắt buộc"]
         }
       }
     },
@@ -371,9 +374,7 @@ Response Structure:
       "code": "AUTH_LOGOUT_INVALID_TOKEN",
       "message": "Refresh token không hợp lệ hoặc đã hết hạn",
       "details": {
-        "formErrors": [
-          "Refresh token không hợp lệ hoặc đã hết hạn"
-        ],
+        "formErrors": ["Refresh token không hợp lệ hoặc đã hết hạn"],
         "fieldErrors": {}
       }
     },
@@ -429,9 +430,7 @@ Response Structure:
       "code": "AUTH_REFRESH_TOKEN_INVALID_TOKEN",
       "message": "Refresh token không hợp lệ hoặc đã hết hạn",
       "details": {
-        "formErrors": [
-          "Refresh token không hợp lệ hoặc đã hết hạn"
-        ],
+        "formErrors": ["Refresh token không hợp lệ hoặc đã hết hạn"],
         "fieldErrors": {}
       }
     },
@@ -896,7 +895,7 @@ GET /api/accounts?page=1&limit=10&search=student&role=STUDENT&status=ACTIVE
 | phoneNumber | string |    No    | Phone number                 |
 | dateOfBirth | string |    No    | Date of birth (YYYY-MM-DD)   |
 | gender      | string |    No    | Gender                       |
-| avatars     | string |    No    | Profile image URL            |
+| avatar      | string |    No    | Profile image URL            |
 | citizenId   | string |    No    | CCCD/CMND                    |
 | hometown    | string |    No    | Hometown                     |
 | status      | string |    No    | Status                       |
@@ -1037,7 +1036,7 @@ GET /api/profiles?page=1&limit=10&search=Nguyen&role=STUDENT&status=ACTIVE
   {
     "success": false,
     "error": {
-      "code": "PROFILE_NOT_FOUND",
+      "code": "PROFILE_DETAIL_NOT_FOUND",
       "message": "Hồ sơ không tồn tại"
     }
   }
@@ -1047,7 +1046,13 @@ GET /api/profiles?page=1&limit=10&search=Nguyen&role=STUDENT&status=ACTIVE
 
 #### 3.4. Update Profile
 
-**Description**: Update records by ID. Requires role: `ADMIN` or owner.
+**Description**: Update profile by ID. Requires role: `ADMIN` or owner.
+
+Rules:
+
+- `email` is not updatable in this endpoint.
+- `status` is updatable by `ADMIN` only.
+- Use `avatar` (singular) in request body.
 
 **URL**: `/api/profiles/{profileId}`
 
@@ -1061,17 +1066,16 @@ GET /api/profiles?page=1&limit=10&search=Nguyen&role=STUDENT&status=ACTIVE
 | phoneNumber | string |    No    | Phone number               |
 | dateOfBirth | string |    No    | Date of birth (YYYY-MM-DD) |
 | gender      | string |    No    | Gender                     |
-| email       | string |    No    | Email                      |
-| avatars     | string |    No    | Profile image URL          |
+| avatar      | string |    No    | Profile image URL          |
 | citizenId   | string |    No    | CCCD/CMND                  |
 | hometown    | string |    No    | Hometown                   |
-| status      | string |    No    | Status                     |
+| status      | string |    No    | Status (ADMIN only)        |
 
 ```json
 {
   "fullName": "Nguyễn Văn A",
   "phoneNumber": "0901234567",
-  "email": "nguyenvana@example.com"
+  "avatar": "https://storage.example.com/avatars/1.jpg"
 }
 ```
 
@@ -1088,7 +1092,9 @@ GET /api/profiles?page=1&limit=10&search=Nguyen&role=STUDENT&status=ACTIVE
       "role": "STUDENT",
       "fullName": "Nguyễn Văn A",
       "phoneNumber": "0901234567",
-      "email": "nguyenvana@example.com"
+      "email": "nguyenvana@example.com",
+      "avatar": "https://storage.example.com/avatars/1.jpg",
+      "status": "ACTIVE"
     }
   }
   ```
@@ -1169,7 +1175,7 @@ GET /api/profiles?page=1&limit=10&search=Nguyen&role=STUDENT&status=ACTIVE
 | dateOfBirth | string |    No    | Date of birth (YYYY-MM-DD) |
 | gender      | string |    No    | Gender                     |
 | email       | string |    No    | Email                      |
-| avatars     | string |    No    | Profile image URL          |
+| avatar      | string |    No    | Profile image URL          |
 | citizenId   | string |    No    | CCCD/CMND                  |
 | hometown    | string |    No    | Hometown                   |
 
@@ -5018,3 +5024,445 @@ GET /api/profiles/3/certificates?page=1&limit=10&search=IELTS&certificateTypeId=
     }
   }
   ```
+
+### 16. Parents
+
+#### 16.1. Assign Parent to Student
+
+**Description**: Assign a parent (RoleEnum = `PARENT`) to a student (RoleEnum = `STUDENT`). Authentication request: `Authorization: Bearer <token>`. Requires role: `ADMIN`.
+
+**URL**: `/api/parents/assign`
+
+**Method**: `POST`
+
+**Request Body**:
+
+| Field     |  Type  | Required | Description                                                 |
+| --------- | :----: | :------: | ----------------------------------------------------------- |
+| studentId | number |   Yes    | `UserProfile.profileID` of the student (RoleEnum = STUDENT) |
+| parentId  | number |   Yes    | `UserProfile.profileID` of the parent (RoleEnum = PARENT)   |
+
+**Example Request**:
+
+```json
+{
+  "studentId": 1001,
+  "parentId": 2001
+}
+```
+
+**Example Response**:
+
+- Success:
+
+  ```json
+  {
+    "success": true,
+    "data": {
+      "studentId": 1001,
+      "parentId": 2001
+    }
+  }
+  ```
+
+- Error (student or parent not found):
+
+  ```json
+  {
+    "success": false,
+    "error": {
+      "code": "STUDENT_OR_PARENT_NOT_FOUND",
+      "message": "Học sinh hoặc phụ huynh không tồn tại"
+    }
+  }
+  ```
+
+- Error (link already exists):
+
+  ```json
+  {
+    "success": false,
+    "error": {
+      "code": "ALREADY_LINKED",
+      "message": "Phụ huynh này đã được gán cho học sinh này"
+    }
+  }
+  ```
+
+---
+
+#### 16.2. Unassign Parent from Student
+
+**Description**: Remove the link between a parent and a student. Authentication request: `Authorization: Bearer <token>`. Requires role: `ADMIN`.
+
+**URL**: `/api/parents/assign`
+
+**Method**: `DELETE`
+
+**Query Params**:
+
+| Field     |  Type  | Required | Description                                                 |
+| --------- | :----: | :------: | ----------------------------------------------------------- |
+| studentId | number |   Yes    | `UserProfile.profileID` of the student (RoleEnum = STUDENT) |
+| parentId  | number |   Yes    | `UserProfile.profileID` of the parent (RoleEnum = PARENT)   |
+
+**Example**:
+
+```http
+DELETE /api/parents/assign?studentId=1001&parentId=2001
+Authorization: Bearer <token>
+```
+
+**Example Response**:
+
+- Success:
+
+  ```json
+  {
+    "success": true,
+    "data": null
+  }
+  ```
+
+- Error (link not found):
+
+  ```json
+  {
+    "success": false,
+    "error": {
+      "code": "PARENT_LINK_NOT_FOUND",
+      "message": "Liên kết phụ huynh - học sinh không tồn tại"
+    }
+  }
+  ```
+
+---
+
+#### 16.3. Get Parents of a Student
+
+**Description**: Get the list of parents of a student. Authentication request: `Authorization: Bearer <token>`. Requires role: `ADMIN`.
+
+**URL**: `/api/students/{studentId}/parents`
+
+**Method**: `GET`
+
+**Path Params**:
+
+| Field     |  Type  | Required | Description                                                 |
+| --------- | :----: | :------: | ----------------------------------------------------------- |
+| studentId | number |   Yes    | `UserProfile.profileID` of the student (RoleEnum = STUDENT) |
+
+**Query Params**:
+
+| Field |  Type  | Required | Description                              |
+| ----- | :----: | :------: | ---------------------------------------- |
+| page  | number |    No    | Current page (default: 1)                |
+| limit | number |    No    | Number of records per page (default: 10) |
+
+**Example**:
+
+```http
+GET /api/students/1001/parents?page=1&limit=10
+Authorization: Bearer <token>
+```
+
+**Example Response**:
+
+- Success:
+
+  ```json
+  {
+    "success": true,
+    "data": [
+      {
+        "profileID": 2001,
+        "fullName": "Nguyễn Văn A",
+        "phoneNumber": "0123456789",
+        "email": "phuhuynhA@example.com",
+        "dateOfBirth": "1980-01-01",
+        "gender": "MALE",
+        "avatar": "https://example.com/avatar-a.png"
+      }
+    ]
+  }
+  ```
+
+- Error:
+
+  ```json
+  {
+    "success": false,
+    "error": {
+      "code": "STUDENT_NOT_FOUND",
+      "message": "Học sinh không tồn tại"
+    }
+  }
+  ```
+
+---
+
+#### 16.4. Get Students of a Parent
+
+**Description**: Get the list of students linked to a specific parent (for admin management). Authentication request: `Authorization: Bearer <token>`. Requires role: `ADMIN`.
+
+**URL**: `/api/parents/{parentId}/students`
+
+**Method**: `GET`
+
+**Path Params**:
+
+| Field    |  Type  | Required | Description                                               |
+| -------- | :----: | :------: | --------------------------------------------------------- |
+| parentId | number |   Yes    | `UserProfile.profileID` of the parent (RoleEnum = PARENT) |
+
+**Query Params**:
+
+| Field |  Type  | Required | Description                              |
+| ----- | :----: | :------: | ---------------------------------------- |
+| page  | number |    No    | Current page (default: 1)                |
+| limit | number |    No    | Number of records per page (default: 10) |
+
+**Example**:
+
+```http
+GET /api/parents/2001/students?page=1&limit=10
+Authorization: Bearer <token>
+```
+
+**Example Response**:
+
+- Success:
+
+  ```json
+  {
+    "success": true,
+    "data": [
+      {
+        "profileID": 1001,
+        "fullName": "Trần B",
+        "dateOfBirth": "2006-09-01",
+        "gender": "FEMALE",
+        ...
+      }
+    ]
+  }
+  ```
+
+- Error:
+
+  ```json
+  {
+    "success": false,
+    "error": {
+      "code": "PARENT_NOT_FOUND",
+      "message": "Phụ huynh không tồn tại"
+    }
+  }
+  ```
+
+---
+
+#### 16.5. Get My Students (Parent)
+
+**Description**: Get the list of students linked to the currently logged-in parent. Authentication request: `Authorization: Bearer <token>`. Requires role: `PARENT`.
+
+**URL**: `/api/parents/my-students`
+
+**Method**: `GET`
+
+**Query Params**:
+
+| Field |  Type  | Required | Description                              |
+| ----- | :----: | :------: | ---------------------------------------- |
+| page  | number |    No    | Current page (default: 1)                |
+| limit | number |    No    | Number of records per page (default: 10) |
+
+**Example**:
+
+```http
+GET /api/parents/my-students?page=1&limit=10
+Authorization: Bearer <token>
+```
+
+**Example Response**:
+
+- Success:
+
+  ```json
+  {
+    "success": true,
+    "data": [
+      {
+        "profileID": 1001,
+        "fullName": "Trần B",
+        "dateOfBirth": "2006-09-01",
+        "gender": "FEMALE",
+        ...
+      }
+    ]
+  }
+  ```
+
+- Error:
+
+  ```json
+  {
+    "success": false,
+    "error": {
+      "code": "UNAUTHORIZED",
+      "message": "Vui lòng đăng nhập để tiếp tục"
+    }
+  }
+  ```
+
+---
+
+#### 16.6. Get Student Schedule (Parent)
+
+**Description**: Get the class schedule of a specific student linked to the currently logged-in parent. Authentication request: `Authorization: Bearer <token>`. Requires role: `PARENT`.
+
+**URL**: `/api/parents/students/{studentId}/schedule`
+
+**Method**: `GET`
+
+**Path Params**:
+
+| Field     |  Type  | Required | Description                                                 |
+| --------- | :----: | :------: | ----------------------------------------------------------- |
+| studentId | number |   Yes    | `UserProfile.profileID` of the student (RoleEnum = STUDENT) |
+
+**Query Params**:
+
+| Field     |  Type  | Required | Description                      |
+| --------- | :----: | :------: | -------------------------------- |
+| sectionId | number |    No    | Filter by class section          |
+| roomId    | number |    No    | Filter by classroom              |
+| dayOfWeek | string |    No    | Filter by day: MONDAY ... SUNDAY |
+| startDate | string |    No    | From date (YYYY-MM-DD)           |
+| endDate   | string |    No    | To date (YYYY-MM-DD)             |
+
+**Example**:
+
+```http
+GET /api/parents/students/1001/schedule?dayOfWeek=MONDAY&startDate=2025-03-01&endDate=2025-03-31
+Authorization: Bearer <token>
+```
+
+**Example Response**:
+
+- Success:
+
+  ```json
+  {
+    "success": true,
+    "data": [
+      {
+        "scheduleId": 1,
+        "roomId": 10,
+        "roomName": "A101",
+        "subjectId": 5,
+        "subjectName": "OOP",
+        "sectionId": 101,
+        "sectionName": "OOP-01",
+        "dayOfWeek": "Monday",
+        "startPeriod": 1,
+        "endPeriod": 3,
+        "totalPeriods": 3,
+        "startDate": "2025-01-06",
+        "endDate": "2025-05-30"
+      }
+    ]
+  }
+  ```
+
+- Error (not linked or not found):
+
+  ```json
+  {
+    "success": false,
+    "error": {
+      "code": "STUDENT_NOT_LINKED_TO_PARENT",
+      "message": "Bạn không có quyền xem lịch học của học sinh này"
+    }
+  }
+  ```
+
+---
+
+#### 16.7. Get Student Attendance (Parent)
+
+**Description**: Get the attendance status of a specific student linked to the currently logged-in parent. The response contains a list of subjects, each subject contains a list of attendance sessions with status. Authentication request: `Authorization: Bearer <token>`. Requires role: `PARENT`.
+
+**URL**: `/api/parents/students/{studentId}/attendance`
+
+**Method**: `GET`
+
+**Path Params**:
+
+| Field     |  Type  | Required | Description                                                 |
+| --------- | :----: | :------: | ----------------------------------------------------------- |
+| studentId | number |   Yes    | `UserProfile.profileID` of the student (RoleEnum = STUDENT) |
+
+**Query Params**:
+
+| Field     |  Type  | Required | Description                                         |
+| --------- | :----: | :------: | --------------------------------------------------- |
+| subjectId | number |    No    | Filter by subject (`Subject.SubjectID`)             |
+| sectionId | number |    No    | Filter by section (`Section.SectionID`)             |
+| startDate | string |    No    | From date (YYYY-MM-DD), compare with AttendanceDate |
+| endDate   | string |    No    | To date (YYYY-MM-DD)                                |
+
+**Example**:
+
+```http
+GET /api/parents/students/1001/attendance?subjectId=5&startDate=2025-03-01&endDate=2025-03-31
+Authorization: Bearer <token>
+```
+
+**Example Response**:
+
+- Success:
+
+  ```json
+  {
+    "success": true,
+    "data": [
+      {
+        "subjectId": 5,
+        "subjectName": "OOP",
+        "sectionId": 101,
+        "sectionName": "OOP-01",
+        "attendanceSessions": [
+          {
+            "attendanceId": 1001,
+            "date": "2025-03-01",
+            "dayOfWeek": "Monday",
+            "slot": 1,
+            "roomId": 10,
+            "roomName": "A101",
+            "startPeriod": 1,
+            "endPeriod": 3,
+            "status": "PRESENT",
+            "note": ""
+          }
+        ]
+      }
+    ]
+  }
+  ```
+
+- Error (not linked or not found):
+
+  ```json
+  {
+    "success": false,
+    "error": {
+      "code": "STUDENT_NOT_LINKED_TO_PARENT",
+      "message": "Bạn không có quyền xem điểm danh của học sinh này"
+    }
+  }
+  ```
+
+**Notes**:
+
+- `status` reuses the existing attendance status enum defined in the Attendance section (for example: `PRESENT`, `ABSENT`, `LATE`, `EXCUSED`, ...).
