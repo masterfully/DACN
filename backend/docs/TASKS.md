@@ -252,11 +252,11 @@ Base path: `/api/profile-applications`
 
 Base path: `/api/certificate-types`
 
-- [ ] `GET /api/certificate-types` — paginated list. **Any auth**
-- [ ] `POST /api/certificate-types` — create type. **Role: ADMIN** _(guard: typeName unique)_
-- [ ] `GET /api/certificate-types/:typeId` — type detail. **Any auth**
-- [ ] `PUT /api/certificate-types/:typeId` — update. **Role: ADMIN**
-- [ ] `DELETE /api/certificate-types/:typeId` — delete. **Role: ADMIN** _(guard: in use by certificates)_
+- [x] `GET /api/certificate-types` — paginated list. **Any auth**
+- [x] `POST /api/certificate-types` — create type. **Role: ADMIN** _(guard: typeName unique)_
+- [x] `GET /api/certificate-types/:typeId` — type detail. **Any auth**
+- [x] `PUT /api/certificate-types/:typeId` — update. **Role: ADMIN**
+- [x] `DELETE /api/certificate-types/:typeId` — delete. **Role: ADMIN** _(guard: in use by certificates)_
 
 ---
 
@@ -264,11 +264,11 @@ Base path: `/api/certificate-types`
 
 Base path: `/api/certificates`
 
-- [ ] `GET /api/certificates` — paginated, filter by `certificateTypeId`. **Role: ADMIN**
-- [ ] `POST /api/certificates` — create certificate for an application. **Role: ADMIN**
-- [ ] `GET /api/certificates/:certificateId` — detail. **Role: ADMIN or owner**
-- [ ] `PUT /api/certificates/:certificateId` — update. **Role: ADMIN**
-- [ ] `DELETE /api/certificates/:certificateId` — delete. **Role: ADMIN**
+- [x] `GET /api/certificates` — paginated, filter by `certificateTypeId`. **Role: ADMIN**
+- [x] `POST /api/certificates` — create certificate for an application. **Role: ADMIN**
+- [x] `GET /api/certificates/:certificateId` — detail. **Role: ADMIN or owner**
+- [x] `PUT /api/certificates/:certificateId` — update. **Role: ADMIN**
+- [x] `DELETE /api/certificates/:certificateId` — delete. **Role: ADMIN**
 
 ---
 
