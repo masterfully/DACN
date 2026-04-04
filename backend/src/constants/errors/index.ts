@@ -29,3 +29,6 @@ export { USAGE_ERROR_MESSAGES } from "./usageHistory/messages";
 
 export { PROFILE_ERROR_CODES } from "./profile/codes";
 export { PROFILE_ERROR_MESSAGES } from "./profile/messages";
+
+export { PARENT_ERROR_CODES } from "./parent/codes";
+export { PARENT_ERROR_MESSAGES } from "./parent/messages";

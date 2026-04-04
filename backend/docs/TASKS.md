@@ -114,9 +114,9 @@ Base path: `/api/profiles`
 
 Base path: `/api/parents` and `/api/students`
 
-- [ ] `POST /api/parents/assign` — assign parent to student. **Role: ADMIN**
-- [ ] `DELETE /api/parents/assign` — unassign parent from student. **Role: ADMIN**
-- [ ] `GET /api/students/:studentId/parents` — list parents of a student. **Role: ADMIN**
+- [x] `POST /api/parents/assign` — assign parent to student. **Role: ADMIN**
+- [x] `DELETE /api/parents/assign` — unassign parent from student. **Role: ADMIN**
+- [x] `GET /api/students/:studentId/parents` — list parents of a student. **Role: ADMIN**
 
 ---
 

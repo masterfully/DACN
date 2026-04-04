@@ -3,10 +3,12 @@ import { sendSuccess } from "../utils/response";
 import accountRouter from "./accountRoute";
 import attendanceRoute from "./attendanceRoute";
 import authRouter from "./authRoute";
+import parentRoute from "./parentRoute";
 import profileRoute from "./profileRoute";
 import registrationRoute from "./registrationRoute";
 import roomRoute from "./roomRoute";
 import scheduleRoute from "./scheduleRoute";
+import studentRoute from "./studentRoute";
 import usageHistoryRoute from "./usageHistoryRoute";
 import sectionRoute from "./sectionRoute";
 import subjectRoute from "./subjectRoute";
@@ -34,6 +36,12 @@ router.use("/accounts", accountRouter);
 
 // Mount profile routes
 router.use("/profiles", profileRoute);
+
+// Mount parent routes
+router.use("/parents", parentRoute);
+
+// Mount student routes
+router.use("/students", studentRoute);
 
 // Mount subject routes
 router.use("/subjects", subjectRoute);
