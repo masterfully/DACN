@@ -2,6 +2,12 @@ export const AUTH_ERROR_MESSAGES = {
   AUTH_LOGIN_INVALID_INPUT: "Dữ liệu đăng nhập không hợp lệ",
   AUTH_LOGIN_INVALID_CREDENTIALS: "Tên đăng nhập hoặc mật khẩu không đúng",
   AUTH_LOGIN_ACCOUNT_INACTIVE: "Tài khoản đã bị vô hiệu hóa hoặc bị khóa",
+  AUTH_CHANGE_PASSWORD_INVALID_INPUT: "Dữ liệu đổi mật khẩu không hợp lệ",
+  AUTH_CHANGE_PASSWORD_WRONG_CURRENT_PASSWORD:
+    "Mật khẩu hiện tại không chính xác",
+  AUTH_CHANGE_PASSWORD_SAME_AS_CURRENT:
+    "Mật khẩu mới không được trùng với mật khẩu hiện tại",
+  AUTH_CHANGE_PASSWORD_SUCCESS: "Đổi mật khẩu thành công",
   AUTH_REFRESH_TOKEN_INVALID_INPUT: "Dữ liệu làm mới token không hợp lệ",
   AUTH_REFRESH_TOKEN_INVALID_TOKEN: "Refresh token không hợp lệ hoặc đã hết hạn",
   AUTH_LOGOUT_INVALID_INPUT: "Dữ liệu đăng xuất không hợp lệ",
@@ -24,6 +30,8 @@ export const AUTH_FIELD_ERROR_MESSAGES = {
   FULL_NAME_MAX_LENGTH: "Họ và tên tối đa 255 ký tự",
   USERNAME_REQUIRED: "Tên đăng nhập là bắt buộc",
   USERNAME_MAX_LENGTH: "Tên đăng nhập tối đa 255 ký tự",
+  CURRENT_PASSWORD_REQUIRED: "Mật khẩu hiện tại là bắt buộc",
+  NEW_PASSWORD_REQUIRED: "Mật khẩu mới là bắt buộc",
   REFRESH_TOKEN_REQUIRED: "Refresh token là bắt buộc",
   EMAIL_REQUIRED: "Email là bắt buộc",
   EMAIL_INVALID_FORMAT: "Email không hợp lệ",
