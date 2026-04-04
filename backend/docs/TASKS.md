@@ -134,12 +134,12 @@ Base path: `/api/sections`
 - [x] `GET /api/sections` — paginated, filter by `subjectId`, `year`, `status`. **Role: ADMIN**
 - [x] `POST /api/sections` — create section. **Role: ADMIN**
 - [ ] `GET /api/sections/my-sections` — lecturer's own sections. **Role: LECTURER** _(register before `/:id`)_
-- [ ] `GET /api/sections/:sectionId` — section detail. **Any auth**
-- [ ] `PUT /api/sections/:sectionId` — update section. **Role: ADMIN**
-- [ ] `DELETE /api/sections/:sectionId` — delete. **Role: ADMIN** _(guard: has registered students)_
-- [ ] `GET /api/sections/:sectionId/students` — students in section. **Role: ADMIN, LECTURER**
-- [ ] `PATCH /api/sections/:sectionId/status` — update status. **Role: ADMIN, LECTURER**
-- [ ] `PATCH /api/sections/:sectionId/visibility` — update visibility. **Role: ADMIN, LECTURER**
+- [x] `GET /api/sections/:sectionId` — section detail. **Any auth**
+- [x] `PUT /api/sections/:sectionId` — update section. **Role: ADMIN**
+- [x] `DELETE /api/sections/:sectionId` — delete. **Role: ADMIN** _(guard: has registered students)_
+- [x] `GET /api/sections/:sectionId/students` — students in section. **Role: ADMIN, LECTURER**
+- [x] `PATCH /api/sections/:sectionId/status` — update status. **Role: ADMIN, LECTURER**
+- [x] `PATCH /api/sections/:sectionId/visibility` — update visibility. **Role: ADMIN, LECTURER**
 
 **Status values**: `0` = draft, `1` = open, `2` = closed  
 **Visibility values**: `0` = hidden, `1` = visible
