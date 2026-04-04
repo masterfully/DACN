@@ -1,11 +1,15 @@
 import { Router } from "express";
 import {
+  addProfileCertificateHandler,
   createProfileHandler,
   getLecturerProfilesHandler,
+  getProfileAttendanceSummaryHandler,
+  getProfileCertificatesHandler,
   getProfileDetailHandler,
   getMyProfileHandler,
   getProfilesHandler,
   getStudentProfilesHandler,
+  removeProfileCertificateHandler,
   updateMyProfileHandler,
   updateProfileByIdHandler,
 } from "../controllers/profileController";
@@ -39,6 +43,36 @@ router.get(
   requireAuth,
   requireRole("ADMIN"),
   getLecturerProfilesHandler,
+);
+
+// GET /api/profiles/:profileId/attendance-summary - Attendance summary (ADMIN, LECTURER, owner)
+router.get(
+  "/:profileId/attendance-summary",
+  requireAuth,
+  getProfileAttendanceSummaryHandler,
+);
+
+// GET /api/profiles/:profileId/certificates - Profile certificates (ADMIN or owner)
+router.get(
+  "/:profileId/certificates",
+  requireAuth,
+  getProfileCertificatesHandler,
+);
+
+// POST /api/profiles/:profileId/certificates - Link certificate to student (ADMIN only)
+router.post(
+  "/:profileId/certificates",
+  requireAuth,
+  requireRole("ADMIN"),
+  addProfileCertificateHandler,
+);
+
+// DELETE /api/profiles/:profileId/certificates/:certificateId - Unlink certificate (ADMIN only)
+router.delete(
+  "/:profileId/certificates/:certificateId",
+  requireAuth,
+  requireRole("ADMIN"),
+  removeProfileCertificateHandler,
 );
 
 // GET /api/profiles/:profileId - Get profile detail by ID (ADMIN or owner)

@@ -99,10 +99,10 @@ Base path: `/api/profiles`
 - [x] `GET /api/profiles/lecturers` — lecturer profiles. **Role: ADMIN** _(register before `/:id`)_
 - [x] `GET /api/profiles/:profileId` — profile detail. **Role: ADMIN or owner**
 - [x] `PUT /api/profiles/:profileId` — update profile. **Role: ADMIN or owner**
-- [ ] `GET /api/profiles/:profileId/attendance-summary` — attendance stats. **Role: ADMIN, LECTURER, or owner**
-- [ ] `GET /api/profiles/:profileId/certificates` — student's certificates. **Role: ADMIN or owner**
-- [ ] `POST /api/profiles/:profileId/certificates` — link certificate to student. **Role: ADMIN**
-- [ ] `DELETE /api/profiles/:profileId/certificates/:certificateId` — unlink. **Role: ADMIN**
+- [x] `GET /api/profiles/:profileId/attendance-summary` — attendance stats. **Role: ADMIN, LECTURER, or owner**
+- [x] `GET /api/profiles/:profileId/certificates` — student's certificates. **Role: ADMIN or owner**
+- [x] `POST /api/profiles/:profileId/certificates` — link certificate to student. **Role: ADMIN**
+- [x] `DELETE /api/profiles/:profileId/certificates/:certificateId` — unlink. **Role: ADMIN**
 
 **Notes**:
 - For profile list/detail/student/lecturer endpoints, return email from `Account.Email` (join `account` relation)

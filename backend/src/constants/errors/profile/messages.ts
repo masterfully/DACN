@@ -15,6 +15,29 @@ export const PROFILE_ERROR_MESSAGES = {
   PROFILE_UPDATE_BY_ID_NOT_FOUND: "Hồ sơ không tồn tại",
   PROFILE_UPDATE_BY_ID_FORBIDDEN: "Bạn không có quyền cập nhật hồ sơ này",
   PROFILE_UPDATE_BY_ID_FORBIDDEN_FIELD: "Trường này không được phép cập nhật",
+  PROFILE_ATTENDANCE_SUMMARY_INVALID_PARAMS:
+    "Tham số hồ sơ cho thống kê điểm danh không hợp lệ",
+  PROFILE_ATTENDANCE_SUMMARY_INVALID_QUERY:
+    "Tham số truy vấn thống kê điểm danh không hợp lệ",
+  PROFILE_ATTENDANCE_SUMMARY_PROFILE_NOT_FOUND: "Hồ sơ sinh viên không tồn tại",
+  PROFILE_ATTENDANCE_SUMMARY_FORBIDDEN:
+    "Bạn không có quyền xem thống kê điểm danh của hồ sơ này",
+  PROFILE_ATTENDANCE_SUMMARY_SECTION_NOT_FOUND: "Lớp học phần không tồn tại",
+  PROFILE_CERTIFICATE_LIST_INVALID_PARAMS: "Tham số hồ sơ không hợp lệ",
+  PROFILE_CERTIFICATE_LIST_INVALID_QUERY:
+    "Tham số truy vấn chứng chỉ không hợp lệ",
+  PROFILE_CERTIFICATE_LIST_PROFILE_NOT_FOUND: "Hồ sơ sinh viên không tồn tại",
+  PROFILE_CERTIFICATE_LIST_FORBIDDEN:
+    "Bạn không có quyền xem chứng chỉ của hồ sơ này",
+  PROFILE_CERTIFICATE_LINK_INVALID_PARAMS: "Tham số hồ sơ không hợp lệ",
+  PROFILE_CERTIFICATE_LINK_INVALID_INPUT: "Dữ liệu gắn chứng chỉ không hợp lệ",
+  PROFILE_CERTIFICATE_LINK_PROFILE_NOT_FOUND: "Hồ sơ sinh viên không tồn tại",
+  PROFILE_CERTIFICATE_LINK_CERTIFICATE_NOT_FOUND: "Chứng chỉ không tồn tại",
+  PROFILE_CERTIFICATE_LINK_ALREADY_EXISTS:
+    "Chứng chỉ đã được gắn cho sinh viên này",
+  PROFILE_CERTIFICATE_UNLINK_INVALID_PARAMS: "Tham số hồ sơ hoặc chứng chỉ không hợp lệ",
+  PROFILE_CERTIFICATE_UNLINK_PROFILE_NOT_FOUND: "Hồ sơ sinh viên không tồn tại",
+  PROFILE_CERTIFICATE_UNLINK_NOT_LINKED: "Chứng chỉ không thuộc sinh viên này",
 } as const;
 
 export const PROFILE_FIELD_ERROR_MESSAGES = {
@@ -30,6 +53,14 @@ export const PROFILE_FIELD_ERROR_MESSAGES = {
     "Giới tính không hợp lệ. Giá trị cho phép: MALE, FEMALE",
   SEARCH_INVALID_TYPE: "Từ khóa tìm kiếm phải là chuỗi",
   PROFILE_ID_INVALID: "Mã hồ sơ phải là số nguyên dương",
+  SECTION_ID_INVALID: "Mã lớp học phần phải là số nguyên dương",
+  QUERY_CERTIFICATE_TYPE_ID_INVALID:
+    "certificateTypeId phải là số nguyên dương",
+  QUERY_IS_VERIFIED_INVALID: "isVerified chỉ chấp nhận true hoặc false",
+  CERTIFICATE_ID_REQUIRED: "certificateId là bắt buộc",
+  CERTIFICATE_ID_INVALID_TYPE: "certificateId phải là số",
+  CERTIFICATE_ID_INVALID_INTEGER: "certificateId phải là số nguyên",
+  CERTIFICATE_ID_INVALID_POSITIVE: "certificateId phải lớn hơn 0",
   ACCOUNT_ID_REQUIRED: "accountId là bắt buộc",
   ACCOUNT_ID_INVALID_TYPE: "accountId phải là số",
   ACCOUNT_ID_INVALID_INTEGER: "accountId phải là số nguyên",

@@ -6,11 +6,15 @@ import { parseOrThrow, parsePositiveIntParamOrThrow } from "../utils/validation"
 import { sendSuccess } from "../utils/response";
 import {
   createProfile,
+  getProfileAttendanceSummary,
+  linkCertificateToProfile,
+  listProfileCertificates,
   getMyProfile,
   getProfileDetailById,
   listLecturerProfiles,
   listProfiles,
   listStudentProfiles,
+  unlinkCertificateFromProfile,
   updateMyProfile,
   updateProfileById,
 } from "../services/profileService";
@@ -141,14 +145,56 @@ const getProfileIdFromParams = (
   });
 };
 
+const getCertificateIdFromParams = (
+  req: Request,
+  options: {
+    code: string;
+    message: string;
+  },
+): number => {
+  return parsePositiveIntParamOrThrow(req.params.certificateId, {
+    code: options.code,
+    message: options.message,
+    fieldName: "certificateId",
+    fieldMessage: PROFILE_FIELD_ERROR_MESSAGES.CERTIFICATE_ID_INVALID_POSITIVE,
+  });
+};
+
+const parseBooleanQueryValue = (value: unknown): unknown => {
+  if (value === undefined) {
+    return undefined;
+  }
+
+  if (typeof value === "boolean") {
+    return value;
+  }
+
+  if (typeof value === "string") {
+    const normalized = value.trim().toLowerCase();
+    if (normalized === "true") {
+      return true;
+    }
+
+    if (normalized === "false") {
+      return false;
+    }
+  }
+
+  return value;
+};
+
 const listProfilesQuerySchema = z.object({
   page: z.coerce
-    .number()
+    .number({
+      error: PROFILE_FIELD_ERROR_MESSAGES.QUERY_PAGE_INVALID_INTEGER,
+    })
     .int(PROFILE_FIELD_ERROR_MESSAGES.QUERY_PAGE_INVALID_INTEGER)
     .positive(PROFILE_FIELD_ERROR_MESSAGES.QUERY_PAGE_INVALID_POSITIVE)
     .default(1),
   limit: z.coerce
-    .number()
+    .number({
+      error: PROFILE_FIELD_ERROR_MESSAGES.QUERY_LIMIT_INVALID_INTEGER,
+    })
     .int(PROFILE_FIELD_ERROR_MESSAGES.QUERY_LIMIT_INVALID_INTEGER)
     .positive(PROFILE_FIELD_ERROR_MESSAGES.QUERY_LIMIT_INVALID_POSITIVE)
     .default(10),
@@ -228,6 +274,68 @@ const createProfileSchema = z.object({
       error: PROFILE_FIELD_ERROR_MESSAGES.STATUS_INVALID,
     })
     .optional(),
+});
+
+const attendanceSummaryQuerySchema = z.object({
+  sectionId: z.coerce
+    .number({
+      error: PROFILE_FIELD_ERROR_MESSAGES.SECTION_ID_INVALID,
+    })
+    .int(PROFILE_FIELD_ERROR_MESSAGES.SECTION_ID_INVALID)
+    .positive(PROFILE_FIELD_ERROR_MESSAGES.SECTION_ID_INVALID)
+    .optional(),
+});
+
+const profileCertificatesListQuerySchema = z.object({
+  page: z.coerce
+    .number({
+      error: PROFILE_FIELD_ERROR_MESSAGES.QUERY_PAGE_INVALID_INTEGER,
+    })
+    .int(PROFILE_FIELD_ERROR_MESSAGES.QUERY_PAGE_INVALID_INTEGER)
+    .positive(PROFILE_FIELD_ERROR_MESSAGES.QUERY_PAGE_INVALID_POSITIVE)
+    .default(1),
+  limit: z.coerce
+    .number({
+      error: PROFILE_FIELD_ERROR_MESSAGES.QUERY_LIMIT_INVALID_INTEGER,
+    })
+    .int(PROFILE_FIELD_ERROR_MESSAGES.QUERY_LIMIT_INVALID_INTEGER)
+    .positive(PROFILE_FIELD_ERROR_MESSAGES.QUERY_LIMIT_INVALID_POSITIVE)
+    .default(10),
+  search: z
+    .string({
+      error: PROFILE_FIELD_ERROR_MESSAGES.SEARCH_INVALID_TYPE,
+    })
+    .optional(),
+  certificateTypeId: z.coerce
+    .number({
+      error: PROFILE_FIELD_ERROR_MESSAGES.QUERY_CERTIFICATE_TYPE_ID_INVALID,
+    })
+    .int(PROFILE_FIELD_ERROR_MESSAGES.QUERY_CERTIFICATE_TYPE_ID_INVALID)
+    .positive(PROFILE_FIELD_ERROR_MESSAGES.QUERY_CERTIFICATE_TYPE_ID_INVALID)
+    .optional(),
+  isVerified: z
+    .preprocess(
+      parseBooleanQueryValue,
+      z.boolean({
+        error: PROFILE_FIELD_ERROR_MESSAGES.QUERY_IS_VERIFIED_INVALID,
+      }),
+    )
+    .optional(),
+});
+
+const linkCertificateSchema = z.object({
+  certificateId: z.coerce
+    .number({
+      error: (issue) => {
+        if (issue.input === undefined) {
+          return PROFILE_FIELD_ERROR_MESSAGES.CERTIFICATE_ID_REQUIRED;
+        }
+
+        return PROFILE_FIELD_ERROR_MESSAGES.CERTIFICATE_ID_INVALID_TYPE;
+      },
+    })
+    .int(PROFILE_FIELD_ERROR_MESSAGES.CERTIFICATE_ID_INVALID_INTEGER)
+    .positive(PROFILE_FIELD_ERROR_MESSAGES.CERTIFICATE_ID_INVALID_POSITIVE),
 });
 
 const listQueryOptions = {
@@ -497,6 +605,118 @@ export async function updateProfileByIdHandler(
     }, parsed);
 
     sendSuccess(res, updated, 200);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function getProfileAttendanceSummaryHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> {
+  try {
+    const profileId = getProfileIdFromParams(req, {
+      code: PROFILE_ERROR_CODES.PROFILE_ATTENDANCE_SUMMARY_INVALID_PARAMS,
+      message: PROFILE_ERROR_MESSAGES.PROFILE_ATTENDANCE_SUMMARY_INVALID_PARAMS,
+    });
+
+    const query = parseOrThrow(attendanceSummaryQuerySchema, req.query, {
+      code: PROFILE_ERROR_CODES.PROFILE_ATTENDANCE_SUMMARY_INVALID_QUERY,
+      message: PROFILE_ERROR_MESSAGES.PROFILE_ATTENDANCE_SUMMARY_INVALID_QUERY,
+    });
+
+    const summary = await getProfileAttendanceSummary(
+      profileId,
+      {
+        accountId: req.user!.accountId,
+        role: req.user!.role as RoleEnum,
+      },
+      query,
+    );
+
+    sendSuccess(res, summary, 200);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function getProfileCertificatesHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> {
+  try {
+    const profileId = getProfileIdFromParams(req, {
+      code: PROFILE_ERROR_CODES.PROFILE_CERTIFICATE_LIST_INVALID_PARAMS,
+      message: PROFILE_ERROR_MESSAGES.PROFILE_CERTIFICATE_LIST_INVALID_PARAMS,
+    });
+
+    const query = parseOrThrow(profileCertificatesListQuerySchema, req.query, {
+      code: PROFILE_ERROR_CODES.PROFILE_CERTIFICATE_LIST_INVALID_QUERY,
+      message: PROFILE_ERROR_MESSAGES.PROFILE_CERTIFICATE_LIST_INVALID_QUERY,
+    });
+
+    const result = await listProfileCertificates(
+      profileId,
+      {
+        accountId: req.user!.accountId,
+        role: req.user!.role as RoleEnum,
+      },
+      query,
+    );
+
+    sendSuccess(res, result.certificates, 200, {
+      page: query.page,
+      limit: query.limit,
+      total: result.total,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function addProfileCertificateHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> {
+  try {
+    const profileId = getProfileIdFromParams(req, {
+      code: PROFILE_ERROR_CODES.PROFILE_CERTIFICATE_LINK_INVALID_PARAMS,
+      message: PROFILE_ERROR_MESSAGES.PROFILE_CERTIFICATE_LINK_INVALID_PARAMS,
+    });
+
+    const payload = parseOrThrow(linkCertificateSchema, req.body, {
+      code: PROFILE_ERROR_CODES.PROFILE_CERTIFICATE_LINK_INVALID_INPUT,
+      message: PROFILE_ERROR_MESSAGES.PROFILE_CERTIFICATE_LINK_INVALID_INPUT,
+    });
+
+    const result = await linkCertificateToProfile(profileId, payload.certificateId);
+    sendSuccess(res, result, 200);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function removeProfileCertificateHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> {
+  try {
+    const profileId = getProfileIdFromParams(req, {
+      code: PROFILE_ERROR_CODES.PROFILE_CERTIFICATE_UNLINK_INVALID_PARAMS,
+      message: PROFILE_ERROR_MESSAGES.PROFILE_CERTIFICATE_UNLINK_INVALID_PARAMS,
+    });
+
+    const certificateId = getCertificateIdFromParams(req, {
+      code: PROFILE_ERROR_CODES.PROFILE_CERTIFICATE_UNLINK_INVALID_PARAMS,
+      message: PROFILE_ERROR_MESSAGES.PROFILE_CERTIFICATE_UNLINK_INVALID_PARAMS,
+    });
+
+    await unlinkCertificateFromProfile(profileId, certificateId);
+    sendSuccess(res, null, 200);
   } catch (error) {
     next(error);
   }
