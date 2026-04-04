@@ -3,6 +3,7 @@ import { z } from "zod";
 import { sendSuccess } from "../utils/response";
 import * as authService from "../services/authService";
 import { parseOrThrow } from "../utils/validation";
+import { AppError } from "../middleware/errorHandler";
 import { AUTH_ERROR_CODES } from "../constants/errors/auth/codes";
 import {
   AUTH_ERROR_MESSAGES,
@@ -40,6 +41,18 @@ const refreshTokenSchema = z.object({
   refreshToken: requiredString(AUTH_FIELD_ERROR_MESSAGES.REFRESH_TOKEN_REQUIRED)
     .trim()
     .min(1, AUTH_FIELD_ERROR_MESSAGES.REFRESH_TOKEN_REQUIRED),
+});
+
+const changePasswordSchema = z.object({
+  currentPassword: requiredString(
+    AUTH_FIELD_ERROR_MESSAGES.CURRENT_PASSWORD_REQUIRED,
+  ).min(1, AUTH_FIELD_ERROR_MESSAGES.CURRENT_PASSWORD_REQUIRED),
+  newPassword: requiredString(AUTH_FIELD_ERROR_MESSAGES.NEW_PASSWORD_REQUIRED)
+    .min(8, AUTH_FIELD_ERROR_MESSAGES.PASSWORD_MIN_LENGTH)
+    .regex(
+      passwordRegex,
+      AUTH_FIELD_ERROR_MESSAGES.PASSWORD_WEAK,
+    ),
 });
 
 const registerSchema = z
@@ -117,6 +130,35 @@ export const logout = async (req: Request, res: Response): Promise<void> => {
 
   const result = await authService.logout({
     refreshToken: parsed.refreshToken,
+  });
+
+  sendSuccess(res, result, 200);
+};
+
+export const changePassword = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  const parsed = parseOrThrow(changePasswordSchema, req.body, {
+    code: AUTH_ERROR_CODES.AUTH_CHANGE_PASSWORD_INVALID_INPUT,
+    message: AUTH_ERROR_MESSAGES.AUTH_CHANGE_PASSWORD_INVALID_INPUT,
+  });
+
+  if (!req.user) {
+    throw new AppError(AUTH_ERROR_MESSAGES.UNAUTHORIZED, {
+      statusCode: 401,
+      code: AUTH_ERROR_CODES.UNAUTHORIZED,
+      details: {
+        formErrors: [AUTH_ERROR_MESSAGES.UNAUTHORIZED],
+        fieldErrors: {},
+      },
+    });
+  }
+
+  const result = await authService.changePassword({
+    accountId: req.user.accountId,
+    currentPassword: parsed.currentPassword,
+    newPassword: parsed.newPassword,
   });
 
   sendSuccess(res, result, 200);

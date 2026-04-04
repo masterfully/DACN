@@ -469,19 +469,47 @@ Response Structure:
   ```json
   {
     "success": true,
-    "data": null
+    "data": {
+      "message": "Đổi mật khẩu thành công"
+    },
+    "error": null,
+    "meta": null
   }
   ```
 
-- Error:
+- Error - Wrong Current Password (`AUTH_CHANGE_PASSWORD_WRONG_CURRENT_PASSWORD`):
 
   ```json
   {
     "success": false,
+    "data": null,
     "error": {
-      "code": "WRONG_CURRENT_PASSWORD",
-      "message": "Mật khẩu hiện tại không chính xác"
-    }
+      "code": "AUTH_CHANGE_PASSWORD_WRONG_CURRENT_PASSWORD",
+      "message": "Mật khẩu hiện tại không chính xác",
+      "details": {
+        "formErrors": ["Mật khẩu hiện tại không chính xác"],
+        "fieldErrors": {}
+      }
+    },
+    "meta": null
+  }
+  ```
+
+- Error - New Password Equals Current (`AUTH_CHANGE_PASSWORD_SAME_AS_CURRENT`):
+
+  ```json
+  {
+    "success": false,
+    "data": null,
+    "error": {
+      "code": "AUTH_CHANGE_PASSWORD_SAME_AS_CURRENT",
+      "message": "Mật khẩu mới không được trùng với mật khẩu hiện tại",
+      "details": {
+        "formErrors": ["Mật khẩu mới không được trùng với mật khẩu hiện tại"],
+        "fieldErrors": {}
+      }
+    },
+    "meta": null
   }
   ```
 

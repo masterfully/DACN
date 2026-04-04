@@ -29,6 +29,12 @@ export interface RefreshTokenInput {
   refreshToken: string;
 }
 
+export interface ChangePasswordInput {
+  accountId: number;
+  currentPassword: string;
+  newPassword: string;
+}
+
 interface AuthTokenPayload {
   accountId: number;
   role: RoleEnum;
@@ -569,5 +575,88 @@ export const refreshToken = async (input: RefreshTokenInput) => {
   return {
     accessToken: newAccessToken,
     refreshToken: newRefreshToken,
+  };
+};
+
+export const changePassword = async (input: ChangePasswordInput) => {
+  const account = await prisma.account.findFirst({
+    where: {
+      AccountID: input.accountId,
+      IsDeleted: false,
+    },
+    select: {
+      AccountID: true,
+      Password: true,
+    },
+  });
+
+  if (!account) {
+    throw new AppError(AUTH_ERROR_MESSAGES.UNAUTHORIZED, {
+      statusCode: 401,
+      code: AUTH_ERROR_CODES.UNAUTHORIZED,
+      details: {
+        formErrors: [AUTH_ERROR_MESSAGES.UNAUTHORIZED],
+        fieldErrors: {},
+      },
+    });
+  }
+
+  const currentPasswordMatched = await bcrypt.compare(
+    input.currentPassword,
+    account.Password,
+  );
+
+  if (!currentPasswordMatched) {
+    throw new AppError(
+      AUTH_ERROR_MESSAGES.AUTH_CHANGE_PASSWORD_WRONG_CURRENT_PASSWORD,
+      {
+        statusCode: 401,
+        code: AUTH_ERROR_CODES.AUTH_CHANGE_PASSWORD_WRONG_CURRENT_PASSWORD,
+        details: {
+          formErrors: [
+            AUTH_ERROR_MESSAGES.AUTH_CHANGE_PASSWORD_WRONG_CURRENT_PASSWORD,
+          ],
+          fieldErrors: {},
+        },
+      },
+    );
+  }
+
+  if (input.currentPassword === input.newPassword) {
+    throw new AppError(AUTH_ERROR_MESSAGES.AUTH_CHANGE_PASSWORD_SAME_AS_CURRENT, {
+      statusCode: 409,
+      code: AUTH_ERROR_CODES.AUTH_CHANGE_PASSWORD_SAME_AS_CURRENT,
+      details: {
+        formErrors: [AUTH_ERROR_MESSAGES.AUTH_CHANGE_PASSWORD_SAME_AS_CURRENT],
+        fieldErrors: {},
+      },
+    });
+  }
+
+  const hashedNewPassword = await bcrypt.hash(input.newPassword, 10);
+  const now = new Date();
+
+  await prisma.$transaction([
+    prisma.account.update({
+      where: {
+        AccountID: account.AccountID,
+      },
+      data: {
+        Password: hashedNewPassword,
+      },
+    }),
+    prisma.refreshToken.updateMany({
+      where: {
+        AccountID: account.AccountID,
+        RevokedAt: null,
+      },
+      data: {
+        RevokedAt: now,
+      },
+    }),
+  ]);
+
+  return {
+    message: AUTH_ERROR_MESSAGES.AUTH_CHANGE_PASSWORD_SUCCESS,
   };
 };
