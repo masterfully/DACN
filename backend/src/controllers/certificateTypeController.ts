@@ -45,8 +45,13 @@ export async function listCertificateTypesHandler(
       message: CERTIFICATE_TYPE_ERROR_MESSAGES.CERTIFICATE_TYPE_LIST_INVALID_QUERY,
     });
 
-    const result = await listCertificateTypes(validated);
-    sendSuccess(res, result, 200, result.meta);
+    const { rows, total } = await listCertificateTypes(validated);
+    const meta = {
+      page: validated.page,
+      limit: validated.limit,
+      total,
+    };
+    sendSuccess(res, rows, 200, meta);
   } catch (error) {
     next(error);
   }

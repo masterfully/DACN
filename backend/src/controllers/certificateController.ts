@@ -52,8 +52,13 @@ export async function listCertificatesHandler(
       message: CERTIFICATE_ERROR_MESSAGES.CERTIFICATE_LIST_INVALID_QUERY,
     });
 
-    const result = await listCertificates(validated);
-    sendSuccess(res, result, 200, result.meta);
+    const { rows, total } = await listCertificates(validated);
+    const meta = {
+      page: validated.page,
+      limit: validated.limit,
+      total,
+    };
+    sendSuccess(res, rows, 200, meta);
   } catch (error) {
     next(error);
   }

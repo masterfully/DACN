@@ -39,16 +39,12 @@ export interface CertificateTypeListItem {
   description: string | null;
 }
 
-export interface PaginatedCertificateTypeList {
-  data: CertificateTypeListItem[];
-  meta: {
-    page: number;
-    limit: number;
-    total: number;
-  };
+export interface CertificateTypeListResult {
+  rows: CertificateTypeListItem[];
+  total: number;
 }
 
-export const listCertificateTypes = async (params: z.infer<typeof listSchema>): Promise<PaginatedCertificateTypeList> => {
+export const listCertificateTypes = async (params: z.infer<typeof listSchema>): Promise<CertificateTypeListResult> => {
   const validated = listSchema.parse(params);
   const where: any = {};
 
@@ -71,19 +67,15 @@ export const listCertificateTypes = async (params: z.infer<typeof listSchema>): 
     prisma.certificateType.count({ where }),
   ]);
 
-  const data: CertificateTypeListItem[] = items.map(item => ({
+  const rows: CertificateTypeListItem[] = items.map(item => ({
     certificateTypeId: item.CertificateTypeID,
     typeName: item.TypeName,
     description: item.Description,
   }));
 
   return {
-    data,
-    meta: {
-      page: validated.page,
-      limit: validated.limit,
-      total,
-    },
+    rows,
+    total,
   };
 };
 

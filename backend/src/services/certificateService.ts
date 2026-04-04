@@ -67,13 +67,9 @@ export interface CertificateDetailItem {
   metadata: any;
 }
 
-export interface PaginatedCertificateList {
-  data: CertificateListItem[];
-  meta: {
-    page: number;
-    limit: number;
-    total: number;
-  };
+export interface CertificateListResult {
+  rows: CertificateListItem[];
+  total: number;
 }
 
 type CertificateWithRelations = Prisma.CertificateDetailGetPayload<{
@@ -93,7 +89,7 @@ type CertificateWithRelations = Prisma.CertificateDetailGetPayload<{
   };
 }>;
 
-export const listCertificates = async (params: z.infer<typeof listSchema>): Promise<PaginatedCertificateList> => {
+export const listCertificates = async (params: z.infer<typeof listSchema>): Promise<CertificateListResult> => {
   const validated = listSchema.parse(params);
   const where: any = {};
 
@@ -129,7 +125,7 @@ export const listCertificates = async (params: z.infer<typeof listSchema>): Prom
     prisma.certificateDetail.count({ where }),
   ]);
 
-  const data: CertificateListItem[] = items.map(item => ({
+  const rows: CertificateListItem[] = items.map(item => ({
     certificateId: item.CertificateID,
     applicationId: item.application!.ApplicationID,  
     certificateTypeId: item.CertificateTypeID,
@@ -141,12 +137,8 @@ export const listCertificates = async (params: z.infer<typeof listSchema>): Prom
   }));
 
   return {
-    data,
-    meta: {
-      page: validated.page,
-      limit: validated.limit,
-      total,
-    },
+    rows,
+    total,
   };
 };
 
