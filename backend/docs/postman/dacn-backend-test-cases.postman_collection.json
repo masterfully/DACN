@@ -8446,6 +8446,876 @@
       ]
     },
     {
+      "name": "Parents",
+      "item": [
+        {
+          "name": "Assign Parent",
+          "item": [
+            {
+              "name": "Assign Parent - Success (ADMIN)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/parents/assign",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "parents",
+                    "assign"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"studentId\": {{existing_student_profile_id}},\n  \"parentId\": {{existing_parent_profile_id}}\n}"
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Assign Parent - Missing Token",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/parents/assign",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "parents",
+                    "assign"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"studentId\": {{existing_student_profile_id}},\n  \"parentId\": {{existing_parent_profile_id}}\n}"
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Assign Parent - Forbidden (STUDENT)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{student_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/parents/assign",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "parents",
+                    "assign"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"studentId\": {{existing_student_profile_id}},\n  \"parentId\": {{existing_parent_profile_id}}\n}"
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Assign Parent - Forbidden (PARENT)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{parent_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/parents/assign",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "parents",
+                    "assign"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"studentId\": {{existing_student_profile_id}},\n  \"parentId\": {{existing_parent_profile_id}}\n}"
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Assign Parent - Missing studentId",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/parents/assign",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "parents",
+                    "assign"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"parentId\": {{existing_parent_profile_id}}\n}"
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Assign Parent - Missing parentId",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/parents/assign",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "parents",
+                    "assign"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"studentId\": {{existing_student_profile_id}}\n}"
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Assign Parent - Invalid studentId type",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/parents/assign",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "parents",
+                    "assign"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"studentId\": \"abc\",\n  \"parentId\": {{existing_parent_profile_id}}\n}"
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Assign Parent - Invalid parentId type",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/parents/assign",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "parents",
+                    "assign"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"studentId\": {{existing_student_profile_id}},\n  \"parentId\": \"abc\"\n}"
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Assign Parent - Student Or Parent Not Found",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/parents/assign",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "parents",
+                    "assign"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"studentId\": {{student_not_found_profile_id}},\n  \"parentId\": {{parent_not_found_profile_id}}\n}"
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Assign Parent - Already Linked",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/parents/assign",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "parents",
+                    "assign"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"studentId\": {{linked_student_profile_id}},\n  \"parentId\": {{linked_parent_profile_id}}\n}"
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Unassign Parent",
+          "item": [
+            {
+              "name": "Unassign Parent - Success (ADMIN)",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/parents/assign?studentId={{linked_student_profile_id}}&parentId={{linked_parent_profile_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "parents",
+                    "assign"
+                  ],
+                  "query": [
+                    {
+                      "key": "studentId",
+                      "value": "{{linked_student_profile_id}}"
+                    },
+                    {
+                      "key": "parentId",
+                      "value": "{{linked_parent_profile_id}}"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Unassign Parent - Missing Token",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/parents/assign?studentId={{linked_student_profile_id}}&parentId={{linked_parent_profile_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "parents",
+                    "assign"
+                  ],
+                  "query": [
+                    {
+                      "key": "studentId",
+                      "value": "{{linked_student_profile_id}}"
+                    },
+                    {
+                      "key": "parentId",
+                      "value": "{{linked_parent_profile_id}}"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Unassign Parent - Forbidden (STUDENT)",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{student_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/parents/assign?studentId={{linked_student_profile_id}}&parentId={{linked_parent_profile_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "parents",
+                    "assign"
+                  ],
+                  "query": [
+                    {
+                      "key": "studentId",
+                      "value": "{{linked_student_profile_id}}"
+                    },
+                    {
+                      "key": "parentId",
+                      "value": "{{linked_parent_profile_id}}"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Unassign Parent - Forbidden (PARENT)",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{parent_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/parents/assign?studentId={{linked_student_profile_id}}&parentId={{linked_parent_profile_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "parents",
+                    "assign"
+                  ],
+                  "query": [
+                    {
+                      "key": "studentId",
+                      "value": "{{linked_student_profile_id}}"
+                    },
+                    {
+                      "key": "parentId",
+                      "value": "{{linked_parent_profile_id}}"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Unassign Parent - Missing studentId query",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/parents/assign?parentId={{linked_parent_profile_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "parents",
+                    "assign"
+                  ],
+                  "query": [
+                    {
+                      "key": "parentId",
+                      "value": "{{linked_parent_profile_id}}"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Unassign Parent - Missing parentId query",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/parents/assign?studentId={{linked_student_profile_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "parents",
+                    "assign"
+                  ],
+                  "query": [
+                    {
+                      "key": "studentId",
+                      "value": "{{linked_student_profile_id}}"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Unassign Parent - Invalid query type",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/parents/assign?studentId=abc&parentId=xyz",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "parents",
+                    "assign"
+                  ],
+                  "query": [
+                    {
+                      "key": "studentId",
+                      "value": "abc"
+                    },
+                    {
+                      "key": "parentId",
+                      "value": "xyz"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Unassign Parent - Link Not Found",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/parents/assign?studentId={{unlinked_student_profile_id}}&parentId={{unlinked_parent_profile_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "parents",
+                    "assign"
+                  ],
+                  "query": [
+                    {
+                      "key": "studentId",
+                      "value": "{{unlinked_student_profile_id}}"
+                    },
+                    {
+                      "key": "parentId",
+                      "value": "{{unlinked_parent_profile_id}}"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Get Student Parents",
+          "item": [
+            {
+              "name": "Get Student Parents - Success (ADMIN)",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/students/{{existing_student_profile_id}}/parents?page=1&limit=10",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "students",
+                    "{{existing_student_profile_id}}",
+                    "parents"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Student Parents - Missing Token",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/students/{{existing_student_profile_id}}/parents?page=1&limit=10",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "students",
+                    "{{existing_student_profile_id}}",
+                    "parents"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Student Parents - Forbidden (LECTURER)",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{lecturer_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/students/{{existing_student_profile_id}}/parents?page=1&limit=10",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "students",
+                    "{{existing_student_profile_id}}",
+                    "parents"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Student Parents - Forbidden (STUDENT)",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{student_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/students/{{existing_student_profile_id}}/parents?page=1&limit=10",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "students",
+                    "{{existing_student_profile_id}}",
+                    "parents"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Student Parents - Forbidden (PARENT)",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{parent_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/students/{{existing_student_profile_id}}/parents?page=1&limit=10",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "students",
+                    "{{existing_student_profile_id}}",
+                    "parents"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Student Parents - Invalid studentId",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/students/abc/parents?page=1&limit=10",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "students",
+                    "abc",
+                    "parents"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Student Parents - Student Not Found",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/students/{{student_not_found_profile_id}}/parents?page=1&limit=10",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "students",
+                    "{{student_not_found_profile_id}}",
+                    "parents"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Student Parents - Invalid Query",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/students/{{existing_student_profile_id}}/parents?page=abc&limit=-1",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "students",
+                    "{{existing_student_profile_id}}",
+                    "parents"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "abc"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "-1"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "Rooms",
       "item": [
         {
@@ -12741,191 +13611,439 @@
       "description": "Profile application CRUD and review tests"
     },
     {
-  "name": "Certificate & CertificateType – Full Coverage",
-  "item": [
-    {
-      "name": "CertificateType APIs – Full",
+      "name": "Certificate & CertificateType – Full Coverage",
       "item": [
         {
-          "name": "POST create (admin) – success & save id",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{admin_token}}" },
-              { "key": "Content-Type", "value": "application/json" }
-            ],
-            "url": { "raw": "{{base_url}}/api/certificate-types", "host": ["{{base_url}}"], "path": ["api","certificate-types"] },
-            "body": {
-              "mode": "raw",
-              "options": { "raw": { "language": "json" } },
-              "raw": "{\n  \"typeName\": \"AUTO_TYPE_{{$timestamp}}\",\n  \"description\": \"auto\"\n}"
+          "name": "CertificateType APIs – Full",
+          "item": [
+            {
+              "name": "POST create (admin) – success & save id",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/certificate-types",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "certificate-types"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  },
+                  "raw": "{\n  \"typeName\": \"AUTO_TYPE_{{$timestamp}}\",\n  \"description\": \"auto\"\n}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.response.to.have.status(201);",
+                      "let j=pm.response.json();",
+                      "pm.expect(j.success).to.eql(true);",
+                      "pm.environment.set('cert_type_id', j.data.certificateTypeId);",
+                      "pm.environment.set('cert_type_name', j.data.typeName);"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "POST create – duplicate",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/certificate-types",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "certificate-types"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  },
+                  "raw": "{\n  \"typeName\": \"{{cert_type_name}}\"\n}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.response.to.have.status(409);",
+                      "pm.expect(pm.response.json().success).to.eql(false);"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "GET list – success",
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{base_url}}/api/certificate-types?page=1&limit=10",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "certificate-types"
+                  ]
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.response.to.have.status(200);",
+                      "pm.expect(pm.response.json().data.data).to.be.an('array');"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "GET by id – success",
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{base_url}}/api/certificate-types/{{cert_type_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "certificate-types",
+                    "{{cert_type_id}}"
+                  ]
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.response.to.have.status(200);",
+                      "pm.expect(pm.response.json().data.certificateTypeId).to.eql(Number(pm.environment.get('cert_type_id')));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "PUT update – success",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/certificate-types/{{cert_type_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "certificate-types",
+                    "{{cert_type_id}}"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  },
+                  "raw": "{\n  \"description\": \"updated\"\n}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.response.to.have.status(200);"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "DELETE – success",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/certificate-types/{{cert_type_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "certificate-types",
+                    "{{cert_type_id}}"
+                  ]
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.response.to.have.status(200);"
+                    ]
+                  }
+                }
+              ]
             }
-          },
-          "event": [{
-            "listen": "test",
-            "script": { "exec": [
-              "pm.response.to.have.status(201);",
-              "let j=pm.response.json();",
-              "pm.expect(j.success).to.eql(true);",
-              "pm.environment.set('cert_type_id', j.data.certificateTypeId);",
-              "pm.environment.set('cert_type_name', j.data.typeName);"
-            ]}
-          }]
+          ]
         },
         {
-          "name": "POST create – duplicate",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{admin_token}}" },
-              { "key": "Content-Type", "value": "application/json" }
-            ],
-            "url": { "raw": "{{base_url}}/api/certificate-types", "host": ["{{base_url}}"], "path": ["api","certificate-types"] },
-            "body": {
-              "mode": "raw",
-              "options": { "raw": { "language": "json" } },
-              "raw": "{\n  \"typeName\": \"{{cert_type_name}}\"\n}"
+          "name": "Certificate APIs – Full",
+          "item": [
+            {
+              "name": "POST create certificate – success & save id",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/certificates",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "certificates"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  },
+                  "raw": "{\n  \"applicationId\": {{approved_app_id}},\n  \"certificateTypeId\": {{existing_cert_type_id}},\n  \"score\": 9\n}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.response.to.have.status(201);",
+                      "let j=pm.response.json();",
+                      "pm.environment.set('cert_id', j.data.certificateId);"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "POST create – business rule (not approved app)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/certificates",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "certificates"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  },
+                  "raw": "{\n  \"applicationId\": {{pending_app_id}},\n  \"certificateTypeId\": {{existing_cert_type_id}},\n  \"score\": 9\n}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.response.to.have.status(400);"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "GET list – success",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/certificates?page=1&limit=10",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "certificates"
+                  ]
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.response.to.have.status(200);"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "GET by id – success",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/certificates/{{cert_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "certificates",
+                    "{{cert_id}}"
+                  ]
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.response.to.have.status(200);"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "DELETE – success",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/certificates/{{cert_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "certificates",
+                    "{{cert_id}}"
+                  ]
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.response.to.have.status(200);"
+                    ]
+                  }
+                }
+              ]
             }
-          },
-          "event": [{
-            "listen": "test",
-            "script": { "exec": [
-              "pm.response.to.have.status(409);",
-              "pm.expect(pm.response.json().success).to.eql(false);"
-            ]}
-          }]
-        },
-        {
-          "name": "GET list – success",
-          "request": {
-            "method": "GET",
-            "url": { "raw": "{{base_url}}/api/certificate-types?page=1&limit=10", "host": ["{{base_url}}"], "path": ["api","certificate-types"] }
-          },
-          "event": [{
-            "listen": "test",
-            "script": { "exec": [
-              "pm.response.to.have.status(200);",
-              "pm.expect(pm.response.json().data.data).to.be.an('array');"
-            ]}
-          }]
-        },
-        {
-          "name": "GET by id – success",
-          "request": {
-            "method": "GET",
-            "url": { "raw": "{{base_url}}/api/certificate-types/{{cert_type_id}}", "host": ["{{base_url}}"], "path": ["api","certificate-types","{{cert_type_id}}"] }
-          },
-          "event": [{
-            "listen": "test",
-            "script": { "exec": [
-              "pm.response.to.have.status(200);",
-              "pm.expect(pm.response.json().data.certificateTypeId).to.eql(Number(pm.environment.get('cert_type_id')));"
-            ]}
-          }]
-        },
-        {
-          "name": "PUT update – success",
-          "request": {
-            "method": "PUT",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{admin_token}}" },
-              { "key": "Content-Type", "value": "application/json" }
-            ],
-            "url": { "raw": "{{base_url}}/api/certificate-types/{{cert_type_id}}", "host": ["{{base_url}}"], "path": ["api","certificate-types","{{cert_type_id}}"] },
-            "body": {
-              "mode": "raw",
-              "options": { "raw": { "language": "json" } },
-              "raw": "{\n  \"description\": \"updated\"\n}"
-            }
-          },
-          "event": [{ "listen": "test", "script": { "exec": ["pm.response.to.have.status(200);"] } }]
-        },
-        {
-          "name": "DELETE – success",
-          "request": {
-            "method": "DELETE",
-            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
-            "url": { "raw": "{{base_url}}/api/certificate-types/{{cert_type_id}}", "host": ["{{base_url}}"], "path": ["api","certificate-types","{{cert_type_id}}"] }
-          },
-          "event": [{ "listen": "test", "script": { "exec": ["pm.response.to.have.status(200);"] } }]
-        }
-      ]
-    },
-    {
-      "name": "Certificate APIs – Full",
-      "item": [
-        {
-          "name": "POST create certificate – success & save id",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{admin_token}}" },
-              { "key": "Content-Type", "value": "application/json" }
-            ],
-            "url": { "raw": "{{base_url}}/api/certificates", "host": ["{{base_url}}"], "path": ["api","certificates"] },
-            "body": {
-              "mode": "raw",
-              "options": { "raw": { "language": "json" } },
-              "raw": "{\n  \"applicationId\": {{approved_app_id}},\n  \"certificateTypeId\": {{existing_cert_type_id}},\n  \"score\": 9\n}"
-            }
-          },
-          "event": [{
-            "listen": "test",
-            "script": { "exec": [
-              "pm.response.to.have.status(201);",
-              "let j=pm.response.json();",
-              "pm.environment.set('cert_id', j.data.certificateId);"
-            ]}
-          }]
-        },
-        {
-          "name": "POST create – business rule (not approved app)",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{admin_token}}" },
-              { "key": "Content-Type", "value": "application/json" }
-            ],
-            "url": { "raw": "{{base_url}}/api/certificates", "host": ["{{base_url}}"], "path": ["api","certificates"] },
-            "body": {
-              "mode": "raw",
-              "options": { "raw": { "language": "json" } },
-              "raw": "{\n  \"applicationId\": {{pending_app_id}},\n  \"certificateTypeId\": {{existing_cert_type_id}},\n  \"score\": 9\n}"
-            }
-          },
-          "event": [{ "listen": "test", "script": { "exec": ["pm.response.to.have.status(400);"] } }]
-        },
-        {
-          "name": "GET list – success",
-          "request": {
-            "method": "GET",
-            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
-            "url": { "raw": "{{base_url}}/api/certificates?page=1&limit=10", "host": ["{{base_url}}"], "path": ["api","certificates"] }
-          },
-          "event": [{ "listen": "test", "script": { "exec": ["pm.response.to.have.status(200);"] } }]
-        },
-        {
-          "name": "GET by id – success",
-          "request": {
-            "method": "GET",
-            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
-            "url": { "raw": "{{base_url}}/api/certificates/{{cert_id}}", "host": ["{{base_url}}"], "path": ["api","certificates","{{cert_id}}"] }
-          },
-          "event": [{ "listen": "test", "script": { "exec": ["pm.response.to.have.status(200);"] } }]
-        },
-        {
-          "name": "DELETE – success",
-          "request": {
-            "method": "DELETE",
-            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
-            "url": { "raw": "{{base_url}}/api/certificates/{{cert_id}}", "host": ["{{base_url}}"], "path": ["api","certificates","{{cert_id}}"] }
-          },
-          "event": [{ "listen": "test", "script": { "exec": ["pm.response.to.have.status(200);"] } }]
+          ]
         }
       ]
     }
-  ]
-}
   ],
   "variable": [
     {
@@ -13263,6 +14381,42 @@
     {
       "key": "certificate_type_filter_id",
       "value": "1"
+    },
+    {
+      "key": "parent_token",
+      "value": ""
+    },
+    {
+      "key": "existing_student_profile_id",
+      "value": "1"
+    },
+    {
+      "key": "existing_parent_profile_id",
+      "value": "2"
+    },
+    {
+      "key": "linked_student_profile_id",
+      "value": "1"
+    },
+    {
+      "key": "linked_parent_profile_id",
+      "value": "2"
+    },
+    {
+      "key": "unlinked_student_profile_id",
+      "value": "999998"
+    },
+    {
+      "key": "unlinked_parent_profile_id",
+      "value": "999997"
+    },
+    {
+      "key": "student_not_found_profile_id",
+      "value": "999999"
+    },
+    {
+      "key": "parent_not_found_profile_id",
+      "value": "999999"
     }
   ]
 }

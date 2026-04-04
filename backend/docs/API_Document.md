@@ -5107,6 +5107,7 @@ Rules:
   {
     "success": true,
     "data": {
+      "message": "Gán phụ huynh cho học sinh thành công",
       "studentId": 1001,
       "parentId": 2001
     }
@@ -5119,7 +5120,7 @@ Rules:
   {
     "success": false,
     "error": {
-      "code": "STUDENT_OR_PARENT_NOT_FOUND",
+      "code": "PARENT_ASSIGN_STUDENT_OR_PARENT_NOT_FOUND",
       "message": "Học sinh hoặc phụ huynh không tồn tại"
     }
   }
@@ -5131,7 +5132,7 @@ Rules:
   {
     "success": false,
     "error": {
-      "code": "ALREADY_LINKED",
+      "code": "PARENT_ASSIGN_ALREADY_LINKED",
       "message": "Phụ huynh này đã được gán cho học sinh này"
     }
   }
@@ -5168,7 +5169,9 @@ Authorization: Bearer <token>
   ```json
   {
     "success": true,
-    "data": null
+    "data": {
+      "message": "Hủy liên kết phụ huynh - học sinh thành công"
+    }
   }
   ```
 
@@ -5178,7 +5181,7 @@ Authorization: Bearer <token>
   {
     "success": false,
     "error": {
-      "code": "PARENT_LINK_NOT_FOUND",
+      "code": "PARENT_UNASSIGN_LINK_NOT_FOUND",
       "message": "Liên kết phụ huynh - học sinh không tồn tại"
     }
   }
@@ -5241,7 +5244,7 @@ Authorization: Bearer <token>
   {
     "success": false,
     "error": {
-      "code": "STUDENT_NOT_FOUND",
+      "code": "PARENT_STUDENT_PARENTS_STUDENT_NOT_FOUND",
       "message": "Học sinh không tồn tại"
     }
   }
