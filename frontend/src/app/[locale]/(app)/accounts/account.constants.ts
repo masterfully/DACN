@@ -1,4 +1,4 @@
-import type { Role } from "@/types/account";
+import type { ProfileStatus, Role } from "@/types/account";
 
 export const ACCOUNT_ROLE_OPTIONS: Array<{ value: Role; label: string }> = [
   { value: "ADMIN", label: "Quản trị viên" },
@@ -20,3 +20,12 @@ export const ACCOUNT_ROLE_BADGE_STYLES: Record<Role, string> = {
   STUDENT: "bg-emerald-100 text-emerald-800",
   PARENT: "bg-violet-100 text-violet-800",
 };
+
+export const ACCOUNT_STATUS_OPTIONS: Array<{
+  value: ProfileStatus;
+  label: string;
+}> = [
+  { value: "ACTIVE", label: "Hoạt động" },
+  { value: "INACTIVE", label: "Không hoạt động" },
+  { value: "BANNED", label: "Bị khóa" },
+];

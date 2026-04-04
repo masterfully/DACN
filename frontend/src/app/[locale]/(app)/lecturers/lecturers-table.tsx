@@ -16,6 +16,20 @@ import {
 } from "./lecturer-form-dialog";
 import { LecturerRowActions } from "./lecturer-row-actions";
 
+const normalizeMaybe = (
+  value: string | null | undefined,
+): string | undefined => {
+  const normalized = value?.trim();
+  return normalized ? normalized : undefined;
+};
+
+const normalizeUpperMaybe = (
+  value: string | null | undefined,
+): string | undefined => {
+  const normalized = value?.trim().toUpperCase();
+  return normalized ? normalized : undefined;
+};
+
 export function LecturersTable() {
   const { state: urlState, replaceState } = useListTableUrl();
   const { page, limit: pageSize, q: search } = urlState;
@@ -59,7 +73,52 @@ export function LecturersTable() {
       toast.error("Giảng viên chưa có profile để cập nhật.");
       return false;
     }
-    const result = await updateProfile(buildUpdateLecturerPayload(values));
+    const payload = buildUpdateLecturerPayload(values);
+    const profilePatch: {
+      fullName?: string;
+      phoneNumber?: string;
+      dateOfBirth?: string;
+      gender?: string;
+      status?: string;
+    } = {};
+
+    if (
+      normalizeMaybe(payload.fullName) !==
+      normalizeMaybe(editingLecturer.fullName)
+    ) {
+      profilePatch.fullName = payload.fullName;
+    }
+    if (
+      normalizeMaybe(payload.phoneNumber) !==
+      normalizeMaybe(editingLecturer.phoneNumber)
+    ) {
+      profilePatch.phoneNumber = payload.phoneNumber;
+    }
+    if (
+      normalizeMaybe(payload.dateOfBirth) !==
+      normalizeMaybe(editingLecturer.dateOfBirth)
+    ) {
+      profilePatch.dateOfBirth = payload.dateOfBirth;
+    }
+    if (
+      normalizeUpperMaybe(payload.gender) !==
+      normalizeUpperMaybe(editingLecturer.gender)
+    ) {
+      profilePatch.gender = payload.gender;
+    }
+    if (
+      normalizeUpperMaybe(payload.status) !==
+      normalizeUpperMaybe(editingLecturer.status)
+    ) {
+      profilePatch.status = payload.status;
+    }
+
+    if (Object.keys(profilePatch).length === 0) {
+      toast.info("Không có thay đổi để cập nhật.");
+      return true;
+    }
+
+    const result = await updateProfile(profilePatch);
     if (result.ok) {
       toast.success("Cập nhật giảng viên thành công.");
       await refreshLecturers();

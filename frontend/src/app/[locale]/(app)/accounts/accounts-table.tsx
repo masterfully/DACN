@@ -27,7 +27,7 @@ import { accountColumns } from "./columns";
 
 export function AccountsTable() {
   const { state: urlState, replaceState } = useListTableUrl();
-  const { page, limit: pageSize } = urlState;
+  const { page, limit: pageSize, q: search } = urlState;
 
   // Detail sheet
   const [detailAccount, setDetailAccount] = React.useState<Account | null>(
@@ -45,7 +45,11 @@ export function AccountsTable() {
     isLoading,
     error,
     mutate: refreshAccounts,
-  } = useAccountList({ page, limit: pageSize });
+  } = useAccountList({
+    page,
+    limit: pageSize,
+    search: search.trim() || undefined,
+  });
 
   console.log("data", data);
 
@@ -174,6 +178,14 @@ export function AccountsTable() {
         enableRowSelection
         enableColumnVisibility
         toolbarActions={buildToolbarActions}
+        searchValue={search}
+        onSearchChange={(value) => {
+          replaceState({ ...urlState, page: 1, q: value });
+        }}
+        onSearch={(value) => {
+          replaceState({ ...urlState, page: 1, q: value });
+        }}
+        searchPlaceholder="Tìm theo username, email..."
         onRowDoubleClick={handleRowDoubleClick}
         renderRowActions={(row) => (
           <AccountRowActions

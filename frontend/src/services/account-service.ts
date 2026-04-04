@@ -4,7 +4,9 @@ import type { PaginatedData } from "@/types/api";
 import type {
   Account,
   CreateAccountInput,
+  DeleteAccountResult,
   GetAccountListParams,
+  ProfileStatus,
   UpdateAccountInput,
 } from "@/types/account";
 
@@ -34,6 +36,21 @@ type BackendAccount = {
   } | null;
 };
 
+const normalizeProfileStatus = (
+  status: unknown,
+): ProfileStatus | null => {
+  if (typeof status !== "string") {
+    return null;
+  }
+
+  const normalized = status.trim().toUpperCase();
+  if (normalized === "ACTIVE" || normalized === "INACTIVE" || normalized === "BANNED") {
+    return normalized;
+  }
+
+  return null;
+};
+
 function mapAccountFromBackend(input: BackendAccount): Account {
   const profile = (input.profile ?? input.Profile) as 
     | (typeof input.profile) 
@@ -55,7 +72,7 @@ function mapAccountFromBackend(input: BackendAccount): Account {
     (profile as any)?.avatar ?? (profile as any)?.Avatar ?? null;
 
   const resolvedStatus =
-    (profile as any)?.status ?? (profile as any)?.Status ?? null;
+    normalizeProfileStatus((profile as any)?.status ?? (profile as any)?.Status);
   
   return {
     accountId: input.accountId ?? input.AccountID ?? 0,
@@ -116,7 +133,9 @@ export async function updateAccount(
   return mapAccountFromBackend(res.data as BackendAccount);
 }
 
-export async function deleteAccount(accountId: number): Promise<null> {
-  await apiClient.delete(`/accounts/${accountId}`);
-  return null;
+export async function deleteAccount(
+  accountId: number,
+): Promise<DeleteAccountResult> {
+  const res = await apiClient.delete<DeleteAccountResult>(`/accounts/${accountId}`);
+  return res.data as DeleteAccountResult;
 }

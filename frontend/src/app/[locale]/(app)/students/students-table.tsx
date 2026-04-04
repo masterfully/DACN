@@ -12,7 +12,11 @@ import {
   useUpdateAccount,
 } from "@/hooks/use-accounts";
 import { useListTableUrl } from "@/hooks/use-list-table-url";
-import { useCreateProfile, useStudentList } from "@/hooks/use-profiles";
+import {
+  useCreateProfile,
+  useStudentList,
+  useUpdateProfile,
+} from "@/hooks/use-profiles";
 import { studentColumns } from "./columns";
 import type { Student } from "./student.types";
 import { StudentDetailSheet } from "./student-detail-sheet";
@@ -23,6 +27,20 @@ import {
   type StudentFormValues,
 } from "./student-form-dialog";
 import { StudentRowActions } from "./student-row-actions";
+
+const normalizeMaybe = (
+  value: string | null | undefined,
+): string | undefined => {
+  const normalized = value?.trim();
+  return normalized ? normalized : undefined;
+};
+
+const normalizeUpperMaybe = (
+  value: string | null | undefined,
+): string | undefined => {
+  const normalized = value?.trim().toUpperCase();
+  return normalized ? normalized : undefined;
+};
 
 export function StudentsTable() {
   const { state: urlState, replaceState } = useListTableUrl();
@@ -85,9 +103,12 @@ export function StudentsTable() {
     useCreateAccount();
   const { mutateWithResult: updateAccount, isLoading: isUpdating } =
     useUpdateAccount(editingStudent?.accountId ?? 0);
+  const { mutateWithResult: updateProfile, isLoading: isUpdatingProfile } =
+    useUpdateProfile(editingStudent?.profileId ?? 0);
   const { mutateWithResult: createProfile, isLoading: isCreatingProfile } =
     useCreateProfile();
-  const isSubmitting = isCreating || isUpdating || isCreatingProfile;
+  const isSubmitting =
+    isCreating || isUpdating || isUpdatingProfile || isCreatingProfile;
 
   function openAddDialog() {
     setEditingStudent(null);
@@ -106,16 +127,91 @@ export function StudentsTable() {
     try {
       if (mode === "edit" && editingStudent) {
         const payload = buildUpdateStudentPayload(values);
-        const result = await updateAccount({
+        const accountResult = await updateAccount({
           username: payload.username,
+          email: payload.email,
         });
 
-        if (!result.ok) {
+        if (!accountResult.ok) {
           toast.error(
-            result.error?.message ??
+            accountResult.error?.message ??
               "Cập nhật sinh viên thất bại. Vui lòng thử lại.",
           );
           return false;
+        }
+
+        if (editingStudent.profileId > 0) {
+          const profilePatch: {
+            fullName?: string;
+            phoneNumber?: string;
+            dateOfBirth?: string;
+            gender?: string;
+            avatar?: string;
+            citizenId?: string;
+            hometown?: string;
+            status?: string;
+          } = {};
+
+          if (
+            normalizeMaybe(payload.fullName) !==
+            normalizeMaybe(editingStudent.fullName)
+          ) {
+            profilePatch.fullName = payload.fullName;
+          }
+          if (
+            normalizeMaybe(payload.phoneNumber) !==
+            normalizeMaybe(editingStudent.phoneNumber)
+          ) {
+            profilePatch.phoneNumber = payload.phoneNumber;
+          }
+          if (
+            normalizeMaybe(payload.dateOfBirth) !==
+            normalizeMaybe(editingStudent.dateOfBirth)
+          ) {
+            profilePatch.dateOfBirth = payload.dateOfBirth;
+          }
+          if (
+            normalizeUpperMaybe(payload.gender) !==
+            normalizeUpperMaybe(editingStudent.gender)
+          ) {
+            profilePatch.gender = payload.gender;
+          }
+          if (
+            normalizeMaybe(payload.avatar) !==
+            normalizeMaybe(editingStudent.avatar)
+          ) {
+            profilePatch.avatar = payload.avatar;
+          }
+          if (
+            normalizeMaybe(payload.citizenId) !==
+            normalizeMaybe(editingStudent.citizenId)
+          ) {
+            profilePatch.citizenId = payload.citizenId;
+          }
+          if (
+            normalizeMaybe(payload.hometown) !==
+            normalizeMaybe(editingStudent.hometown)
+          ) {
+            profilePatch.hometown = payload.hometown;
+          }
+          if (
+            normalizeUpperMaybe(payload.status) !==
+            normalizeUpperMaybe(editingStudent.status)
+          ) {
+            profilePatch.status = payload.status;
+          }
+
+          if (Object.keys(profilePatch).length > 0) {
+            const profileResult = await updateProfile(profilePatch);
+
+            if (!profileResult.ok) {
+              toast.error(
+                profileResult.error?.message ??
+                  "Cập nhật trạng thái sinh viên thất bại. Vui lòng thử lại.",
+              );
+              return false;
+            }
+          }
         }
 
         toast.success("Cập nhật sinh viên thành công.");

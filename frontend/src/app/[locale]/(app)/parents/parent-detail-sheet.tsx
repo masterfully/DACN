@@ -50,7 +50,8 @@ export function ParentDetailSheet({ parent, onClose }: ParentDetailSheetProps) {
             <dt className="text-muted-foreground font-medium">Trạng thái</dt>
             <dd>
               {parent.status
-                ? (PARENT_STATUS_LABELS[parent.status] ?? parent.status)
+                ? (PARENT_STATUS_LABELS[parent.status.toUpperCase()] ??
+                  parent.status)
                 : "—"}
             </dd>
           </dl>

@@ -12,17 +12,22 @@ import { Label } from "@/components/ui/label";
 import type {
   Account,
   CreateAccountInput,
+  ProfileStatus,
   Role,
   UpdateAccountInput,
 } from "@/types/account";
 import type { MutationResult } from "@/types/api";
-import { ACCOUNT_ROLE_OPTIONS } from "./account.constants";
+import {
+  ACCOUNT_ROLE_OPTIONS,
+  ACCOUNT_STATUS_OPTIONS,
+} from "./account.constants";
 
 export interface AccountFormValues {
   username: string;
   email: string;
   password: string;
   role: Role;
+  status: ProfileStatus;
 }
 
 export const ACCOUNT_EMPTY_FORM: AccountFormValues = {
@@ -30,6 +35,24 @@ export const ACCOUNT_EMPTY_FORM: AccountFormValues = {
   email: "",
   password: "",
   role: "STUDENT",
+  status: "ACTIVE",
+};
+
+const normalizeStatus = (status: unknown): ProfileStatus => {
+  if (typeof status !== "string") {
+    return "ACTIVE";
+  }
+
+  const normalized = status.trim().toUpperCase();
+  if (normalized === "INACTIVE") {
+    return "INACTIVE";
+  }
+
+  if (normalized === "BANNED") {
+    return "BANNED";
+  }
+
+  return "ACTIVE";
 };
 
 export function accountToFormValues(account: Account): AccountFormValues {
@@ -38,6 +61,7 @@ export function accountToFormValues(account: Account): AccountFormValues {
     email: account.email ?? account.profile?.email ?? "",
     password: "",
     role: account.role,
+    status: normalizeStatus(account.profile?.status),
   };
 }
 
@@ -57,10 +81,11 @@ export function validateAccountForm(
     };
   }
 
+  if (!values.email.trim()) {
+    return { field: "email", message: "Email không được để trống." };
+  }
+
   if (mode === "create") {
-    if (!values.email.trim()) {
-      return { field: "email", message: "Email không được để trống." };
-    }
     if (!values.password.trim()) {
       return { field: "password", message: "Mật khẩu không được để trống." };
     }
@@ -85,7 +110,9 @@ export function buildUpdateAccountPayload(
 ): UpdateAccountInput {
   return {
     username: values.username.trim(),
+    email: values.email.trim(),
     role: values.role,
+    status: values.status,
   };
 }
 
@@ -171,21 +198,21 @@ export function AccountFormDialog({
             />
           </div>
 
+          <div className="grid gap-1.5">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="VD: user@example.com"
+              value={values.email}
+              onChange={(e) => handleFieldChange("email", e.target.value)}
+              disabled={isSubmitting}
+              required
+            />
+          </div>
+
           {!isEditing && (
             <>
-              <div className="grid gap-1.5">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="VD: user@example.com"
-                  value={values.email}
-                  onChange={(e) => handleFieldChange("email", e.target.value)}
-                  disabled={isSubmitting}
-                  required
-                />
-              </div>
-
               <div className="grid gap-1.5">
                 <Label htmlFor="password">Mật khẩu</Label>
                 <Input
@@ -219,6 +246,25 @@ export function AccountFormDialog({
               ))}
             </select>
           </div>
+
+          {isEditing && (
+            <div className="grid gap-1.5">
+              <Label htmlFor="status">Trạng thái</Label>
+              <select
+                id="status"
+                value={values.status}
+                onChange={(e) => handleFieldChange("status", e.target.value)}
+                disabled={isSubmitting}
+                className="border-input focus-visible:border-ring focus-visible:ring-ring/50 h-9 w-full rounded-md border bg-transparent px-3 py-1 text-sm shadow-xs outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {ACCOUNT_STATUS_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           {error && <p className="text-destructive text-sm">{error}</p>}
         </form>

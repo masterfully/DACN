@@ -18,7 +18,7 @@ import type { Student } from "./student.types";
 
 export function StudentStatusBadge({ status }: { status: string | null }) {
   if (!status) return <span className="text-muted-foreground">—</span>;
-  const key = status.toLowerCase();
+  const key = status.trim().toUpperCase();
   return (
     <Badge
       variant="ghost"

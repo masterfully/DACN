@@ -1,4 +1,5 @@
 export type Role = "ADMIN" | "LECTURER" | "STUDENT" | "PARENT";
+export type ProfileStatus = "ACTIVE" | "INACTIVE" | "BANNED";
 
 export interface AccountProfile {
   profileId: number;
@@ -19,7 +20,9 @@ export interface Account {
 export interface GetAccountListParams {
   page?: number;
   limit?: number;
+  search?: string;
   role?: Role;
+  status?: ProfileStatus;
 }
 
 export interface CreateAccountInput {
@@ -31,5 +34,16 @@ export interface CreateAccountInput {
 
 export interface UpdateAccountInput {
   username?: string;
+  email?: string;
   role?: Role;
+  status?: ProfileStatus;
+}
+
+export interface DeleteAccountResult {
+  accountId: number;
+  username: string;
+  email: string;
+  role: Role;
+  deleted: true;
+  deletedAt: string;
 }
