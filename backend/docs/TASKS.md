@@ -110,6 +110,16 @@ Base path: `/api/profiles`
 
 ---
 
+### Step 4 — Parent Relationship Core (API sync)
+
+Base path: `/api/parents` and `/api/students`
+
+- [ ] `POST /api/parents/assign` — assign parent to student. **Role: ADMIN**
+- [ ] `DELETE /api/parents/assign` — unassign parent from student. **Role: ADMIN**
+- [ ] `GET /api/students/:studentId/parents` — list parents of a student. **Role: ADMIN**
+
+---
+
 ## Member 2 — Subject + Section + Registration + Schedule + Attendance
 
 > **Wait for**: Member 1 to finish Step 0 (infrastructure + middleware) before starting.
@@ -133,11 +143,12 @@ Base path: `/api/sections`
 
 - [x] `GET /api/sections` — paginated, filter by `subjectId`, `year`, `status`. **Role: ADMIN**
 - [x] `POST /api/sections` — create section. **Role: ADMIN**
-- [ ] `GET /api/sections/my-sections` — lecturer's own sections. **Role: LECTURER** _(register before `/:id`)_
+- [x] `GET /api/sections/my-sections` — lecturer's own sections. **Role: LECTURER** _(register before `/:id`)_
 - [x] `GET /api/sections/:sectionId` — section detail. **Any auth**
 - [x] `PUT /api/sections/:sectionId` — update section. **Role: ADMIN**
 - [x] `DELETE /api/sections/:sectionId` — delete. **Role: ADMIN** _(guard: has registered students)_
 - [x] `GET /api/sections/:sectionId/students` — students in section. **Role: ADMIN, LECTURER**
+- [x] `GET /api/sections/:sectionId/registrations` — registrations for a section. **Role: ADMIN, LECTURER**
 - [x] `PATCH /api/sections/:sectionId/status` — update status. **Role: ADMIN, LECTURER**
 - [x] `PATCH /api/sections/:sectionId/visibility` — update visibility. **Role: ADMIN, LECTURER**
 
@@ -145,16 +156,24 @@ Base path: `/api/sections`
 **Visibility values**: `0` = hidden, `1` = visible
 
 ---
-- [x] `GET /api/sections` — paginated, filter by `subjectId`, `year`, `status`. **Role: ADMIN**
-- [x] `POST /api/sections` — create section. **Role: ADMIN**
-- [x] `GET /api/sections/my-sections` — lecturer's own sections. **Role: LECTURER** _(register before `/:id`)_
-- [x] `GET /api/sections/:sectionId` — section detail. **Any auth**
-- [x] `PUT /api/sections/:sectionId` — update section. **Role: ADMIN**
-- [x] `DELETE /api/sections/:sectionId` — delete. **Role: ADMIN** _(guard: has registered students)_
-- [x] `GET /api/sections/:sectionId/students` — students in section. **Role: ADMIN, LECTURER**
-- [x] `PATCH /api/sections/:sectionId/status` — update status. **Role: ADMIN, LECTURER**
-- [x] `PATCH /api/sections/:sectionId/visibility` — update visibility. **Role: ADMIN, LECTURER**
-- [x] `GET /api/sections/:sectionId/registrations` — registrations for a section. **Role: ADMIN, LECTURER**
+
+### Registration module (API sync)
+
+Base path: `/api/registrations`
+
+- [x] `GET /api/registrations` — list all registrations. **Role: ADMIN**
+- [x] `POST /api/registrations` — register section. **Role: STUDENT**
+- [x] `DELETE /api/registrations/:sectionId` — cancel registration. **Role: STUDENT**
+- [x] `GET /api/registrations/my-registrations` — list own registrations. **Role: STUDENT**
+
+---
+
+### Parent Access to Schedule & Attendance (API sync)
+
+Base path: `/api/parents/students/:studentId`
+
+- [ ] `GET /api/parents/students/:studentId/schedule` — parent views linked student's schedule. **Role: PARENT**
+- [ ] `GET /api/parents/students/:studentId/attendance` — parent views linked student's attendance. **Role: PARENT**
 
 ---
 
@@ -269,6 +288,15 @@ Base path: `/api/certificates`
 - [x] `GET /api/certificates/:certificateId` — detail. **Role: ADMIN or owner**
 - [x] `PUT /api/certificates/:certificateId` — update. **Role: ADMIN**
 - [x] `DELETE /api/certificates/:certificateId` — delete. **Role: ADMIN**
+
+---
+
+### Parent Student List Endpoints (API sync)
+
+Base path: `/api/parents`
+
+- [ ] `GET /api/parents/:parentId/students` — admin views students linked to a parent. **Role: ADMIN**
+- [ ] `GET /api/parents/my-students` — parent views own linked students. **Role: PARENT**
 
 ---
 
