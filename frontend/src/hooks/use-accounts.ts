@@ -16,6 +16,7 @@ import type {
   Account,
   GetAccountListParams,
   CreateAccountInput,
+  DeleteAccountResult,
   UpdateAccountInput,
 } from "@/types/account";
 
@@ -50,7 +51,7 @@ export function useUpdateAccount(accountId: number) {
 }
 
 export function useDeleteAccount(accountId: number) {
-  return useMutation<null, void>(
+  return useMutation<DeleteAccountResult, void>(
     `/accounts/${accountId}/delete`,
     () => deleteAccount(accountId),
   );

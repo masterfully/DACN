@@ -14,7 +14,7 @@ import type { Parent } from "./parent.types";
 
 export function ParentStatusBadge({ status }: { status: string | null }) {
   if (!status) return <span className="text-muted-foreground">—</span>;
-  const key = status.toLowerCase();
+  const key = status.trim().toUpperCase();
   return (
     <Badge
       variant="ghost"

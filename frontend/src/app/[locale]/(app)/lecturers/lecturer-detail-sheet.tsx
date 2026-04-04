@@ -55,14 +55,16 @@ export function LecturerDetailSheet({
             <dt className="text-muted-foreground font-medium">Giới tính</dt>
             <dd>
               {lecturer.gender
-                ? (LECTURER_GENDER_LABELS[lecturer.gender] ?? lecturer.gender)
+                ? (LECTURER_GENDER_LABELS[lecturer.gender.toUpperCase()] ??
+                  lecturer.gender)
                 : "—"}
             </dd>
 
             <dt className="text-muted-foreground font-medium">Trạng thái</dt>
             <dd>
               {lecturer.status
-                ? (LECTURER_STATUS_LABELS[lecturer.status] ?? lecturer.status)
+                ? (LECTURER_STATUS_LABELS[lecturer.status.toUpperCase()] ??
+                  lecturer.status)
                 : "—"}
             </dd>
           </dl>

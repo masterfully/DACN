@@ -28,6 +28,7 @@ export interface UpdateAccountInput {
   username?: string;
   email?: string;
   role?: RoleEnum;
+  status?: "ACTIVE" | "INACTIVE" | "BANNED";
 }
 
 export interface DeleteAccountInput {
@@ -401,6 +402,19 @@ export const updateAccount = async (input: UpdateAccountInput) => {
 
   if (input.role !== undefined) {
     data.Role = input.role;
+  }
+
+  if (input.status !== undefined) {
+    data.profile = {
+      upsert: {
+        update: {
+          Status: input.status,
+        },
+        create: {
+          Status: input.status,
+        },
+      },
+    };
   }
 
   try {

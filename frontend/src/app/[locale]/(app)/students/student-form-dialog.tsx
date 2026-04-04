@@ -42,7 +42,37 @@ export const STUDENT_EMPTY_FORM: StudentFormValues = {
   avatar: "",
   citizenId: "",
   hometown: "",
-  status: "active",
+  status: "ACTIVE",
+};
+
+const normalizeStudentStatus = (status: unknown): string => {
+  if (typeof status !== "string") {
+    return "ACTIVE";
+  }
+
+  const normalized = status.trim().toUpperCase();
+  if (normalized === "INACTIVE") {
+    return "INACTIVE";
+  }
+
+  if (normalized === "BANNED" || normalized === "SUSPENDED") {
+    return "BANNED";
+  }
+
+  return "ACTIVE";
+};
+
+const normalizeStudentGender = (gender: unknown): string => {
+  if (typeof gender !== "string") {
+    return "";
+  }
+
+  const normalized = gender.trim().toUpperCase();
+  if (normalized === "MALE" || normalized === "FEMALE") {
+    return normalized;
+  }
+
+  return "";
 };
 
 export function studentToFormValues(student: Student): StudentFormValues {
@@ -53,11 +83,11 @@ export function studentToFormValues(student: Student): StudentFormValues {
     fullName: student.fullName ?? "",
     phoneNumber: student.phoneNumber ?? "",
     dateOfBirth: student.dateOfBirth ?? "",
-    gender: student.gender ?? "",
+    gender: normalizeStudentGender(student.gender),
     avatar: student.avatar ?? "",
     citizenId: student.citizenId ?? "",
     hometown: student.hometown ?? "",
-    status: student.status ?? "active",
+    status: normalizeStudentStatus(student.status),
   };
 }
 

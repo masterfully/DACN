@@ -61,7 +61,8 @@ export function StudentDetailSheet({
             <dt className="text-muted-foreground font-medium">Giới tính</dt>
             <dd>
               {student.gender
-                ? (STUDENT_GENDER_LABELS[student.gender] ?? student.gender)
+                ? (STUDENT_GENDER_LABELS[student.gender.toUpperCase()] ??
+                  student.gender)
                 : "—"}
             </dd>
 
@@ -77,7 +78,8 @@ export function StudentDetailSheet({
             <dt className="text-muted-foreground font-medium">Trạng thái</dt>
             <dd>
               {student.status
-                ? (STUDENT_STATUS_LABELS[student.status] ?? student.status)
+                ? (STUDENT_STATUS_LABELS[student.status.toUpperCase()] ??
+                  student.status)
                 : "—"}
             </dd>
           </dl>

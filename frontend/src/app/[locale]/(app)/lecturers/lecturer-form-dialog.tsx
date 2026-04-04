@@ -36,7 +36,37 @@ export const LECTURER_EMPTY_FORM: LecturerFormValues = {
   phoneNumber: "",
   dateOfBirth: "",
   gender: "",
-  status: "active",
+  status: "ACTIVE",
+};
+
+const normalizeLecturerStatus = (status: unknown): string => {
+  if (typeof status !== "string") {
+    return "ACTIVE";
+  }
+
+  const normalized = status.trim().toUpperCase();
+  if (normalized === "INACTIVE") {
+    return "INACTIVE";
+  }
+
+  if (normalized === "BANNED" || normalized === "SUSPENDED") {
+    return "BANNED";
+  }
+
+  return "ACTIVE";
+};
+
+const normalizeLecturerGender = (gender: unknown): string => {
+  if (typeof gender !== "string") {
+    return "";
+  }
+
+  const normalized = gender.trim().toUpperCase();
+  if (normalized === "MALE" || normalized === "FEMALE") {
+    return normalized;
+  }
+
+  return "";
 };
 
 export function lecturerToFormValues(
@@ -47,8 +77,8 @@ export function lecturerToFormValues(
     email: lecturer.email ?? "",
     phoneNumber: lecturer.phoneNumber ?? "",
     dateOfBirth: lecturer.dateOfBirth ?? "",
-    gender: lecturer.gender ?? "",
-    status: lecturer.status ?? "active",
+    gender: normalizeLecturerGender(lecturer.gender),
+    status: normalizeLecturerStatus(lecturer.status),
   };
 }
 
@@ -78,7 +108,6 @@ export function buildUpdateLecturerPayload(
 ): UpdateProfileInput {
   return {
     fullName: values.fullName.trim() || undefined,
-    email: values.email.trim() || undefined,
     phoneNumber: values.phoneNumber.trim() || undefined,
     dateOfBirth: values.dateOfBirth || undefined,
     gender: values.gender || undefined,

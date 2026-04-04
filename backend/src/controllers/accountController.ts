@@ -121,12 +121,18 @@ const updateAccountSchema = z
         error: ACCOUNT_FIELD_ERROR_MESSAGES.ROLE_INVALID,
       })
       .optional(),
+    status: z
+      .enum(PROFILE_STATUS_VALUES, {
+        error: ACCOUNT_FIELD_ERROR_MESSAGES.QUERY_STATUS_INVALID,
+      })
+      .optional(),
   })
   .refine(
     (data) =>
       data.username !== undefined ||
       data.email !== undefined ||
-      data.role !== undefined,
+      data.role !== undefined ||
+      data.status !== undefined,
     {
       message: ACCOUNT_FIELD_ERROR_MESSAGES.UPDATE_AT_LEAST_ONE_FIELD,
       path: ["form"],
@@ -275,6 +281,7 @@ export async function updateAccountHandler(
       username: parsed.username,
       email: parsed.email,
       role: parsed.role as RoleEnum | undefined,
+      status: parsed.status,
     });
 
     sendSuccess(res, account, 200);
