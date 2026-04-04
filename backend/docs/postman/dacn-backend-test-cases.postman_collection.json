@@ -11600,6 +11600,1265 @@
               "response": []
             }
           ]
+        },
+        {
+          "name": "Attendance Summary + Certificates",
+          "item": [
+            {
+              "name": "Attendance Summary - Success (ADMIN)",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/profiles/{{profile_certificates_test_profile_id}}/attendance-summary",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "profiles",
+                    "{{profile_certificates_test_profile_id}}",
+                    "attendance-summary"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Attendance Summary - Success (Owner)",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{student_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/profiles/{{profile_certificates_test_profile_id}}/attendance-summary",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "profiles",
+                    "{{profile_certificates_test_profile_id}}",
+                    "attendance-summary"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Attendance Summary - Success (LECTURER)",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{lecturer_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/profiles/{{profile_certificates_test_profile_id}}/attendance-summary",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "profiles",
+                    "{{profile_certificates_test_profile_id}}",
+                    "attendance-summary"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Attendance Summary - Success (with sectionId)",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/profiles/{{profile_certificates_test_profile_id}}/attendance-summary?sectionId={{existing_section_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "profiles",
+                    "{{profile_certificates_test_profile_id}}",
+                    "attendance-summary"
+                  ],
+                  "query": [
+                    {
+                      "key": "sectionId",
+                      "value": "{{existing_section_id}}"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Attendance Summary - Forbidden (Non-owner STUDENT)",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{student_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/profiles/{{profile_certificates_other_profile_id}}/attendance-summary",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "profiles",
+                    "{{profile_certificates_other_profile_id}}",
+                    "attendance-summary"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Attendance Summary - Invalid profileId",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/profiles/abc/attendance-summary",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "profiles",
+                    "abc",
+                    "attendance-summary"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Attendance Summary - Profile not found",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/profiles/999999/attendance-summary",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "profiles",
+                    "999999",
+                    "attendance-summary"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Attendance Summary - Non-student profile not found",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/profiles/{{existing_lecturer_profile_id}}/attendance-summary",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "profiles",
+                    "{{existing_lecturer_profile_id}}",
+                    "attendance-summary"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Attendance Summary - Invalid sectionId query",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/profiles/{{profile_certificates_test_profile_id}}/attendance-summary?sectionId=abc",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "profiles",
+                    "{{profile_certificates_test_profile_id}}",
+                    "attendance-summary"
+                  ],
+                  "query": [
+                    {
+                      "key": "sectionId",
+                      "value": "abc"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Attendance Summary - Section not found",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/profiles/{{profile_certificates_test_profile_id}}/attendance-summary?sectionId=999999",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "profiles",
+                    "{{profile_certificates_test_profile_id}}",
+                    "attendance-summary"
+                  ],
+                  "query": [
+                    {
+                      "key": "sectionId",
+                      "value": "999999"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Attendance Summary - Missing token",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/profiles/{{profile_certificates_test_profile_id}}/attendance-summary",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "profiles",
+                    "{{profile_certificates_test_profile_id}}",
+                    "attendance-summary"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Certificates List - Success (ADMIN)",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/profiles/{{profile_certificates_test_profile_id}}/certificates?page=1&limit=10",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "profiles",
+                    "{{profile_certificates_test_profile_id}}",
+                    "certificates"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Certificates List - Success (Owner)",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{student_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/profiles/{{profile_certificates_test_profile_id}}/certificates?page=1&limit=10",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "profiles",
+                    "{{profile_certificates_test_profile_id}}",
+                    "certificates"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Certificates List - Forbidden (Non-owner STUDENT)",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{student_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/profiles/{{profile_certificates_other_profile_id}}/certificates?page=1&limit=10",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "profiles",
+                    "{{profile_certificates_other_profile_id}}",
+                    "certificates"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Certificates List - Search by typeName",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/profiles/{{profile_certificates_test_profile_id}}/certificates?page=1&limit=10&search=English",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "profiles",
+                    "{{profile_certificates_test_profile_id}}",
+                    "certificates"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    },
+                    {
+                      "key": "search",
+                      "value": "English"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Certificates List - Filter by certificateTypeId",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/profiles/{{profile_certificates_test_profile_id}}/certificates?page=1&limit=10&certificateTypeId={{certificate_type_filter_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "profiles",
+                    "{{profile_certificates_test_profile_id}}",
+                    "certificates"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    },
+                    {
+                      "key": "certificateTypeId",
+                      "value": "{{certificate_type_filter_id}}"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Certificates List - Filter isVerified=true",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/profiles/{{profile_certificates_test_profile_id}}/certificates?page=1&limit=10&isVerified=true",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "profiles",
+                    "{{profile_certificates_test_profile_id}}",
+                    "certificates"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    },
+                    {
+                      "key": "isVerified",
+                      "value": "true"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Certificates List - Filter isVerified=false",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/profiles/{{profile_certificates_test_profile_id}}/certificates?page=1&limit=10&isVerified=false",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "profiles",
+                    "{{profile_certificates_test_profile_id}}",
+                    "certificates"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    },
+                    {
+                      "key": "isVerified",
+                      "value": "false"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Certificates List - Invalid page query",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/profiles/{{profile_certificates_test_profile_id}}/certificates?page=abc&limit=10",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "profiles",
+                    "{{profile_certificates_test_profile_id}}",
+                    "certificates"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "abc"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Certificates List - Invalid isVerified query",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/profiles/{{profile_certificates_test_profile_id}}/certificates?page=1&limit=10&isVerified=maybe",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "profiles",
+                    "{{profile_certificates_test_profile_id}}",
+                    "certificates"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    },
+                    {
+                      "key": "isVerified",
+                      "value": "maybe"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Certificates List - Invalid profileId",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/profiles/abc/certificates?page=1&limit=10",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "profiles",
+                    "abc",
+                    "certificates"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Certificates List - Profile not found",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/profiles/999999/certificates?page=1&limit=10",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "profiles",
+                    "999999",
+                    "certificates"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Certificates List - Non-student profile not found",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/profiles/{{existing_lecturer_profile_id}}/certificates?page=1&limit=10",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "profiles",
+                    "{{existing_lecturer_profile_id}}",
+                    "certificates"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Certificates List - Missing token",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/profiles/{{profile_certificates_test_profile_id}}/certificates?page=1&limit=10",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "profiles",
+                    "{{profile_certificates_test_profile_id}}",
+                    "certificates"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Link Certificate - Success (ADMIN)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"certificateId\": \"{{certificate_link_success_id}}\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/profiles/{{profile_certificates_test_profile_id}}/certificates",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "profiles",
+                    "{{profile_certificates_test_profile_id}}",
+                    "certificates"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Link Certificate - Duplicate (409)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"certificateId\": \"{{certificate_unlink_success_id}}\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/profiles/{{profile_certificates_test_profile_id}}/certificates",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "profiles",
+                    "{{profile_certificates_test_profile_id}}",
+                    "certificates"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Link Certificate - Profile not found",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"certificateId\": \"{{certificate_link_success_id}}\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/profiles/999999/certificates",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "profiles",
+                    "999999",
+                    "certificates"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Link Certificate - Non-student profile not found",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"certificateId\": \"{{certificate_link_success_id}}\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/profiles/{{existing_lecturer_profile_id}}/certificates",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "profiles",
+                    "{{existing_lecturer_profile_id}}",
+                    "certificates"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Link Certificate - Certificate not found",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"certificateId\": 999999\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/profiles/{{profile_certificates_test_profile_id}}/certificates",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "profiles",
+                    "{{profile_certificates_test_profile_id}}",
+                    "certificates"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Link Certificate - Invalid body (missing certificateId)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/profiles/{{profile_certificates_test_profile_id}}/certificates",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "profiles",
+                    "{{profile_certificates_test_profile_id}}",
+                    "certificates"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Link Certificate - Invalid body (certificateId type)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"certificateId\": \"abc\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/profiles/{{profile_certificates_test_profile_id}}/certificates",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "profiles",
+                    "{{profile_certificates_test_profile_id}}",
+                    "certificates"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Link Certificate - Forbidden (STUDENT)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{student_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"certificateId\": \"{{certificate_link_success_id}}\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/profiles/{{profile_certificates_test_profile_id}}/certificates",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "profiles",
+                    "{{profile_certificates_test_profile_id}}",
+                    "certificates"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Link Certificate - Missing token",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"certificateId\": \"{{certificate_link_success_id}}\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/profiles/{{profile_certificates_test_profile_id}}/certificates",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "profiles",
+                    "{{profile_certificates_test_profile_id}}",
+                    "certificates"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Unlink Certificate - Success (ADMIN, cleanup link_success)",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/profiles/{{profile_certificates_test_profile_id}}/certificates/{{certificate_link_success_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "profiles",
+                    "{{profile_certificates_test_profile_id}}",
+                    "certificates",
+                    "{{certificate_link_success_id}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Unlink Certificate - Not linked",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/profiles/{{profile_certificates_test_profile_id}}/certificates/{{certificate_not_linked_for_student01_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "profiles",
+                    "{{profile_certificates_test_profile_id}}",
+                    "certificates",
+                    "{{certificate_not_linked_for_student01_id}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Unlink Certificate - Profile not found",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/profiles/999999/certificates/{{certificate_link_success_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "profiles",
+                    "999999",
+                    "certificates",
+                    "{{certificate_link_success_id}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Unlink Certificate - Non-student profile not found",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/profiles/{{existing_lecturer_profile_id}}/certificates/{{certificate_link_success_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "profiles",
+                    "{{existing_lecturer_profile_id}}",
+                    "certificates",
+                    "{{certificate_link_success_id}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Unlink Certificate - Invalid profileId",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/profiles/abc/certificates/{{certificate_link_success_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "profiles",
+                    "abc",
+                    "certificates",
+                    "{{certificate_link_success_id}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Unlink Certificate - Invalid certificateId",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/profiles/{{profile_certificates_test_profile_id}}/certificates/abc",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "profiles",
+                    "{{profile_certificates_test_profile_id}}",
+                    "certificates",
+                    "abc"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Unlink Certificate - Forbidden (STUDENT)",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{student_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/profiles/{{profile_certificates_test_profile_id}}/certificates/{{certificate_link_success_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "profiles",
+                    "{{profile_certificates_test_profile_id}}",
+                    "certificates",
+                    "{{certificate_link_success_id}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Unlink Certificate - Missing token",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/profiles/{{profile_certificates_test_profile_id}}/certificates/{{certificate_link_success_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "profiles",
+                    "{{profile_certificates_test_profile_id}}",
+                    "certificates",
+                    "{{certificate_link_success_id}}"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
         }
       ]
     },
@@ -12454,6 +13713,46 @@
     {
       "key": "another_profile_id",
       "value": "2"
+    },
+    {
+      "key": "student_inactive_profile_id",
+      "value": "18"
+    },
+    {
+      "key": "student_banned_profile_id",
+      "value": "19"
+    },
+    {
+      "key": "profile_certificates_test_profile_id",
+      "value": "15"
+    },
+    {
+      "key": "profile_certificates_other_profile_id",
+      "value": "16"
+    },
+    {
+      "key": "certificate_link_success_id",
+      "value": "4"
+    },
+    {
+      "key": "certificate_unlink_success_id",
+      "value": "1"
+    },
+    {
+      "key": "certificate_not_linked_for_student01_id",
+      "value": "3"
+    },
+    {
+      "key": "certificate_filter_verified_true_id",
+      "value": "1"
+    },
+    {
+      "key": "certificate_filter_verified_false_id",
+      "value": "2"
+    },
+    {
+      "key": "certificate_type_filter_id",
+      "value": "1"
     }
   ]
 }

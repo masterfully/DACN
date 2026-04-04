@@ -3976,6 +3976,11 @@ GET /api/attendances/1/details?page=1&limit=50&status=PRESENT
 
 **Description**: Get the total attendance of a student (number of sessions present, absent, late) in the entire or a specific class. Requires role: `ADMIN`, `LECTURER`, or owner.
 
+Rules:
+- Endpoint only supports profiles with role `STUDENT`; non-student profiles return `404`.
+- `absent` includes both `ABSENT` and `EXCUSED_ABSENCE` statuses.
+- `attendanceRate` is returned as an integer percentage.
+
 **URL**: `/api/profiles/{profileId}/attendance-summary`
 
 **Method**: `GET`
@@ -4887,6 +4892,10 @@ GET /api/certificates?page=1&limit=10&search=IELTS&certificateTypeId=1&isVerifie
 
 **Description**: Get a list of a student's certificates. Requires role: `ADMIN` or owner.
 
+Rules:
+- Endpoint only supports profiles with role `STUDENT`; non-student profiles return `404`.
+- `isVerified` filter maps to `CertificateDetail.IsVerified`.
+
 **URL**: `/api/profiles/{profileId}/certificates`
 
 **Method**: `GET`
@@ -4916,10 +4925,15 @@ GET /api/profiles/3/certificates?page=1&limit=10&search=IELTS&certificateTypeId=
       {
         "certificateId": 1,
         "typeName": "IELTS",
+        "createdByAccountId": 2,
         "score": 7.5,
         "issueDate": "2024-06-01",
         "expiryDate": "2026-06-01",
-        "evidenceURL": "https://storage.example.com/certs/ielts.pdf"
+        "evidenceURL": "https://storage.example.com/certs/ielts.pdf",
+        "metadata": {
+          "band": "C1"
+        },
+        "isVerified": true
       }
     ],
     "meta": {
@@ -4947,6 +4961,9 @@ GET /api/profiles/3/certificates?page=1&limit=10&search=IELTS&certificateTypeId=
 #### 15.2. Add Certificate to Student
 
 **Description**: Attach a certificate to the student. Requires role: `ADMIN`.
+
+Rules:
+- Endpoint only supports profiles with role `STUDENT`; non-student profiles return `404`.
 
 **URL**: `/api/profiles/{profileId}/certificates`
 
@@ -4995,6 +5012,9 @@ GET /api/profiles/3/certificates?page=1&limit=10&search=IELTS&certificateTypeId=
 #### 15.3. Remove Certificate from Student
 
 **Description**: Remove a certificate from a student. Requires role: `ADMIN`.
+
+Rules:
+- Endpoint only supports profiles with role `STUDENT`; non-student profiles return `404`.
 
 **URL**: `/api/profiles/{profileId}/certificates/{certificateId}`
 

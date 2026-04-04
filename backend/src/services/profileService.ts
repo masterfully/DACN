@@ -39,6 +39,18 @@ export interface UpdateProfileByIdInput extends UpdateMyProfileInput {
   status?: "ACTIVE" | "INACTIVE" | "BANNED";
 }
 
+export interface GetProfileAttendanceSummaryInput {
+  sectionId?: number;
+}
+
+export interface ListProfileCertificatesInput {
+  page: number;
+  limit: number;
+  search?: string;
+  certificateTypeId?: number;
+  isVerified?: boolean;
+}
+
 interface ProfileActor {
   accountId: number;
   role: RoleEnum;
@@ -46,6 +58,10 @@ interface ProfileActor {
 
 const toDateOnly = (input: string): Date => {
   return new Date(`${input}T00:00:00.000Z`);
+};
+
+const formatDateOnly = (value: Date | null): string | null => {
+  return value ? value.toISOString().slice(0, 10) : null;
 };
 
 const profileSelect = {
@@ -206,6 +222,17 @@ const findActiveProfileById = async (profileId: number) => {
 
 const isAllowedProfileActor = (actor: ProfileActor, targetAccountId: number): boolean => {
   return actor.role === RoleEnum.ADMIN || actor.accountId === targetAccountId;
+};
+
+const isAllowedAttendanceSummaryActor = (
+  actor: ProfileActor,
+  targetAccountId: number,
+): boolean => {
+  return (
+    actor.role === RoleEnum.ADMIN ||
+    actor.role === RoleEnum.LECTURER ||
+    actor.accountId === targetAccountId
+  );
 };
 
 export const listProfiles = async (input: ListProfilesInput) => {
@@ -439,6 +466,350 @@ export const updateProfileById = async (
   });
 
   return mapProfile(updated);
+};
+
+export const getProfileAttendanceSummary = async (
+  profileId: number,
+  actor: ProfileActor,
+  input: GetProfileAttendanceSummaryInput,
+) => {
+  const profile = await findActiveProfileById(profileId);
+
+  if (!profile || profile.account.Role !== RoleEnum.STUDENT) {
+    throw new AppError(
+      PROFILE_ERROR_MESSAGES.PROFILE_ATTENDANCE_SUMMARY_PROFILE_NOT_FOUND,
+      {
+        statusCode: 404,
+        code: PROFILE_ERROR_CODES.PROFILE_ATTENDANCE_SUMMARY_PROFILE_NOT_FOUND,
+        details: {
+          formErrors: [
+            PROFILE_ERROR_MESSAGES.PROFILE_ATTENDANCE_SUMMARY_PROFILE_NOT_FOUND,
+          ],
+          fieldErrors: {},
+        },
+      },
+    );
+  }
+
+  if (!isAllowedAttendanceSummaryActor(actor, profile.AccountID)) {
+    throw new AppError(PROFILE_ERROR_MESSAGES.PROFILE_ATTENDANCE_SUMMARY_FORBIDDEN, {
+      statusCode: 403,
+      code: PROFILE_ERROR_CODES.PROFILE_ATTENDANCE_SUMMARY_FORBIDDEN,
+      details: {
+        formErrors: [PROFILE_ERROR_MESSAGES.PROFILE_ATTENDANCE_SUMMARY_FORBIDDEN],
+        fieldErrors: {},
+      },
+    });
+  }
+
+  let subjectName: string | null = null;
+  if (input.sectionId !== undefined) {
+    const section = await prisma.section.findUnique({
+      where: {
+        SectionID: input.sectionId,
+      },
+      select: {
+        SectionID: true,
+        subject: {
+          select: {
+            SubjectName: true,
+          },
+        },
+      },
+    });
+
+    if (!section) {
+      throw new AppError(
+        PROFILE_ERROR_MESSAGES.PROFILE_ATTENDANCE_SUMMARY_SECTION_NOT_FOUND,
+        {
+          statusCode: 404,
+          code: PROFILE_ERROR_CODES.PROFILE_ATTENDANCE_SUMMARY_SECTION_NOT_FOUND,
+          details: {
+            formErrors: [
+              PROFILE_ERROR_MESSAGES.PROFILE_ATTENDANCE_SUMMARY_SECTION_NOT_FOUND,
+            ],
+            fieldErrors: {},
+          },
+        },
+      );
+    }
+
+    subjectName = section.subject.SubjectName;
+  }
+
+  const details = await prisma.attendanceDetail.findMany({
+    where: {
+      StudentProfileID: profile.ProfileID,
+      attendance:
+        input.sectionId !== undefined
+          ? {
+              SectionID: input.sectionId,
+            }
+          : undefined,
+    },
+    select: {
+      Status: true,
+    },
+  });
+
+  const totalSessions = details.length;
+  let present = 0;
+  let absent = 0;
+  let late = 0;
+
+  for (const detail of details) {
+    const normalizedStatus = detail.Status?.toUpperCase();
+    if (normalizedStatus === "PRESENT") {
+      present += 1;
+      continue;
+    }
+
+    if (
+      normalizedStatus === "ABSENT" ||
+      normalizedStatus === "EXCUSED_ABSENCE"
+    ) {
+      absent += 1;
+      continue;
+    }
+
+    if (normalizedStatus === "LATE") {
+      late += 1;
+    }
+  }
+
+  const attendanceRate =
+    totalSessions > 0 ? Math.round((present / totalSessions) * 100) : 0;
+
+  return {
+    profileId: profile.ProfileID,
+    studentName: profile.FullName ?? "",
+    sectionId: input.sectionId ?? null,
+    subjectName,
+    totalSessions,
+    present,
+    absent,
+    late,
+    attendanceRate,
+  };
+};
+
+export const listProfileCertificates = async (
+  profileId: number,
+  actor: ProfileActor,
+  input: ListProfileCertificatesInput,
+) => {
+  const profile = await findActiveProfileById(profileId);
+
+  if (!profile || profile.account.Role !== RoleEnum.STUDENT) {
+    throw new AppError(PROFILE_ERROR_MESSAGES.PROFILE_CERTIFICATE_LIST_PROFILE_NOT_FOUND, {
+      statusCode: 404,
+      code: PROFILE_ERROR_CODES.PROFILE_CERTIFICATE_LIST_PROFILE_NOT_FOUND,
+      details: {
+        formErrors: [PROFILE_ERROR_MESSAGES.PROFILE_CERTIFICATE_LIST_PROFILE_NOT_FOUND],
+        fieldErrors: {},
+      },
+    });
+  }
+
+  if (!isAllowedProfileActor(actor, profile.AccountID)) {
+    throw new AppError(PROFILE_ERROR_MESSAGES.PROFILE_CERTIFICATE_LIST_FORBIDDEN, {
+      statusCode: 403,
+      code: PROFILE_ERROR_CODES.PROFILE_CERTIFICATE_LIST_FORBIDDEN,
+      details: {
+        formErrors: [PROFILE_ERROR_MESSAGES.PROFILE_CERTIFICATE_LIST_FORBIDDEN],
+        fieldErrors: {},
+      },
+    });
+  }
+
+  const certificateWhere: Prisma.CertificateDetailWhereInput = {};
+  const normalizedSearch = input.search?.trim();
+
+  if (normalizedSearch) {
+    certificateWhere.certificateType = {
+      TypeName: {
+        contains: normalizedSearch,
+        mode: "insensitive",
+      },
+    };
+  }
+
+  if (input.certificateTypeId !== undefined) {
+    certificateWhere.CertificateTypeID = input.certificateTypeId;
+  }
+
+  if (input.isVerified !== undefined) {
+    certificateWhere.IsVerified = input.isVerified;
+  }
+
+  const where: Prisma.StudentCertificatesWhereInput = {
+    StudentID: profile.ProfileID,
+    certificate: certificateWhere,
+  };
+
+  const skip = (input.page - 1) * input.limit;
+
+  const [rows, total] = await Promise.all([
+    prisma.studentCertificates.findMany({
+      where,
+      skip,
+      take: input.limit,
+      orderBy: {
+        CertificateID: "asc",
+      },
+      select: {
+        CertificateID: true,
+        certificate: {
+          select: {
+            CreatedByAccountID: true,
+            Score: true,
+            IssueDate: true,
+            ExpiryDate: true,
+            EvidenceURL: true,
+            Metadata: true,
+            IsVerified: true,
+            certificateType: {
+              select: {
+                TypeName: true,
+              },
+            },
+          },
+        },
+      },
+    }),
+    prisma.studentCertificates.count({ where }),
+  ]);
+
+  return {
+    certificates: rows.map((row) => ({
+      certificateId: row.CertificateID,
+      typeName: row.certificate.certificateType.TypeName,
+      createdByAccountId: row.certificate.CreatedByAccountID,
+      score: row.certificate.Score,
+      issueDate: formatDateOnly(row.certificate.IssueDate),
+      expiryDate: formatDateOnly(row.certificate.ExpiryDate),
+      evidenceURL: row.certificate.EvidenceURL,
+      metadata: row.certificate.Metadata,
+      isVerified: row.certificate.IsVerified,
+    })),
+    total,
+  };
+};
+
+export const linkCertificateToProfile = async (
+  profileId: number,
+  certificateId: number,
+) => {
+  const profile = await findActiveProfileById(profileId);
+
+  if (!profile || profile.account.Role !== RoleEnum.STUDENT) {
+    throw new AppError(PROFILE_ERROR_MESSAGES.PROFILE_CERTIFICATE_LINK_PROFILE_NOT_FOUND, {
+      statusCode: 404,
+      code: PROFILE_ERROR_CODES.PROFILE_CERTIFICATE_LINK_PROFILE_NOT_FOUND,
+      details: {
+        formErrors: [PROFILE_ERROR_MESSAGES.PROFILE_CERTIFICATE_LINK_PROFILE_NOT_FOUND],
+        fieldErrors: {},
+      },
+    });
+  }
+
+  const certificate = await prisma.certificateDetail.findUnique({
+    where: {
+      CertificateID: certificateId,
+    },
+    select: {
+      CertificateID: true,
+    },
+  });
+
+  if (!certificate) {
+    throw new AppError(
+      PROFILE_ERROR_MESSAGES.PROFILE_CERTIFICATE_LINK_CERTIFICATE_NOT_FOUND,
+      {
+        statusCode: 404,
+        code: PROFILE_ERROR_CODES.PROFILE_CERTIFICATE_LINK_CERTIFICATE_NOT_FOUND,
+        details: {
+          formErrors: [
+            PROFILE_ERROR_MESSAGES.PROFILE_CERTIFICATE_LINK_CERTIFICATE_NOT_FOUND,
+          ],
+          fieldErrors: {},
+        },
+      },
+    );
+  }
+
+  try {
+    await prisma.studentCertificates.create({
+      data: {
+        StudentID: profile.ProfileID,
+        CertificateID: certificateId,
+      },
+    });
+  } catch (error) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
+      throw new AppError(PROFILE_ERROR_MESSAGES.PROFILE_CERTIFICATE_LINK_ALREADY_EXISTS, {
+        statusCode: 409,
+        code: PROFILE_ERROR_CODES.PROFILE_CERTIFICATE_LINK_ALREADY_EXISTS,
+        details: {
+          formErrors: [PROFILE_ERROR_MESSAGES.PROFILE_CERTIFICATE_LINK_ALREADY_EXISTS],
+          fieldErrors: {},
+        },
+      });
+    }
+
+    throw error;
+  }
+
+  return {
+    studentId: profile.ProfileID,
+    certificateId,
+  };
+};
+
+export const unlinkCertificateFromProfile = async (
+  profileId: number,
+  certificateId: number,
+) => {
+  const profile = await findActiveProfileById(profileId);
+
+  if (!profile || profile.account.Role !== RoleEnum.STUDENT) {
+    throw new AppError(
+      PROFILE_ERROR_MESSAGES.PROFILE_CERTIFICATE_UNLINK_PROFILE_NOT_FOUND,
+      {
+        statusCode: 404,
+        code: PROFILE_ERROR_CODES.PROFILE_CERTIFICATE_UNLINK_PROFILE_NOT_FOUND,
+        details: {
+          formErrors: [
+            PROFILE_ERROR_MESSAGES.PROFILE_CERTIFICATE_UNLINK_PROFILE_NOT_FOUND,
+          ],
+          fieldErrors: {},
+        },
+      },
+    );
+  }
+
+  const deleted = await prisma.studentCertificates.deleteMany({
+    where: {
+      StudentID: profile.ProfileID,
+      CertificateID: certificateId,
+    },
+  });
+
+  if (deleted.count === 0) {
+    throw new AppError(PROFILE_ERROR_MESSAGES.PROFILE_CERTIFICATE_UNLINK_NOT_LINKED, {
+      statusCode: 404,
+      code: PROFILE_ERROR_CODES.PROFILE_CERTIFICATE_UNLINK_NOT_LINKED,
+      details: {
+        formErrors: [PROFILE_ERROR_MESSAGES.PROFILE_CERTIFICATE_UNLINK_NOT_LINKED],
+        fieldErrors: {},
+      },
+    });
+  }
+
+  return null;
 };
 
 export const listStudentProfiles = async (

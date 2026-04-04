@@ -218,6 +218,7 @@ model CertificateDetail {
   ApplicationID      Int
   CertificateTypeID  Int
   CreatedByAccountID Int? // NEW: Fix #2
+  IsVerified         Boolean   @default(false)
   Score              Float?
   IssueDate          DateTime? @db.Date
   ExpiryDate         DateTime? @db.Date
